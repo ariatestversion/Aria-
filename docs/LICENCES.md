@@ -38,7 +38,7 @@ Aucun de ces fichiers n’était utilisé par l’application V0.4. Seul l’anc
 | Vignettes de morceaux | 3 images de presets | Composant `PieceThumb` : icône de l’instrument sur fond or léger (`src/v0/ui.tsx`) |
 | Icônes d’instruments (onboarding, vignettes) | 3 illustrations PNG | Icônes vectorielles dessinées pour le Design System : `inst-piano`, `inst-guitar`, `inst-bass`, `inst-voice`, `inst-drums`, `inst-other` (`src/design/Icon.tsx`) |
 
-L’application V0.4 n’affiche plus aucune image matricielle. Le parcours e2e vérifie qu’il n’y a aucun `<img>` et aucune ressource manquante (404).
+L’application V0.4 n’affiche plus aucune image matricielle. Le parcours e2e vérifie qu’aucune requête n’est faite vers les médias retirés. Sur la prévisualisation `6b0078bb…` (`91441b1`), leurs anciennes adresses ne servent plus les fichiers et renvoient la page de l’application.
 
 ## Autres éléments publiés
 

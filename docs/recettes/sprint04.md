@@ -5,7 +5,7 @@ Ce registre distingue trois sources de résultats :
 - **les tests physiques**, réalisés par la recette avec de vrais micros et appareils ;
 - **les tests encore à faire.**
 
-Version de référence MVP Alpha V0.4 : voir `docs/SOURCE.md` (prévisualisation définitive et SHA).
+Version de référence MVP Alpha V0.4 : commit `91441b1`, prévisualisation https://6b0078bb87479237251ba188--ariafirstversion.netlify.app (`version.json` = `91441b1`).
 
 ## 1. Tests automatisés (Claude, micro simulé)
 
@@ -13,7 +13,7 @@ Version de référence MVP Alpha V0.4 : voir `docs/SOURCE.md` (prévisualisation
 | --- | --- | --- |
 | Compilation TypeScript + build Vite | `npm run build` | OK |
 | Tests unitaires (moteur pédagogique, bilan, séances, non-régression) | `npm test` | 23/23 |
-| Parcours de bout en bout, Chromium, mobile 390×844 | `node scripts/e2e-sprint04.mjs` | 67/67 en local, et sur l’URL de prévisualisation définitive |
+| Parcours de bout en bout, Chromium, mobile 390×844 | `node scripts/e2e-sprint04.mjs` | 68/68 en local, et sur l’URL de prévisualisation définitive |
 
 ### Couverture du parcours de bout en bout
 
@@ -40,7 +40,7 @@ Version de référence MVP Alpha V0.4 : voir `docs/SOURCE.md` (prévisualisation
   - cibles tactiles d’au moins 44 px ;
   - rien de masqué par la barre de navigation.
 - **Variante marine.** Aperçu, puis retour à la variante par défaut. Aucune erreur JavaScript.
-- **Médias (après leur retrait).** Aucune ressource manquante (aucune réponse 404) sur tout le parcours, aucune image `<img>` affichée. Les captures `docs/screenshots/sprint04/` sont refaites sur la version finale.
+- **Médias (après leur retrait).** Sur tout le parcours, aucune requête vers `/presets/`, `/instruments/` ni vers un fichier audio ou image matricielle. C’est le contrôle déterminant, car Netlify renvoie la page de l’application, avec un code 200, pour un fichier absent. Aucune réponse 404, aucune image `<img>` sur l’écran final. Les captures `docs/screenshots/sprint04/` sont refaites sur la version finale.
 
 ### Limites des tests automatisés
 
@@ -58,9 +58,10 @@ Version de référence MVP Alpha V0.4 : voir `docs/SOURCE.md` (prévisualisation
 | NR4 | Test physique Chrome Mac | Bilan sans observation, objectif Justesse | Conseil adapté à l’objectif : jamais « monte le tempo » hors Rythme / Tempo ; pas de BPM imposé à la reprise d’une étape de justesse | Unitaires | Corrigé (V0.4) |
 | NR5 | Test physique Chrome Mac | Prise enregistrée en séance sans passage saisi | Le Suivi n’affiche pas l’objectif (« Justesse », « Rythme »…) comme passage, y compris pour les prises déjà enregistrées | e2e + unitaire | Corrigé (V0.4) |
 
-| M1 | Arbitrage médias V0.4 | Retrait des 4 audios, des 3 images et des 3 illustrations | Aucune ressource manquante, aucune image externe, structure des écrans conservée (captures) | e2e + revue des captures | Fait (V0.4) |
+| M1 | Arbitrage médias V0.4 | Retrait des 4 audios, des 3 images et des 3 illustrations | Aucune requête vers les médias retirés, structure des écrans conservée (captures) | e2e + revue des captures | Fait (`91441b1`) |
 
 Contre-épreuves :
+- M1, lancé sur la prévisualisation `6b0076bc…` (`99a313e`), échouait : requêtes vers `clair-de-lune.jpg` et `piano-dessin.png`.
 - NR1 à NR3, lancés sur l’ancienne prévisualisation `6b00649f…`, échouaient.
 - NR5, lancé sur la prévisualisation `6b006f0b…` (`820bfe3`), échouait : la prise affichait « · Rythme » comme passage.
 - Tous passent sur la version définitive.

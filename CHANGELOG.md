@@ -112,7 +112,7 @@ Onboarding en 4 étapes non répété, accueil sans « Bonjour, » vide, « Repr
 
 - **Automatisés (micro simulé)** :
   - `npm test` : 23/23 ;
-  - `node scripts/e2e-sprint04.mjs` (Playwright, Chromium, 390×844) : 67/67, dont 11 contrôles de non-régression (NR1 à NR5) et 2 contrôles médias (aucun 404, aucune image externe), en local et sur la prévisualisation définitive.
+  - `node scripts/e2e-sprint04.mjs` (Playwright, Chromium, 390×844) : 68/68, dont 11 contrôles de non-régression (NR1 à NR5) et 3 contrôles médias (aucune requête vers les médias retirés, aucun 404, aucune image affichée), en local et sur la prévisualisation définitive.
 - **Physiques (réalisés par la recette, micro réel)** :
   - Chrome sur Mac : réussi. Deux prises audibles, conservées après deux fermetures du navigateur.
   - iPhone, navigateur intégré à ChatGPT : réussi.
@@ -122,7 +122,7 @@ Onboarding en 4 étapes non répété, accueil sans « Bonjour, » vide, « Repr
 ### Publication
 
 - Captures : `docs/screenshots/sprint04/`.
-- **Prévisualisation définitive MVP Alpha V0.4** : voir `docs/SOURCE.md` (lien, SHA, vérifications).
+- **Prévisualisation définitive MVP Alpha V0.4** : https://6b0078bb87479237251ba188--ariafirstversion.netlify.app, commit `91441b1` (`version.json` vérifié, bundles identiques, e2e 68/68 sur l’URL).
 - Prévisualisations précédentes : `6b00649f…` (`cf42503`), `6b006f0b…` (`820bfe3`) et `6b0076bc…` (`99a313e`, avant le retrait des médias), remplacées.
 - Production verrouillée sur le Sprint 02 (`6aff204b…`) jusqu’à la validation finale indépendante. Ensuite, et sur autorisation explicite : fusion dans `main` et publication sur le lien principal.
 ---

@@ -24,16 +24,17 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 `npm run build` génère `public/version.json` (commit, branche, date) : c’est la preuve de correspondance entre le commit GitHub et le déploiement Netlify. `SOURCE_VERSION.json` enregistre le dernier couple commit / déploiement de prévisualisation.
 
-## État Sprint 04 — prototype V0.4 (clôture)
+## État Sprint 04 — ARIA MVP Alpha V0.4 (clôture)
 
-- Branche `claude/sprint04-experience-musicale`. **Source déployée : commit `99a313e`** (`99a313eb9beff358f3ea95cfcb18cc495a4de343`). Le commit suivant ne contient que cette documentation de livraison.
-- **Prévisualisation définitive V0.4** : https://6b0076bca18fd5cc811ba140--ariafirstversion.netlify.app (déploiement `6b0076bca18fd5cc811ba140`, non publié).
+- Branche `claude/sprint04-experience-musicale`. **Source déployée : commit `91441b1`** (`91441b163ee40e8829755cc780673e0e592f931f`). Les commits suivants ne touchent que les tests e2e et la documentation de livraison.
+- **Prévisualisation définitive MVP Alpha V0.4** : https://6b0078bb87479237251ba188--ariafirstversion.netlify.app (déploiement `6b0078bb87479237251ba188`, non publié).
 - **Production verrouillée** sur le Sprint 02 : déploiement `6aff204b188f1862668a1bab`, commit `d86e813`, `locked: true`. Aucune mise en production ni aucun déverrouillage n’a été fait.
 - **Correspondance GitHub ↔ Netlify** :
-  - `version.json` = `99a313e`, branche `claude/sprint04-experience-musicale` ;
-  - `assets/index-DDrk4lBb.js` et `assets/index-Bom41a6f.css` identiques (SHA-256) au build local ;
-  - e2e 65/65 sur l’URL (micro simulé).
-- Prévisualisations précédentes, remplacées : `6b00649f…` (`cf42503`) et `6b006f0b…` (`820bfe3`, celle des tests physiques).
+  - `version.json` = `91441b1`, branche `claude/sprint04-experience-musicale` ;
+  - `assets/index-CwMQ-Ygw.js` et `assets/index-BuR7kNjN.css` identiques (SHA-256) au build local ;
+  - e2e 68/68 sur l’URL (micro simulé).
+- **Médias retirés** : sur la prévisualisation, leurs anciennes adresses ne servent plus les fichiers. Elles renvoient la page de l’application (`text/html`, règle de redirection), et le parcours ne fait aucune requête vers elles.
+- Prévisualisations précédentes, remplacées : `6b00649f…` (`cf42503`), `6b006f0b…` (`820bfe3`, celle des tests physiques), `6b0076bc…` (`99a313e`, avant le retrait des médias).
 
 ### Déploiement par le connecteur Netlify (procédure)
 

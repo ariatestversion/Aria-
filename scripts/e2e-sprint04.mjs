@@ -115,9 +115,16 @@ async function main() {
   const page = await context.newPage()
   const errors = []
   const missing = []
+  const mediaRequests = []
   page.on('pageerror', (e) => errors.push(e.message))
   page.on('response', (r) => {
     if (r.status() >= 400 && new URL(r.url()).origin === new URL(BASE).origin) missing.push(`${r.status()} ${r.url()}`)
+  })
+  // Netlify renvoie index.html (200) pour tout chemin inconnu : on contrôle donc les requêtes
+  // elles-mêmes, en plus des 404 (utile en local).
+  page.on('request', (r) => {
+    const path = new URL(r.url()).pathname
+    if (/\/(presets|instruments)\//.test(path) || /\.(mp3|wav|jpe?g|png)$/i.test(path)) mediaRequests.push(path)
   })
 
   // 1. Onboarding → objectifs transmis à la préparation
@@ -284,7 +291,8 @@ async function main() {
   await page.getByRole('button', { name: 'Crème & espresso' }).click()
   check('Variante par défaut restaurée', (await page.evaluate(() => document.documentElement.dataset.brand)) === undefined)
   check('Aucune erreur JavaScript', errors.length === 0, errors.join(' | '))
-  check('Médias : aucune ressource manquante (404) après le retrait des médias', missing.length === 0, missing.join(' | '))
+  check('Médias : aucune ressource en échec (404)', missing.length === 0, missing.join(' | '))
+  check('Médias : aucune requête vers les médias retirés (presets, instruments, audio, images)', mediaRequests.length === 0, mediaRequests.join(' | '))
   check(
     'Médias : aucune image externe affichée par l’application',
     (await page.evaluate(() => document.querySelectorAll('img').length)) === 0,

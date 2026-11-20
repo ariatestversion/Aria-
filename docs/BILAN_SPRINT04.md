@@ -1,6 +1,6 @@
 # Bilan définitif — Sprint 04 · ARIA MVP Alpha V0.4
 
-Dépôt `ariatestversion/Aria-`, branche `claude/sprint04-experience-musicale`, base `23ea182` (source Cursor `104645c`, Sprint 03). **Prévisualisation définitive MVP Alpha V0.4** : lien, SHA et vérifications dans `docs/SOURCE.md` et `SOURCE_VERSION.json`.
+Dépôt `ariatestversion/Aria-`, branche `claude/sprint04-experience-musicale`, base `23ea182` (source Cursor `104645c`, Sprint 03). **Prévisualisation définitive MVP Alpha V0.4** : https://6b0078bb87479237251ba188--ariafirstversion.netlify.app (commit `91441b1`, `version.json` vérifié). Détails : `docs/SOURCE.md` et `SOURCE_VERSION.json`.
 Production : verrouillée sur le Sprint 02. **Aucune mise en production.**
 
 ## 1. Fonctionnalités acquises
@@ -80,7 +80,7 @@ Points d’attention, non qualifiés comme anomalies faute de test :
 | Type | Résultat |
 | --- | --- |
 | Unitaires (Vitest) | 23/23 |
-| Parcours de bout en bout (Playwright, Chromium, 390×844, micro simulé) | 67/67 en local et sur la prévisualisation définitive |
+| Parcours de bout en bout (Playwright, Chromium, 390×844, micro simulé) | 68/68 en local et sur la prévisualisation définitive |
 | Physique · Chrome Mac · micro réel (recette) | Réussi |
 | Physique · iPhone, navigateur intégré à ChatGPT · micro réel (recette) | Réussi |
 | Physique · Safari iPhone ouvert directement | Non testé (reporté à dimanche ou lundi) |
