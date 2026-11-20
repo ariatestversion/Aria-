@@ -1,0 +1,33 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules
+
+# Build
+dist
+dist-ssr
+dist-noir
+dist-colors
+dist-v1
+dist-v2
+dist-v2-en
+*.local
+public/version.json
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+# Env — never commit secrets or machine-local env files
+.env
+.env.*
+!.env.example
+
+# Local tooling
+.netlify/
+agent-tools/

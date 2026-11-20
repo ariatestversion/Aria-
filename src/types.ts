@@ -1,0 +1,97 @@
+import type { PianoLevel } from './lib/coachScripts'
+
+export type ArrangementKind = 'arrangement' | 'original' | null
+export type InstrumentKind = 'piano' | 'guitar' | 'bass'
+export type { PianoLevel }
+
+export type UserProfile = {
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+}
+
+export type AriaFeedback = {
+  headline: string
+  greeting: string
+  overview: string
+  atmosphere: string
+  technique: string
+  rhythm: string
+  /** Points positifs */
+  strengths: string[]
+  /** Points fragiles / à corriger */
+  weaknesses?: string[]
+  /** Axes d'amélioration avec pistes de travail */
+  improvements: string[]
+  nextFocus: string
+  takesLeft: number
+}
+
+export type AppState = {
+  slide: number
+  hasPartition: boolean | null
+  profile: UserProfile
+  pieceName: string
+  partitionName: string
+  partitionPreview: string | null
+  partitionMime: string | null
+  /** Id d’un morceau démo préchargé, si choisi */
+  selectedPresetId: string | null
+  /** Extrait audio à écouter à l’entraînement */
+  previewAudio: string | null
+  /** Audio de performance démo (V2) */
+  performanceAudio: string | null
+  /** Secondes max du repère entraînement */
+  practicePeekSec: number | null
+  scrollCapRatio: number | null
+  repeatEverySec: number | null
+  scrollDurationSec: number | null
+  scrollKeyframes: { t: number; p: number }[] | null
+  arrangement: ArrangementKind
+  /** Débutant = posture, mains, mains séparées. Déjà jouer = retour sur le passage. */
+  pianoLevel: PianoLevel | null
+  /** Piano = parcours partition. Guitare / basse = micro + accordeur. */
+  instrument: InstrumentKind
+  takesUsed: number
+  isRecording: boolean
+  liveCue: string | null
+  feedback: AriaFeedback | null
+}
+
+export const MAX_TAKES = 99
+
+export const initialState: AppState = {
+  slide: 1,
+  hasPartition: null,
+  profile: {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+  },
+  pieceName: '',
+  partitionName: '',
+  partitionPreview: null,
+  partitionMime: null,
+  selectedPresetId: null,
+  previewAudio: null,
+  performanceAudio: null,
+  practicePeekSec: null,
+  scrollCapRatio: null,
+  repeatEverySec: null,
+  scrollDurationSec: null,
+  scrollKeyframes: null,
+  arrangement: null,
+  pianoLevel: null,
+  instrument: 'piano',
+  takesUsed: 0,
+  isRecording: false,
+  liveCue: null,
+  feedback: null,
+}
+
+export function totalSlides(hasPartition: boolean | null): number {
+  if (hasPartition === false) return 7
+  return 8
+}

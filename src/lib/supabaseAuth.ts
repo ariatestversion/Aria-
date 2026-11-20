@@ -1,0 +1,379 @@
+import { createClient, type Session, type User } from '@supabase/supabase-js'
+import { isPasswordStrong } from './passwordPolicy'
+import type { UserProfile } from '../types'
+import { findProfileByEmail, saveProfile } from './storage'
+
+const url = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim() || ''
+const anon = (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined)?.trim() || ''
+
+export const isSupabaseConfigured = Boolean(url && anon)
+
+/** Confirmation / reset emails must land on the app root, not a nested path. */
+export function authRedirectUrl() {
+  const { origin, pathname } = window.location
+  const onPages = pathname === '/app' || pathname.startsWith('/app/')
+  const raw = onPages ? `${origin}/app/` : `${origin}/`
+  return raw.replace(/([^:]\/)\/+/g, '$1')
+}
+
+export const supabase = isSupabaseConfigured
+  ? createClient(url, anon, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
+    })
+  : null
+
+export type AuthResult = {
+  ok: boolean
+  profile?: UserProfile
+  /** Stable code for UI copy, or a raw fallback message */
+  error?: string
+  /** User must confirm email before session is active */
+  needsEmailConfirm?: boolean
+}
+
+/** Map Supabase Auth error text → stable codes the UI can translate. */
+export function mapAuthError(message: string): string {
+  const m = message.toLowerCase()
+  if (m.includes('rate limit')) return 'rate_limited'
+  if (
+    m.includes('otp_expired') ||
+    m.includes('email link is invalid') ||
+    m.includes('link is invalid or has expired')
+  ) {
+    return 'link_expired'
+  }
+  if (m.includes('email not confirmed') || m.includes('not confirmed')) {
+    return 'email_not_confirmed'
+  }
+  if (m.includes('invalid login credentials') || m.includes('invalid credentials')) {
+    return 'invalid_credentials'
+  }
+  if (m.includes('user already registered') || m.includes('already been registered')) {
+    return 'already_registered'
+  }
+  if (m.includes('provider is not enabled') || m.includes('unsupported provider')) {
+    return 'oauth_unavailable'
+  }
+  if (
+    m.includes('password should be') ||
+    m.includes('password is known') ||
+    m.includes('weak password')
+  ) {
+    return 'password_weak'
+  }
+  return message
+}
+
+function profileFromUser(user: User, fallback?: Partial<UserProfile>): UserProfile {
+  const meta = (user.user_metadata || {}) as Record<string, string>
+  return {
+    firstName: String(meta.first_name || fallback?.firstName || '').trim(),
+    lastName: String(meta.last_name || fallback?.lastName || '').trim(),
+    email: String(user.email || fallback?.email || '').trim(),
+    phone: String(meta.phone || fallback?.phone || '').trim(),
+  }
+}
+
+async function upsertProfileRow(user: User, profile: UserProfile) {
+  if (!supabase) return
+  try {
+    await supabase.from('profiles').upsert(
+      {
+        id: user.id,
+        email: profile.email,
+        first_name: profile.firstName,
+        last_name: profile.lastName,
+        phone: profile.phone || null,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'id' },
+    )
+  } catch {
+    /* table may not exist yet — auth still works via user_metadata */
+  }
+}
+
+export async function signUpWithPassword(input: {
+  profile: UserProfile
+  password: string
+}): Promise<AuthResult> {
+  const email = input.profile.email.trim().toLowerCase()
+  const password = input.password
+  const firstName = input.profile.firstName.trim()
+  const lastName = input.profile.lastName.trim()
+
+  // lastName optional (ARIA V0 signup is first name + email + password only)
+  if (!firstName || !email) {
+    return { ok: false, error: 'missing_profile' }
+  }
+  if (!isPasswordStrong(password)) {
+    return { ok: false, error: 'password_weak' }
+  }
+
+  if (!isSupabaseConfigured || !supabase) {
+    // Local fallback until Supabase keys are set (keeps Pages demo usable)
+    saveProfile({ ...input.profile, email })
+    return { ok: true, profile: { ...input.profile, email } }
+  }
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        first_name: firstName,
+        last_name: lastName,
+        phone: input.profile.phone.trim(),
+      },
+      emailRedirectTo: authRedirectUrl(),
+    },
+  })
+
+  if (error) return { ok: false, error: mapAuthError(error.message) }
+
+  const user = data.user
+  if (!user) return { ok: false, error: 'Signup failed' }
+
+  // Existing confirmed account: Auth returns a fake user (no identities) and sends no confirm mail.
+  const identities = (user as { identities?: unknown[] }).identities
+  if (Array.isArray(identities) && identities.length === 0) {
+    return { ok: false, error: 'already_registered' }
+  }
+
+  const profile = profileFromUser(user, input.profile)
+  saveProfile(profile)
+  await upsertProfileRow(user, profile)
+
+  if (!data.session) {
+    return { ok: true, profile, needsEmailConfirm: true }
+  }
+
+  return { ok: true, profile }
+}
+
+export async function resendSignupEmail(email: string): Promise<AuthResult> {
+  if (!isSupabaseConfigured || !supabase) {
+    return { ok: false, error: 'Auth is not configured yet' }
+  }
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email: email.trim().toLowerCase(),
+    options: {
+      emailRedirectTo: authRedirectUrl(),
+    },
+  })
+  if (error) return { ok: false, error: mapAuthError(error.message) }
+  return { ok: true }
+}
+
+export async function signInWithPassword(input: {
+  email: string
+  password: string
+}): Promise<AuthResult> {
+  const email = input.email.trim().toLowerCase()
+  const password = input.password
+
+  if (!isSupabaseConfigured || !supabase) {
+    const found = findProfileByEmail(email)
+    if (!found) return { ok: false, error: 'not_found' }
+    saveProfile(found)
+    return { ok: true, profile: found }
+  }
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
+
+  if (error) return { ok: false, error: mapAuthError(error.message) }
+  const user = data.user
+  if (!user) return { ok: false, error: 'Login failed' }
+
+  let profile = profileFromUser(user)
+  try {
+    const { data: row } = await supabase
+      .from('profiles')
+      .select('first_name,last_name,phone,email')
+      .eq('id', user.id)
+      .maybeSingle()
+    if (row) {
+      profile = {
+        firstName: row.first_name || profile.firstName,
+        lastName: row.last_name || profile.lastName,
+        email: row.email || profile.email,
+        phone: row.phone || profile.phone,
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+
+  saveProfile(profile)
+  await upsertProfileRow(user, profile)
+  return { ok: true, profile }
+}
+
+export async function updateUserProfile(profile: UserProfile): Promise<AuthResult> {
+  const next = {
+    firstName: profile.firstName.trim(),
+    lastName: profile.lastName.trim(),
+    email: profile.email.trim().toLowerCase(),
+    phone: profile.phone.trim(),
+  }
+  saveProfile(next)
+
+  if (!isSupabaseConfigured || !supabase) {
+    return { ok: true, profile: next }
+  }
+
+  const { data: sessionData } = await supabase.auth.getSession()
+  const user = sessionData.session?.user
+  if (!user) {
+    return { ok: true, profile: next }
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    data: {
+      first_name: next.firstName,
+      last_name: next.lastName,
+      phone: next.phone,
+    },
+  })
+  if (error) return { ok: false, error: mapAuthError(error.message), profile: next }
+
+  await upsertProfileRow(user, next)
+  return { ok: true, profile: next }
+}
+
+export async function requestPasswordReset(email: string): Promise<AuthResult> {
+  if (!isSupabaseConfigured || !supabase) {
+    return { ok: false, error: 'Auth is not configured yet' }
+  }
+  const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+    redirectTo: authRedirectUrl(),
+  })
+  if (error) return { ok: false, error: mapAuthError(error.message) }
+  return { ok: true }
+}
+
+export async function signInWithEmailLink(
+  email: string,
+  meta?: { firstName?: string },
+): Promise<AuthResult> {
+  const trimmed = email.trim().toLowerCase()
+  if (!trimmed) return { ok: false, error: 'invalid_credentials' }
+
+  if (!isSupabaseConfigured || !supabase) {
+    const found = findProfileByEmail(trimmed)
+    const profile: UserProfile = found ?? {
+      firstName: meta?.firstName?.trim() || '',
+      lastName: '',
+      email: trimmed,
+      phone: '',
+    }
+    saveProfile(profile)
+    return { ok: true, profile }
+  }
+
+  const { error } = await supabase.auth.signInWithOtp({
+    email: trimmed,
+    options: {
+      emailRedirectTo: authRedirectUrl(),
+      shouldCreateUser: true,
+      data: meta?.firstName?.trim() ? { first_name: meta.firstName.trim() } : undefined,
+    },
+  })
+  if (error) return { ok: false, error: mapAuthError(error.message) }
+  return { ok: true, needsEmailConfirm: true }
+}
+
+export async function signInWithSocial(
+  provider: 'google' | 'facebook',
+): Promise<AuthResult> {
+  if (!isSupabaseConfigured || !supabase) {
+    return { ok: false, error: `${provider}_unavailable` }
+  }
+  try {
+    sessionStorage.setItem('sonique.afterAuth', '1')
+  } catch {
+    /* ignore */
+  }
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider,
+    options: {
+      redirectTo: authRedirectUrl(),
+      skipBrowserRedirect: true,
+    },
+  })
+  if (error) {
+    const mapped = mapAuthError(error.message)
+    if (mapped === 'oauth_unavailable') return { ok: false, error: `${provider}_unavailable` }
+    return { ok: false, error: mapped }
+  }
+  const startUrl = data.url
+  if (!startUrl) return { ok: false, error: `${provider}_unavailable` }
+
+  // If the provider is off in Supabase, /authorize returns JSON 400.
+  // Probe first so the musician stays on Sonique instead of a raw error page.
+  try {
+    const probe = await fetch(startUrl, {
+      method: 'GET',
+      redirect: 'manual',
+      headers: { apikey: anon, Authorization: `Bearer ${anon}` },
+    })
+    if (probe.status === 400) {
+      const body = (await probe.json().catch(() => null)) as { msg?: string } | null
+      const msg = body?.msg || ''
+      if (
+        msg.toLowerCase().includes('not enabled') ||
+        msg.toLowerCase().includes('unsupported provider')
+      ) {
+        return { ok: false, error: `${provider}_unavailable` }
+      }
+      return { ok: false, error: mapAuthError(msg || 'oauth_unavailable') }
+    }
+  } catch {
+    /* CORS oddity: still try the real redirect */
+  }
+
+  window.location.assign(startUrl)
+  return { ok: true }
+}
+
+export async function signInWithGoogle(): Promise<AuthResult> {
+  return signInWithSocial('google')
+}
+
+export async function getSessionProfile(): Promise<UserProfile | null> {
+  if (!isSupabaseConfigured || !supabase) return null
+  const { data } = await supabase.auth.getSession()
+  const session: Session | null = data.session
+  if (!session?.user) return null
+  return profileFromUser(session.user)
+}
+
+/** Clears Supabase session + local Sonique profile cache. */
+export async function signOut(): Promise<void> {
+  if (supabase) {
+    try {
+      await supabase.auth.signOut()
+    } catch {
+      /* ignore */
+    }
+  }
+  try {
+    localStorage.removeItem('sonique.profiles')
+    localStorage.removeItem('sonique.currentEmail')
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith('sb-') && key.includes('auth-token')) {
+        localStorage.removeItem(key)
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+}

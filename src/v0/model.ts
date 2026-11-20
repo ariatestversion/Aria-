@@ -1,0 +1,139 @@
+export type InstrumentId = 'piano' | 'guitar' | 'voice' | 'bass' | 'drums' | 'other'
+export type LevelId = 'beginner' | 'practicing' | 'advanced'
+export type HabitId = 'score' | 'tabs' | 'chords' | 'video' | 'ear'
+
+export type AriaAccount = {
+  id: string
+  firstName: string
+  email: string
+  /** Local-only hashed password (device account). Empty when cloud auth is used. */
+  passwordHash: string
+  salt: string
+  createdAt: string
+}
+
+export type MusicalProfile = {
+  email: string
+  instruments: InstrumentId[]
+  level: LevelId
+  habits: HabitId[]
+  /** Objectifs musicaux choisis à l’onboarding (ex. Justesse, Rythme). */
+  goals?: string[]
+  /** Temps de pratique habituel (minutes). */
+  preferredMinutes?: number
+  onboardingDone: boolean
+  updatedAt: string
+}
+
+export type PieceResource = {
+  id: string
+  kind: 'pdf' | 'audio' | 'video' | 'chords' | 'tabs' | 'note'
+  label: string
+  /** Object URL or text content; blobs live in IndexedDB by resource id */
+  text?: string
+  demo?: boolean
+}
+
+export type WorkProgramStep = {
+  id: string
+  title: string
+  what: string
+  how: string
+  why: string
+  success: string
+  done?: boolean
+}
+
+export type WorkProgram = {
+  steps: WorkProgramStep[]
+  objective: string
+  minutes: number
+  difficulties: string
+  updatedAt: string
+  stepIndex: number
+}
+
+export type Piece = {
+  id: string
+  email: string
+  title: string
+  artist: string
+  instrument: InstrumentId
+  genre: string
+  objective: string
+  passages: string
+  notes: string
+  resources: PieceResource[]
+  program: WorkProgram | null
+  demo?: boolean
+  createdAt: string
+  updatedAt: string
+  lastWorkedAt: string | null
+}
+
+export type Take = {
+  id: string
+  email: string
+  pieceId: string
+  passage: string
+  createdAt: string
+  seconds: number
+  mime: string
+}
+
+export type SessionLogStatus = 'draft' | 'completed'
+
+export type SessionLog = {
+  id: string
+  email: string
+  pieceId: string
+  createdAt: string
+  minutes: number
+  objective: string
+  observationWorks: string
+  observationImprove: string
+  nextStep: string
+  takeIds: string[]
+  source: 'user' | 'rules'
+  /** Completed = réelle séance sauvegardée ; draft = brouillon non compté. */
+  status: SessionLogStatus
+}
+
+export type AppScreen =
+  | 'welcome'
+  | 'auth'
+  | 'onboarding'
+  | 'home'
+  | 'library'
+  | 'piece'
+  | 'prepare'
+  | 'session'
+  | 'record'
+  | 'review'
+  | 'follow'
+  | 'profile'
+
+export const INSTRUMENTS: { id: InstrumentId; label: string }[] = [
+  { id: 'piano', label: 'Piano' },
+  { id: 'guitar', label: 'Guitare' },
+  { id: 'voice', label: 'Voix' },
+  { id: 'bass', label: 'Basse' },
+  { id: 'drums', label: 'Batterie' },
+  { id: 'other', label: 'Autre' },
+]
+
+export const LEVELS: { id: LevelId; label: string; hint: string }[] = [
+  { id: 'beginner', label: 'Je débute', hint: 'Je découvre l’instrument.' },
+  { id: 'practicing', label: 'Je pratique', hint: 'Je veux progresser et structurer mon travail.' },
+  { id: 'advanced', label: 'Je me perfectionne', hint: 'Je prépare une audition, un examen ou un projet.' },
+]
+
+export const HABITS: { id: HabitId; label: string }[] = [
+  { id: 'score', label: 'Partition' },
+  { id: 'tabs', label: 'Tablature' },
+  { id: 'chords', label: 'Accords' },
+  { id: 'video', label: 'Vidéo' },
+  { id: 'ear', label: 'À l’oreille' },
+]
+
+export const DEMO_GENRES = ['Classique', 'Jazz', 'Pop', 'R&B', 'Folk', 'Étude'] as const

@@ -1,0 +1,15 @@
+# Site Netlify courant : ariafirstversion
+# https://ariafirstversion.netlify.app
+# Relié au dépôt de travail Cursor : elodie-yebga-samnick/link-doctor
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
