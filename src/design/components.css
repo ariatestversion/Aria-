@@ -313,6 +313,7 @@ html[data-v0='1'] .ds-seg button.is-on { background: var(--id-surface); color: v
 .ds-row-card-text span { color: var(--ink-muted); font-size: var(--fs-small); }
 .ds-row-card > .ds-icon { color: var(--ink-faint); }
 .ds-thumb { width: 52px; height: 52px; border-radius: var(--r-sm); object-fit: cover; background: var(--id-surface-sunken); }
+.ds-thumb--icon { display: grid; place-items: center; color: var(--id-accent-ink); background: var(--id-accent-soft); }
 
 .ds-empty { display: grid; gap: var(--sp-3); justify-items: start; padding: var(--sp-2) 0; }
 

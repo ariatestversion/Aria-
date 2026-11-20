@@ -114,7 +114,11 @@ async function main() {
   await context.grantPermissions(['microphone'])
   const page = await context.newPage()
   const errors = []
+  const missing = []
   page.on('pageerror', (e) => errors.push(e.message))
+  page.on('response', (r) => {
+    if (r.status() >= 400 && new URL(r.url()).origin === new URL(BASE).origin) missing.push(`${r.status()} ${r.url()}`)
+  })
 
   // 1. Onboarding → objectifs transmis à la préparation
   await onboardGuitar(page)
@@ -280,6 +284,11 @@ async function main() {
   await page.getByRole('button', { name: 'Crème & espresso' }).click()
   check('Variante par défaut restaurée', (await page.evaluate(() => document.documentElement.dataset.brand)) === undefined)
   check('Aucune erreur JavaScript', errors.length === 0, errors.join(' | '))
+  check('Médias : aucune ressource manquante (404) après le retrait des médias', missing.length === 0, missing.join(' | '))
+  check(
+    'Médias : aucune image externe affichée par l’application',
+    (await page.evaluate(() => document.querySelectorAll('img').length)) === 0,
+  )
   await browser.close()
 
   // 7. Micro refusé puis réessai.

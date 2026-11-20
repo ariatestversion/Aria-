@@ -1,6 +1,6 @@
 # Sprint 04 — captures
 
-Générées par `SHOTS=1 node scripts/e2e-sprint04.mjs`.
+Générées par `SHOTS=1 node scripts/e2e-sprint04.mjs` (sauf `00-welcome.png`, capture directe de l’écran d’accueil). Captures de la version V0.4 finale, médias de provenance inconnue retirés.
 
 Conditions de capture :
 - Chromium headless, viewport 390×844, densité ×2, pleine page. Pour la capture, la barre de navigation est replacée en bas du document.
@@ -8,7 +8,8 @@ Conditions de capture :
 
 | Fichier | Contenu |
 | --- | --- |
-| `01-onboarding-instruments.png` | Onboarding : choix d’instruments (Guitare) |
+| `00-welcome.png` | Accueil (welcome) avec fond neutre dessiné en CSS, sans photo (V0.4) |
+| `01-onboarding-instruments.png` | Onboarding : choix d’instruments, icônes du Design System (Guitare) |
 | `02-onboarding-objectifs.png` | Onboarding : objectifs, avec le marqueur « principal » |
 | `03-accueil.png` | Accueil |
 | `04-preparation.png` | Préparation : instrument, niveau, objectifs repris du profil, temps, passage, support, aperçu des étapes |

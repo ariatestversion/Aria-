@@ -6,6 +6,8 @@
 
 /* Alias historiques — utilisés par l’écran de connexion (AuthGate) et styles.css. */
 html[data-v0='1'] {
+  /* Motif de portées dessiné en SVG inline (création ARIA, sans droits tiers). */
+  --staff-lines: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='110'%3E%3Cpath d='M0 30h160M0 40h160M0 50h160M0 60h160M0 70h160' stroke='%23f7f1e8' stroke-opacity='.09' stroke-width='1'/%3E%3C/svg%3E");
   --cream: var(--id-bg);
   --paper: var(--id-surface);
   --espresso: var(--id-primary);
@@ -100,9 +102,11 @@ html[data-v0='1'] button { touch-action: manipulation; }
   color: #f7f1e8;
   padding: var(--sp-4) 72px var(--sp-5) var(--sp-5);
   margin-top: var(--sp-2);
+  /* Carte neutre (portées stylisées + dégradé identitaire) : aucune image externe. */
   background:
-    linear-gradient(180deg, rgba(20, 12, 8, 0.2) 0%, rgba(20, 12, 8, 0.72) 58%, rgba(20, 12, 8, 0.9) 100%),
-    var(--resume-photo, none) center/cover no-repeat;
+    radial-gradient(80% 70% at 85% 10%, color-mix(in srgb, var(--id-accent) 40%, transparent), transparent 65%),
+    var(--staff-lines),
+    linear-gradient(160deg, color-mix(in srgb, var(--id-primary) 88%, white) 0%, color-mix(in srgb, var(--id-primary) 80%, black) 100%);
   display: grid;
   align-content: end;
   gap: var(--sp-1);
@@ -181,14 +185,7 @@ html[data-v0='1'] button { touch-action: manipulation; }
   font-weight: var(--fw-bold);
   cursor: pointer;
 }
-.v0-inst img {
-  width: 42px;
-  height: 42px;
-  object-fit: contain;
-  opacity: 0.9;
-  pointer-events: none;
-}
-.v0-inst-glyph { font-size: 1.8rem; line-height: 42px; }
+.v0-inst-icon { color: var(--ink); }
 .v0-inst-check { position: absolute; top: 10px; right: 10px; }
 html[data-v0='1'] .v0-inst.on {
   background: var(--id-primary);
@@ -196,7 +193,7 @@ html[data-v0='1'] .v0-inst.on {
   border-color: var(--id-primary);
   box-shadow: var(--shadow-2);
 }
-html[data-v0='1'] .v0-inst.on img { filter: invert(1) brightness(1.6); }
+html[data-v0='1'] .v0-inst.on .v0-inst-icon { color: var(--id-on-primary); }
 
 /* —— Séance & bilan —— */
 .v0-session .ds-h2 { margin-bottom: var(--sp-1); }
@@ -250,10 +247,13 @@ html[data-v0='1'] .v0-dock button.on { color: var(--id-primary); background: var
 }
 .v0-welcome-bg {
   position: absolute;
-  inset: 0;
+  inset: -4%;
+  /* Fond neutre dessiné en CSS (portées stylisées) : aucune image externe. */
   background:
-    linear-gradient(180deg, rgba(20, 12, 8, 0.18) 0%, rgba(20, 12, 8, 0.55) 48%, rgba(20, 12, 8, 0.88) 100%),
-    var(--welcome-photo) center/cover no-repeat;
+    radial-gradient(70% 45% at 22% 18%, color-mix(in srgb, var(--id-accent) 38%, transparent), transparent 62%),
+    radial-gradient(60% 40% at 88% 78%, color-mix(in srgb, var(--id-accent) 20%, transparent), transparent 64%),
+    var(--staff-lines),
+    linear-gradient(180deg, color-mix(in srgb, var(--id-primary) 92%, white) 0%, color-mix(in srgb, var(--id-primary) 78%, black) 100%);
   transform: scale(1.02);
   animation: v0-ken 18s ease-in-out infinite alternate;
 }

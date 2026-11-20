@@ -1,12 +1,22 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Icon, type IconName } from '../design/Icon'
-import type { Take } from './model'
+import { Icon, INSTRUMENT_ICON, type IconName } from '../design/Icon'
+import type { InstrumentId, Take } from './model'
 import { getBlob } from './store'
 import { useMetronome } from './metronome'
 
 export function fmt(sec: number) {
   const s = Math.max(0, Math.round(Number.isFinite(sec) ? sec : 0))
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
+}
+
+/* —— Vignette de morceau (composant neutre, sans image externe) —— */
+
+export function PieceThumb({ instrument }: { instrument?: InstrumentId }) {
+  return (
+    <span className="ds-thumb ds-thumb--icon" aria-hidden>
+      <Icon name={INSTRUMENT_ICON[instrument || 'other']} size={26} />
+    </span>
+  )
 }
 
 /* —— Badges & sources —— */

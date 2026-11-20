@@ -1,11 +1,11 @@
-# Registre de recette — Sprint 04 / prototype V0.4
+# Registre de recette — Sprint 04 / ARIA MVP Alpha V0.4
 
 Ce registre distingue trois sources de résultats :
 - **les tests automatisés**, exécutés par Claude avec un micro simulé ;
 - **les tests physiques**, réalisés par la recette avec de vrais micros et appareils ;
 - **les tests encore à faire.**
 
-Version de référence V0.4 : commit `99a313e`, prévisualisation https://6b0076bca18fd5cc811ba140--ariafirstversion.netlify.app (`version.json` = `99a313e`).
+Version de référence MVP Alpha V0.4 : voir `docs/SOURCE.md` (prévisualisation définitive et SHA).
 
 ## 1. Tests automatisés (Claude, micro simulé)
 
@@ -13,7 +13,7 @@ Version de référence V0.4 : commit `99a313e`, prévisualisation https://6b0076
 | --- | --- | --- |
 | Compilation TypeScript + build Vite | `npm run build` | OK |
 | Tests unitaires (moteur pédagogique, bilan, séances, non-régression) | `npm test` | 23/23 |
-| Parcours de bout en bout, Chromium, mobile 390×844 | `node scripts/e2e-sprint04.mjs` | 65/65 en local, et sur l’URL de prévisualisation définitive |
+| Parcours de bout en bout, Chromium, mobile 390×844 | `node scripts/e2e-sprint04.mjs` | 67/67 en local, et sur l’URL de prévisualisation définitive |
 
 ### Couverture du parcours de bout en bout
 
@@ -40,6 +40,7 @@ Version de référence V0.4 : commit `99a313e`, prévisualisation https://6b0076
   - cibles tactiles d’au moins 44 px ;
   - rien de masqué par la barre de navigation.
 - **Variante marine.** Aperçu, puis retour à la variante par défaut. Aucune erreur JavaScript.
+- **Médias (après leur retrait).** Aucune ressource manquante (aucune réponse 404) sur tout le parcours, aucune image `<img>` affichée. Les captures `docs/screenshots/sprint04/` sont refaites sur la version finale.
 
 ### Limites des tests automatisés
 
@@ -57,6 +58,8 @@ Version de référence V0.4 : commit `99a313e`, prévisualisation https://6b0076
 | NR4 | Test physique Chrome Mac | Bilan sans observation, objectif Justesse | Conseil adapté à l’objectif : jamais « monte le tempo » hors Rythme / Tempo ; pas de BPM imposé à la reprise d’une étape de justesse | Unitaires | Corrigé (V0.4) |
 | NR5 | Test physique Chrome Mac | Prise enregistrée en séance sans passage saisi | Le Suivi n’affiche pas l’objectif (« Justesse », « Rythme »…) comme passage, y compris pour les prises déjà enregistrées | e2e + unitaire | Corrigé (V0.4) |
 
+| M1 | Arbitrage médias V0.4 | Retrait des 4 audios, des 3 images et des 3 illustrations | Aucune ressource manquante, aucune image externe, structure des écrans conservée (captures) | e2e + revue des captures | Fait (V0.4) |
+
 Contre-épreuves :
 - NR1 à NR3, lancés sur l’ancienne prévisualisation `6b00649f…`, échouaient.
 - NR5, lancé sur la prévisualisation `6b006f0b…` (`820bfe3`), échouait : la prise affichait « · Rythme » comme passage.
@@ -71,11 +74,13 @@ Contre-épreuves :
 | 2026-11-20 | Mac · Google Chrome · micro réel | Prévisualisation `6b006f0b…`, commit `820bfe3` | Deux prises du même passage ; réécoute ; fermeture et réouverture du navigateur deux fois → prises toujours accessibles et audibles | **Réussi**. Qualité sonore jugée satisfaisante. |
 | 2026-11-20 | iPhone · navigateur intégré à l’application ChatGPT · micro réel | Prévisualisation `820bfe3` | Enregistrement, réécoute, conservation des prises après fermeture | **Réussi** |
 
-Ces tests ont été réalisés sur `820bfe3`. La version définitive ne modifie que deux règles de texte du bilan et l’affichage du libellé de passage. L’enregistrement, la lecture et le stockage des prises ne changent pas.
+Ces tests ont été réalisés sur `820bfe3`. Depuis, la version définitive a modifié deux règles de texte du bilan et l’affichage du libellé de passage, retiré des médias inutilisés et remplacé les visuels par des éléments neutres. L’enregistrement, la lecture et le stockage des prises ne changent pas : `recorder.ts` et `store.ts` sont identiques depuis `820bfe3`, le lecteur `TakePlayer` aussi. Seule la valeur du champ « passage » enregistré avec une prise change (NR5).
 
 Sur iPhone, le navigateur intégré à ChatGPT repose sur le moteur WebKit, comme Safari. Ce n’est cependant pas Safari ouvert directement : la gestion des données de site et des autorisations peut différer.
 
 ### Restant à vérifier
+
+Tests reportés à dimanche ou lundi, sur la prévisualisation définitive :
 
 | Cas | Safari iPhone (ouvert directement) | Android · Chrome |
 | --- | --- | --- |
@@ -99,10 +104,7 @@ Points d’attention propres à Safari :
 
 ## 4. Statut de la mise en production
 
-**Non autorisée.** Préalables :
-- test Safari iPhone ouvert directement ;
-- test Android ;
-- validation de la porteuse du projet ;
-- statut des droits des médias (voir `docs/LICENCES.md`).
-
-La production reste verrouillée sur le Sprint 02 (`6aff204b…`, `d86e813`).
+**Non autorisée.** Production verrouillée sur le Sprint 02 (`6aff204b…`, `d86e813`) jusqu’à :
+1. les tests Safari iPhone (ouvert directement) et Android ;
+2. la validation finale indépendante ;
+3. l’autorisation explicite de fusionner dans `main` et de publier sur le lien principal.

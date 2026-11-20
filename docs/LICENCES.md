@@ -1,34 +1,50 @@
-# Licences — médias (état au Sprint 04 / V0.4)
+# Licences — médias (état final ARIA MVP Alpha V0.4)
 
-**Statut : non validé.** Aucune vérification juridique n’a été faite. Claude a inventorié les fichiers et relevé les sources notées dans le dépôt, mais n’a ni vérifié ni obtenu aucun droit. Ces médias ne doivent pas être présentés comme libres de droits.
+## Décision appliquée (V0.4)
 
-## Médias affichés par l’application V0.4
+1. **Les quatre fichiers audio inutilisés sont retirés** du dépôt et du déploiement, avec leurs fiches de source `*.AUDIO.txt`.
+2. **Les trois images et les trois illustrations d’instruments sont retirées**, car leur provenance **n’a pas pu être établie** (voir l’enquête ci-dessous). Elles sont remplacées par des éléments créés pour ARIA dans le code, sans droits tiers, sans changer la structure des écrans.
 
-| Fichier | Usage dans V0.4 | Source connue | Statut |
+Aucune vérification juridique externe n’a été faite. Ce document décrit des faits techniques, pas un avis juridique.
+
+## Enquête de provenance (2026-11-20)
+
+| Fichier retiré | Usage en V0.4 | Recherche effectuée | Conclusion |
 | --- | --- | --- | --- |
-| `public/presets/clair-de-lune.jpg` | Fond de l’écran d’accueil, vignette par défaut des morceaux | Aucune source notée | **À vérifier** |
-| `public/presets/the-entertainer.jpg` | Carte « Commencer » de l’accueil, vignette démo « Nocturne » | Aucune source notée | **À vérifier** |
-| `public/presets/lettre-a-elise.png` | Vignette démo « Gymnopédie » | Aucune source notée | **À vérifier** |
-| `public/instruments/{piano,guitare,basse}-dessin.png` | Onboarding (choix d’instruments) | Illustrations produit | **Droits internes à confirmer** |
+| `public/presets/clair-de-lune.jpg` (900×7486) | Fond de l’écran d’accueil, vignette par défaut | Métadonnées : aucune (ré-encodé par ffmpeg « Lavc60.31.102 ») ; aucune source notée ; historique Git limité à l’import `23ea182` | Provenance **non établie** : retiré |
+| `public/presets/the-entertainer.jpg` (900×5094) | Carte « Commencer », vignette démo | Idem | Provenance **non établie** : retiré |
+| `public/presets/lettre-a-elise.png` (640×905) | Vignette démo | Métadonnées : aucune ; aucune source notée | Provenance **non établie** : retiré |
+| `public/instruments/piano-dessin.png`, `guitare-dessin.png`, `basse-dessin.png` (512×341) | Onboarding (choix d’instruments) | Métadonnées : aucune ; seule mention : « illustrations produit », sans auteur ni contrat | Provenance **non établie** : retirés |
 
-## Médias publiés mais non utilisés par V0.4
+## Fichiers audio retirés
 
-Ils restent dans `public/` : ils sont donc **publiés et accessibles par URL**, sur la prévisualisation comme en production. Seul l’ancien prototype `src/App.tsx`, non monté, les référence.
-
-| Fichier | Source notée dans le dépôt | Conséquence |
+| Fichier | Source notée avant retrait | Licence notée |
 | --- | --- | --- |
-| `public/presets/clair-de-lune.mp3` | Archive.org « ClairDeLunedebussy » — **CC BY-ND 3.0** | Attribution obligatoire, aucune modification ; non affichée |
-| `public/presets/lettre-a-elise.mp3` | Jamendo / Archive.org jamendo-325328 — StasNick — **CC BY-SA 3.0** | Attribution obligatoire, partage à l’identique ; non affichée |
-| `public/presets/the-entertainer.mp3` | Archive.org, enregistrement historique — licence non vérifiée (« check item page ») | **À vérifier** |
-| `public/presets/ode-to-joy.wav` | Aucune source notée | **À vérifier** |
-| `public/presets/ode-to-joy.svg`, `ode-to-joy-beginner-placeholder.svg` | Arrangement débutant, source non notée | **À vérifier** |
+| `public/presets/clair-de-lune.mp3` | Archive.org « ClairDeLunedebussy » | CC BY-ND 3.0 (attribution non affichée) |
+| `public/presets/lettre-a-elise.mp3` | Jamendo / Archive.org jamendo-325328 — StasNick | CC BY-SA 3.0 (attribution non affichée) |
+| `public/presets/the-entertainer.mp3` | Archive.org, enregistrement historique | Non vérifiée |
+| `public/presets/ode-to-joy.wav` | Aucune | Inconnue |
 
-Les compositions (Debussy, Beethoven, Joplin, Chopin, Satie) sont dans le domaine public en tant qu’œuvres. En revanche, leurs **enregistrements** et les **images** peuvent être protégés.
+Aucun de ces fichiers n’était utilisé par l’application V0.4. Seul l’ancien prototype `src/App.tsx`, non monté, les référençait encore.
 
-## Recommandations (non appliquées, en attente de décision)
+**Attention :** ces fichiers restent servis par la production actuelle (Sprint 02, verrouillée) tant que la V0.4 n’y est pas publiée. Ils restent aussi dans l’historique Git, où ils ne sont plus publiés.
 
-1. Avant toute mise en production, choisir pour chaque média : prouver la licence, remplacer le média, ou le retirer de `public/`.
-2. Pour les enregistrements CC BY-ND et CC BY-SA, s’ils sont conservés : afficher l’attribution (auteur, titre, licence, lien) ou les retirer, puisque V0.4 ne les utilise pas.
-3. Documenter la provenance des 3 images affichées et des illustrations d’instruments.
+## Éléments de remplacement (créés pour ARIA, sans droits tiers)
 
-Aucun média n’a été modifié, ajouté ni retiré au Sprint 04.
+| Élément | Remplace | Nature |
+| --- | --- | --- |
+| Fond de l’écran d’accueil | `clair-de-lune.jpg` | Dégradés CSS aux couleurs des tokens identitaires et motif de portées en SVG inline (`--staff-lines`, `src/v0/aria-v0.css`) |
+| Carte « Reprendre / Commencer » de l’accueil | `the-entertainer.jpg`, `clair-de-lune.jpg` | Même procédé, aucune image |
+| Vignettes de morceaux | 3 images de presets | Composant `PieceThumb` : icône de l’instrument sur fond or léger (`src/v0/ui.tsx`) |
+| Icônes d’instruments (onboarding, vignettes) | 3 illustrations PNG | Icônes vectorielles dessinées pour le Design System : `inst-piano`, `inst-guitar`, `inst-bass`, `inst-voice`, `inst-drums`, `inst-other` (`src/design/Icon.tsx`) |
+
+L’application V0.4 n’affiche plus aucune image matricielle. Le parcours e2e vérifie qu’il n’y a aucun `<img>` et aucune ressource manquante (404).
+
+## Autres éléments publiés
+
+| Élément | Statut |
+| --- | --- |
+| `public/favicon.svg` | Logo du projet ARIA (fichier interne) |
+| Polices Manrope et Fraunces (Google Fonts) | SIL Open Font License 1.1, usage autorisé |
+| `public/presets/ode-to-joy.svg`, `ode-to-joy-beginner-placeholder.svg`, `ode-to-joy.KEEP.txt` | **Hors arbitrage V0.4, provenance non établie.** Arrangement débutant de l’« Hymne à la joie » (mélodie du domaine public), sans auteur noté. Non utilisés par V0.4 mais **toujours publiés**. Décision à prendre : retrait recommandé. |
+| Démos « Nocturne / Clair de lune / Gymnopédie » (mode découverte) | Titres et compositeurs uniquement (œuvres du domaine public), sans média associé |

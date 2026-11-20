@@ -1,6 +1,6 @@
 # Changelog — ARIA
 
-## [V0.4 — Sprint 04] — Expérience musicale & Design System (2026-11-20)
+## [ARIA — MVP Alpha V0.4 · Sprint 04] — Expérience musicale & Design System (2026-11-20)
 
 Branche : `claude/sprint04-experience-musicale` (depuis `main` = `23ea182`, source Cursor `104645c`)  
 Dépôt de référence : `ariatestversion/Aria-`. Développement : Claude Code (reprise de Cursor).  
@@ -91,6 +91,19 @@ Netlify : projet existant `ariafirstversion`, **prévisualisation uniquement**.
 - Registre de recette consolidé (`docs/recettes/sprint04.md`), état des droits des médias (`docs/LICENCES.md`), bilan définitif (`docs/BILAN_SPRINT04.md`).
 - `package.json` : version `0.4.0`.
 
+### Médias (arbitrage de clôture MVP Alpha V0.4)
+
+- **Retirés du dépôt et du déploiement** :
+  - les 4 fichiers audio inutilisés (`clair-de-lune.mp3`, `lettre-a-elise.mp3`, `the-entertainer.mp3`, `ode-to-joy.wav`) et leurs fiches `*.AUDIO.txt` ;
+  - les 3 images (`clair-de-lune.jpg`, `the-entertainer.jpg`, `lettre-a-elise.png`) et les 3 illustrations d’instruments, dont la **provenance n’a pas pu être établie** (aucune métadonnée, aucune source notée).
+- **Remplacements neutres créés pour ARIA**, sans changer la structure des écrans :
+  - fond d’accueil et cartes en dégradés CSS avec un motif de portées SVG inline ;
+  - vignettes de morceaux à icône d’instrument ;
+  - 6 icônes d’instruments dans le Design System.
+- L’application n’affiche plus aucune image matricielle. Le build passe d’environ 5 Mo à 0,7 Mo.
+- `docs/LICENCES.md` : enquête de provenance, éléments de remplacement, et éléments restants (fichiers SVG « Ode to Joy », hors arbitrage, provenance non établie).
+- Identité visuelle par défaut inchangée (crème / espresso / or). La variante marine reste expérimentale.
+
 ### Préservé du Sprint 03
 
 Onboarding en 4 étapes non répété, accueil sans « Bonjour, » vide, « Reprendre » uniquement si une séance est en cours, filtres de genres vides masqués, badge Démo, réécoute dans le Suivi, statut cloud/local dans le Profil, espace réservé sous la barre de navigation.
@@ -99,19 +112,19 @@ Onboarding en 4 étapes non répété, accueil sans « Bonjour, » vide, « Repr
 
 - **Automatisés (micro simulé)** :
   - `npm test` : 23/23 ;
-  - `node scripts/e2e-sprint04.mjs` (Playwright, Chromium, 390×844) : 65/65, dont 11 contrôles de non-régression (NR1 à NR5), en local et sur la prévisualisation définitive.
+  - `node scripts/e2e-sprint04.mjs` (Playwright, Chromium, 390×844) : 67/67, dont 11 contrôles de non-régression (NR1 à NR5) et 2 contrôles médias (aucun 404, aucune image externe), en local et sur la prévisualisation définitive.
 - **Physiques (réalisés par la recette, micro réel)** :
   - Chrome sur Mac : réussi. Deux prises audibles, conservées après deux fermetures du navigateur.
   - iPhone, navigateur intégré à ChatGPT : réussi.
-- **Non testés** : Safari iPhone ouvert directement, Android.
+- **Non testés** : Safari iPhone ouvert directement, Android (reportés à dimanche ou lundi).
 - Registre complet : `docs/recettes/sprint04.md`.
 
 ### Publication
 
 - Captures : `docs/screenshots/sprint04/`.
-- **Prévisualisation définitive V0.4** : https://6b0076bca18fd5cc811ba140--ariafirstversion.netlify.app, commit `99a313e` (`version.json` vérifié, bundles identiques, e2e 65/65 sur l’URL).
-- Prévisualisations précédentes : `6b00649f…` (`cf42503`) et `6b006f0b…` (`820bfe3`), remplacées.
-- Production verrouillée sur le Sprint 02 (`6aff204b…`) : **mise en production non autorisée**.
+- **Prévisualisation définitive MVP Alpha V0.4** : voir `docs/SOURCE.md` (lien, SHA, vérifications).
+- Prévisualisations précédentes : `6b00649f…` (`cf42503`), `6b006f0b…` (`820bfe3`) et `6b0076bc…` (`99a313e`, avant le retrait des médias), remplacées.
+- Production verrouillée sur le Sprint 02 (`6aff204b…`) jusqu’à la validation finale indépendante. Ensuite, et sur autorisation explicite : fusion dans `main` et publication sur le lien principal.
 ---
 
 ## [Sprint 03] — Parcours utilisateur & architecture UX (2026-11-20)

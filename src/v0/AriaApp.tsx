@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { AuthGate } from '../components/AuthGate'
-import { Icon } from '../design/Icon'
+import { Icon, INSTRUMENT_ICON } from '../design/Icon'
 import { useMediaRecorder } from '../lib/recorder'
 import { isGuestEmail, probeAuthMode, restoreSession, signOutV0, type AuthMode } from './auth'
 import type { UserProfile } from '../types'
@@ -44,33 +44,12 @@ import {
   seedDemoPieces,
   setSessionEmail,
 } from './store'
-import { Badge, fmt, MetronomePanel, RecordPanel, Section, SourceTag, StepTimer, TakePlayer } from './ui'
+import { Badge, fmt, MetronomePanel, PieceThumb, RecordPanel, Section, SourceTag, StepTimer, TakePlayer } from './ui'
 
 type Tab = 'home' | 'library' | 'follow' | 'profile'
 type Tool = 'none' | 'metronome' | 'resources' | 'notes'
 
 const BRAND_KEY = 'aria.v0.brandPreview'
-
-const asset = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`
-
-const INST_ICON: Record<InstrumentId, string | null> = {
-  piano: asset('instruments/piano-dessin.png'),
-  guitar: asset('instruments/guitare-dessin.png'),
-  bass: asset('instruments/basse-dessin.png'),
-  voice: null,
-  drums: null,
-  other: null,
-}
-
-const PIECE_THUMB: Record<string, string> = {
-  'Nocturne Op. 9 n°2': asset('presets/the-entertainer.jpg'),
-  'Clair de lune': asset('presets/clair-de-lune.jpg'),
-  'Gymnopédie n°1': asset('presets/lettre-a-elise.png'),
-}
-
-function pieceThumb(title: string) {
-  return PIECE_THUMB[title] || asset('presets/clair-de-lune.jpg')
-}
 
 const instLabel = (id: InstrumentId) => INSTRUMENTS.find((i) => i.id === id)?.label || id
 const levelLabel = (id: LevelId) => LEVELS.find((l) => l.id === id)?.label || id
@@ -798,11 +777,7 @@ export function AriaApp() {
 
       {screen === 'welcome' ? (
         <section className="v0-welcome">
-          <div
-            className="v0-welcome-bg"
-            aria-hidden
-            style={{ ['--welcome-photo' as string]: `url(${asset('presets/clair-de-lune.jpg')})` }}
-          />
+          <div className="v0-welcome-bg" aria-hidden />
           <div className="v0-welcome-copy">
             <p className="v0-brand">ARIA</p>
             <p className="v0-slogan">Just Play Something.</p>
@@ -846,7 +821,6 @@ export function AriaApp() {
               <div className="v0-inst-grid">
                 {INSTRUMENTS.map((item) => {
                   const on = instruments.includes(item.id)
-                  const icon = INST_ICON[item.id]
                   return (
                     <button
                       key={item.id}
@@ -855,7 +829,7 @@ export function AriaApp() {
                       className={`v0-inst${on ? ' on' : ''}`}
                       onClick={() => setInstruments((prev) => toggleIn(prev, item.id))}
                     >
-                      {icon ? <img src={icon} alt="" /> : <span className="v0-inst-glyph" aria-hidden>♪</span>}
+                      <Icon name={INSTRUMENT_ICON[item.id]} size={40} className="v0-inst-icon" />
                       {item.label}
                       {on ? <Icon name="check" size={16} className="v0-inst-check" /> : null}
                     </button>
@@ -983,7 +957,6 @@ export function AriaApp() {
             <button
               className="v0-resume"
               type="button"
-              style={{ ['--resume-photo' as string]: `url(${pieceThumb(inProgressPiece.title)})` }}
               onClick={() => resumePracticeFor(inProgressPiece.id)}
             >
               <small>
@@ -1002,7 +975,6 @@ export function AriaApp() {
               <button
                 className="v0-resume"
                 type="button"
-                style={{ ['--resume-photo' as string]: `url(${pieceThumb(lastCompletedPiece.title)})` }}
                 onClick={() => openPiece(lastCompletedPiece.id)}
               >
                 <small>Dernière séance terminée</small>
@@ -1027,7 +999,6 @@ export function AriaApp() {
             <button
               className="v0-resume"
               type="button"
-              style={{ ['--resume-photo' as string]: `url(${asset('presets/the-entertainer.jpg')})` }}
               onClick={() => goTab('library')}
             >
               <small>Commencer</small>
@@ -1057,7 +1028,7 @@ export function AriaApp() {
                   const p = getPiece(log.pieceId)
                   return (
                     <button key={log.id} className="ds-row-card" type="button" onClick={() => openPiece(log.pieceId)}>
-                      <img className="ds-thumb" src={pieceThumb(p?.title || '')} alt="" />
+                      <PieceThumb instrument={p?.instrument} />
                       <span className="ds-row-card-text">
                         <b>{p?.title || 'Morceau'}</b>
                         <span>
@@ -1111,7 +1082,7 @@ export function AriaApp() {
           <div className="ds-stack ds-mt">
             {filtered.map((p) => (
               <button key={p.id} className="ds-row-card" type="button" onClick={() => openPiece(p.id)}>
-                <img className="ds-thumb" src={pieceThumb(p.title)} alt="" />
+                <PieceThumb instrument={p.instrument} />
                 <span className="ds-row-card-text">
                   <b>
                     {p.title} {p.demo ? <Badge tone="accent">Démo</Badge> : null}

@@ -32,6 +32,12 @@ export type IconName =
   | 'compare'
   | 'target'
   | 'spark'
+  | 'inst-piano'
+  | 'inst-guitar'
+  | 'inst-bass'
+  | 'inst-voice'
+  | 'inst-drums'
+  | 'inst-other'
 
 const PATHS: Record<IconName, ReactNode> = {
   play: <path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none" />,
@@ -146,7 +152,61 @@ const PATHS: Record<IconName, ReactNode> = {
     </>
   ),
   spark: <path d="M12 3.5l1.8 5.2 5.2 1.8-5.2 1.8L12 17.5l-1.8-5.2L5 10.5l5.2-1.8z" />,
+  // Instruments — dessins vectoriels propres au Design System ARIA (Sprint 04, V0.4).
+  'inst-piano': (
+    <>
+      <rect x="3" y="6" width="18" height="12" rx="1.5" />
+      <path d="M7.5 12.5V18M12 12.5V18M16.5 12.5V18" />
+      <rect x="6.2" y="6" width="2.6" height="6.5" rx="0.6" fill="currentColor" stroke="none" />
+      <rect x="10.7" y="6" width="2.6" height="6.5" rx="0.6" fill="currentColor" stroke="none" />
+      <rect x="15.2" y="6" width="2.6" height="6.5" rx="0.6" fill="currentColor" stroke="none" />
+    </>
+  ),
+  'inst-guitar': (
+    <>
+      <path d="M13.2 10.8a3.4 3.4 0 0 0-4.8 0c-.7.7-.9 1.6-.8 2.4-1.6-.1-3 .5-3.7 1.6-1.3 2 .1 4.8 2.5 5.7 2.3.9 4.6-.3 5-2.6.1-.6 0-1.2-.2-1.7.9-.1 1.7-.5 2.2-1.2a3.4 3.4 0 0 0-.2-4.2z" />
+      <circle cx="9.6" cy="15" r="1.3" />
+      <path d="M12.6 11.4 19 5M17.6 3.6l2.8 2.8" />
+    </>
+  ),
+  'inst-bass': (
+    <>
+      <path d="M11.6 12.4a3 3 0 0 0-4.2 0c-.6.6-.8 1.4-.7 2.1-1.4-.1-2.6.4-3.2 1.4-1.1 1.8.1 4.2 2.2 5 2 .8 4-.3 4.4-2.3.1-.5 0-1-.2-1.5.8-.1 1.5-.4 1.9-1a3 3 0 0 0-.2-3.7z" />
+      <path d="M11 13 20.5 3.5" />
+      <path d="M18.4 3.4l.9.9M20 5l.9.9M17.2 4.6l.9.9M18.8 6.2l.9.9" />
+    </>
+  ),
+  'inst-voice': (
+    <>
+      <rect x="9" y="3.5" width="6" height="11" rx="3" />
+      <path d="M6 11.5a6 6 0 0 0 12 0M12 17.5V21M9 21h6" />
+    </>
+  ),
+  'inst-drums': (
+    <>
+      <ellipse cx="12" cy="11" rx="7.5" ry="2.8" />
+      <path d="M4.5 11v6.2c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8V11" />
+      <path d="M8 3.5l3 6M16 3.5l-3 6" />
+    </>
+  ),
+  'inst-other': (
+    <>
+      <path d="M9 18V6l10-2v12" />
+      <circle cx="6.8" cy="18" r="2.2" />
+      <circle cx="16.8" cy="16" r="2.2" />
+    </>
+  ),
 }
+
+/** Icône associée à chaque instrument (remplace les illustrations PNG de provenance inconnue). */
+export const INSTRUMENT_ICON = {
+  piano: 'inst-piano',
+  guitar: 'inst-guitar',
+  bass: 'inst-bass',
+  voice: 'inst-voice',
+  drums: 'inst-drums',
+  other: 'inst-other',
+} as const satisfies Record<string, IconName>
 
 export function Icon({ name, size = 20, className }: { name: IconName; size?: number; className?: string }) {
   return (

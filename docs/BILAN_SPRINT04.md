@@ -1,6 +1,6 @@
-# Bilan définitif — Sprint 04 · Prototype fonctionnel V0.4
+# Bilan définitif — Sprint 04 · ARIA MVP Alpha V0.4
 
-Dépôt `ariatestversion/Aria-`, branche `claude/sprint04-experience-musicale`, base `23ea182` (source Cursor `104645c`, Sprint 03). **Prévisualisation définitive V0.4** : https://6b0076bca18fd5cc811ba140--ariafirstversion.netlify.app (commit `99a313e`, `version.json` vérifié). Détails : `docs/SOURCE.md` et `SOURCE_VERSION.json`.
+Dépôt `ariatestversion/Aria-`, branche `claude/sprint04-experience-musicale`, base `23ea182` (source Cursor `104645c`, Sprint 03). **Prévisualisation définitive MVP Alpha V0.4** : lien, SHA et vérifications dans `docs/SOURCE.md` et `SOURCE_VERSION.json`.
 Production : verrouillée sur le Sprint 02. **Aucune mise en production.**
 
 ## 1. Fonctionnalités acquises
@@ -49,7 +49,10 @@ Production : verrouillée sur le Sprint 02. **Aucune mise en production.**
 - Tokens : identité crème / espresso / or, palette fonctionnelle (vert, jaune, rouge erreur, rouge enregistrement), Manrope, espacements, rayons, ombres, cibles tactiles de 44 px.
 - Composants `ds-*` et jeu d’icônes, documentés dans `docs/DESIGN_SYSTEM.md`.
 - Contraste au niveau WCAG AA pour les textes.
-- Variante marine `#152642` disponible en aperçu seulement.
+- Variante marine `#152642` disponible en aperçu seulement. Elle reste expérimentale ; l’identité crème / espresso / or est conservée par défaut.
+
+### Médias
+- Aucun média de provenance non établie n’est utilisé. Le fond d’accueil, les cartes, les vignettes et les icônes d’instruments sont créés pour ARIA (CSS, SVG). Les 4 fichiers audio inutilisés sont retirés.
 
 ## 2. Anomalies restantes
 
@@ -65,7 +68,8 @@ Points d’attention, non qualifiés comme anomalies faute de test :
 - **Stockage local à l’appareil.** Les prises ne sont pas synchronisées et sont perdues si l’on efface les données du navigateur. Sur Safari, l’effacement est automatique après 7 jours sans visite (ITP).
 - **Règles pédagogiques générales** pour l’instrument « Autre », ce qui est signalé dans l’application.
 - **Le métronome est capté dans les enregistrements** quand le haut-parleur est utilisé.
-- **Droits des médias non validés** (voir `docs/LICENCES.md`). Quatre fichiers audio non utilisés restent publiés. Deux d’entre eux sont sous licence CC avec une attribution obligatoire qui n’est pas affichée.
+- **Médias** : les éléments de provenance non établie sont retirés de V0.4. Restent publiés, non utilisés et hors arbitrage : 2 fichiers SVG « Ode to Joy » et une note texte, de provenance non établie (retrait recommandé, voir `docs/LICENCES.md`). La production actuelle (Sprint 02) sert encore les anciens médias tant que V0.4 n’y est pas publiée.
+- **Visuels neutres** : les photos sont remplacées par des fonds abstraits et des icônes. La structure des écrans est conservée, sans nouvel arbitrage graphique.
 - **Variante marine non validée** : elle n’est pas appliquée par défaut.
 - **Déploiement par le connecteur Netlify** : il n’existe pas de mode brouillon. La prévisualisation repose sur le verrouillage de la production. Le site n’est relié à aucun dépôt GitHub, donc il n’y a pas de prévisualisation automatique par branche.
 - **Pas de fusion dans `main`** : le Sprint 04 vit sur sa branche, en attente de validation.
@@ -76,15 +80,17 @@ Points d’attention, non qualifiés comme anomalies faute de test :
 | Type | Résultat |
 | --- | --- |
 | Unitaires (Vitest) | 23/23 |
-| Parcours de bout en bout (Playwright, Chromium, 390×844, micro simulé) | 65/65 en local et sur la prévisualisation définitive |
+| Parcours de bout en bout (Playwright, Chromium, 390×844, micro simulé) | 67/67 en local et sur la prévisualisation définitive |
 | Physique · Chrome Mac · micro réel (recette) | Réussi |
 | Physique · iPhone, navigateur intégré à ChatGPT · micro réel (recette) | Réussi |
-| Physique · Safari iPhone ouvert directement | Non testé |
-| Physique · Android | Non testé |
+| Physique · Safari iPhone ouvert directement | Non testé (reporté à dimanche ou lundi) |
+| Physique · Android | Non testé (reporté à dimanche ou lundi) |
 
-## 5. Décisions attendues
+## 5. Suite prévue
 
-1. Test Safari iPhone ouvert directement, et test Android.
-2. Statut des médias : licences, remplacement ou retrait.
-3. Validation de la variante marine, ou maintien de crème / espresso.
-4. Fusion de la branche dans `main`, puis mise en production (déverrouillage et publication), sur autorisation explicite.
+1. Tests physiques complémentaires sur Safari iPhone ouvert directement et sur Android (dimanche ou lundi).
+2. Validation finale indépendante.
+3. Sur autorisation explicite : fusion du Sprint 04 dans `main`, puis publication de V0.4 sur le lien principal Netlify (déverrouillage de la production).
+4. Décision sur les fichiers SVG « Ode to Joy » restants (retrait recommandé).
+
+Aucun Sprint 05 ni aucune nouvelle fonctionnalité avant cette validation.
