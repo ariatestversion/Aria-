@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="apple-touch-icon" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aria</title>
+    <meta name="aria-build" content="2026-09-14-aria-four-slides" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="theme-color" content="#f5f0e6" />
+    <style>
+      html,
+      body,
+      #root {
+        margin: 0;
+        min-height: 100%;
+        background: #f5f0e6;
+        color: #3c2a21;
+        font-family: Manrope, system-ui, sans-serif;
+      }
+      #boot {
+        display: flex;
+        min-height: 100vh;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+      }
+      #boot p {
+        margin: 0.35rem 0;
+      }
+      #boot .brand {
+        letter-spacing: 0.28em;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
+    </style>
+    <script type="module" crossorigin src="/Aria-/assets/index-CuBZ5_wJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/Aria-/assets/index-C3zJt_OW.css">
+  </head>
+  <body>
+    <div id="root">
+      <div id="boot">
+        <div>
+          <p class="brand">Aria</p>
+          <p>Chargement de l’app…</p>
+        </div>
+      </div>
+    </div>
+    <script>
+      window.addEventListener('load', function () {
+        setTimeout(function () {
+          var boot = document.getElementById('boot')
+          if (!boot) return
+          boot.innerHTML =
+            '<div><p class="brand">Aria</p><p>L’app n’a pas démarré.</p><p>Recharge la page.</p></div>'
+        }, 8000)
+      })
+    </script>
+  </body>
+</html>
