@@ -26,9 +26,21 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 ## État Sprint 04
 
-- Branche `claude/sprint04-experience-musicale`, commit source `22c2a93` (`version.json` du build : `22c2a93`).
-- Prévisualisation Netlify **non publiée** : le connecteur Netlify ne sait faire que des déploiements de production (voir CHANGELOG). La production actuelle (`6aff204b188f1862668a1bab`) n’est pas modifiée.
-- `SOURCE_VERSION.json` décrit encore la base Sprint 03. Il sera mis à jour avec le couple commit / déploiement une fois la prévisualisation publiée.
+- Branche `claude/sprint04-experience-musicale`. Source déployée : commit `cf42503`.
+- **Prévisualisation Netlify** : https://6b00649f007a205b699926b3--ariafirstversion.netlify.app (déploiement `6b00649f007a205b699926b3`, non publié).
+- **Production verrouillée** sur le Sprint 02 : déploiement `6aff204b188f1862668a1bab`, commit `d86e813`. Verrou posé dans Netlify (*Lock to stop auto publishing*) et vérifié par l’API (`locked: true`). Aucune mise en production ni aucun déverrouillage n’a été fait.
+- **Correspondance GitHub ↔ Netlify** :
+  - les fichiers `assets/index-BldsOBiR.js` et `assets/index-Bom41a6f.css` du déploiement sont identiques (SHA-256) à ceux du build local de `cf42503` ;
+  - le parcours `scripts/e2e-sprint04.mjs` exécuté sur l’URL de prévisualisation donne 54/54.
+- **Écart connu** : le `version.json` de ce déploiement affiche `4ed8405` / `master`. Netlify recrée un dépôt Git synthétique à partir de l’archive envoyée par le connecteur, et l’ancien script a lu ce commit-là. C’est corrigé dans `scripts/write-version.mjs` (le fichier généré depuis le commit poussé est conservé) et sera visible au prochain déploiement.
+
+### Déploiement par le connecteur Netlify (procédure)
+
+1. Vérifier que la production est verrouillée (`locked: true` sur le déploiement publié).
+2. `npm run build` depuis un arbre propre, au commit poussé : `public/version.json` porte ce commit.
+3. Lancer la commande fournie par l’opération `deploy-site` avec `NODE_USE_ENV_PROXY=1` (proxy de la session). L’hôte `mcp.netlify.com` doit être autorisé dans l’environnement.
+4. Contrôler par l’API : nouveau déploiement `ready` et `published_at: null` ; le déploiement publié reste inchangé.
+5. Vérifier `/version.json` et les bundles sur l’URL `https://<deploy-id>--ariafirstversion.netlify.app`, puis exécuter le parcours e2e sur cette URL.
 
 ## Publication
 

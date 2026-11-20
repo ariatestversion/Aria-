@@ -91,12 +91,12 @@ Onboarding en 4 étapes non répété, accueil sans « Bonjour, » vide, « Repr
 
 Captures : `docs/screenshots/sprint04/`. Code poussé sur la branche `claude/sprint04-experience-musicale` (commit source `22c2a93`).
 
-**Prévisualisation Netlify : non publiée (blocage documenté).** L’unique opération de déploiement du connecteur Netlify (`deploy-site`) envoie le code à `POST /sites/{id}/builds` et ne propose ni brouillon ni prévisualisation. Sur `ariafirstversion`, qui n’est relié à aucun dépôt, un tel build part normalement en production. Il n’a donc pas été lancé. Déblocage possible :
+**Prévisualisation Netlify** : https://6b00649f007a205b699926b3--ariafirstversion.netlify.app (déploiement `6b00649f007a205b699926b3`, source `cf42503`).
 
-1. verrouiller la publication de la production dans Netlify (Deploys → déploiement actuel → *Lock to stop auto publishing*), puis déployer avec le connecteur ;
-2. ou fournir une clé d’accès personnelle Netlify pour un `netlify deploy` en mode brouillon (prévisualisation par défaut).
-
-La production n’est pas modifiée.
+- Production verrouillée au préalable sur le Sprint 02 (`6aff204b…`, `locked: true`) : non publiée, non déverrouillée.
+- Bundles identiques au build local de `cf42503`.
+- Parcours e2e sur la prévisualisation : 54/54.
+- `version.json` du déploiement : `4ed8405` (commit synthétique créé par Netlify à partir de l’archive). C’est corrigé dans `scripts/write-version.mjs` pour les prochains déploiements ; voir `docs/SOURCE.md`.
 
 ---
 

@@ -1,7 +1,9 @@
 {
-  "commit": "104645c0b27e473aa179ba4199ff251530475099",
-  "short": "104645c",
-  "netlifyDeployId": "6b00481375bb6fd8ad2fadc4",
-  "netlifyPreview": "https://6b00481375bb6fd8ad2fadc4--ariafirstversion.netlify.app",
-  "branch": "cursor/aria-sprint03-parcours-ux-47c6"
+  "commit": "cf4250309d90781444ea94a5fbfb72d529b321ef",
+  "short": "cf42503",
+  "netlifyDeployId": "6b00649f007a205b699926b3",
+  "netlifyPreview": "https://6b00649f007a205b699926b3--ariafirstversion.netlify.app",
+  "branch": "claude/sprint04-experience-musicale",
+  "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813)",
+  "verification": "Bundles JS/CSS identiques octet par octet au build local de cf42503 ; version.json du déploiement = 4ed8405/master (commit synthétique Netlify, corrigé ensuite dans scripts/write-version.mjs)"
 }
