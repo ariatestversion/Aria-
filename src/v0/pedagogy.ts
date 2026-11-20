@@ -1,4 +1,5 @@
 import type {
+  HabitId,
   InstrumentId,
   LevelId,
   Piece,
@@ -365,6 +366,34 @@ export function prepGoalsFor(piece: Pick<Piece, 'objective'>, profileGoals: stri
   return out.slice(0, 2)
 }
 
+const HABIT_TO_RESOURCE: Record<HabitId, ResourceMode> = {
+  score: 'score',
+  tabs: 'tabs',
+  chords: 'chords',
+  video: 'audio',
+  ear: 'ear',
+}
+
+/** Un support n’est proposé par défaut que s’il existe réellement dans la fiche du morceau. */
+export function resourceAvailable(piece: Pick<Piece, 'resources'>, mode: ResourceMode) {
+  if (mode === 'ear') return true
+  const kinds = new Set(piece.resources.filter((r) => !r.demo).map((r) => r.kind))
+  if (mode === 'score') return kinds.has('pdf')
+  if (mode === 'audio') return kinds.has('audio') || kinds.has('video')
+  return kinds.has(mode)
+}
+
+/**
+ * Support par défaut à la préparation : l’habitude du profil si ce support est présent dans la
+ * fiche, sinon le premier support réellement importé, sinon « À l’oreille, sans support ».
+ * Le choix reste modifiable.
+ */
+export function defaultResource(piece: Pick<Piece, 'resources'>, habits: HabitId[]): ResourceMode {
+  for (const h of habits) if (resourceAvailable(piece, HABIT_TO_RESOURCE[h])) return HABIT_TO_RESOURCE[h]
+  for (const mode of ['score', 'tabs', 'chords', 'audio'] as const) if (resourceAvailable(piece, mode)) return mode
+  return 'ear'
+}
+
 export type ProgramInput = {
   piece: Piece
   instrument: InstrumentId
@@ -496,6 +525,8 @@ export function buildReview(input: {
   level?: LevelId
   steps?: { title: string; check?: StepCheck }[]
   takes?: { seconds: number }[]
+  /** Une prise de ce morceau existe déjà (cette séance ou une précédente). */
+  hasReferenceTake?: boolean
 }): Review {
   const works = input.works.trim()
   const improve = input.improve.trim()
@@ -525,18 +556,26 @@ export function buildReview(input: {
     retrySteps,
   })
 
+  // Sans prise de référence, on propose d’en enregistrer une première ; la comparaison n’est
+  // suggérée que lorsqu’une prise existe déjà pour ce morceau.
+  const hasReference = input.hasReferenceTake ?? (input.takes || []).length > 0
+  const takeStep = hasReference
+    ? 'refais une prise de 30 secondes et compare-la à la précédente'
+    : 'enregistre une première prise de 30 secondes : elle servira de référence pour les prochaines comparaisons'
   const next: ReviewItem = retrySteps.length
     ? {
-        text: `Prochaine tentative : reprends « ${retrySteps[0]} » 8 BPM plus lentement, puis refais une prise de 30 secondes et compare-la à la précédente.`,
+        text: `Prochaine tentative : reprends « ${retrySteps[0]} » 8 BPM plus lentement, puis ${takeStep}.`,
         source: 'rules',
       }
     : improve
       ? {
-          text: `Prochaine séance : commence par l’exercice correctif (5 min), puis refais une prise du passage et compare-la à celle d’aujourd’hui.`,
+          text: `Prochaine séance : commence par l’exercice correctif (5 min), puis ${takeStep}.`,
           source: 'rules',
         }
       : {
-          text: `Prochaine séance : garde l’objectif « ${objective} » et monte le tempo de 4 BPM, ou élargis au passage suivant si tout était stable.`,
+          text: hasReference
+            ? `Prochaine séance : garde l’objectif « ${objective} » et monte le tempo de 4 BPM, ou élargis au passage suivant si tout était stable.`
+            : `Prochaine séance : garde l’objectif « ${objective} » et enregistre une première prise de 30 secondes : elle servira de référence pour les prochaines comparaisons.`,
           source: 'rules',
         }
 

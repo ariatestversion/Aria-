@@ -131,6 +131,11 @@ export type SessionLog = {
   stepChecks?: { title: string; check: StepCheck }[]
   /** Sprint 04 — comparaison de prises écrite par l’utilisateur. */
   comparison?: string
+  /**
+   * Identifiant de la séance (= début du programme). Un brouillon repris puis terminé
+   * met à jour le même journal au lieu d’en créer un second.
+   */
+  sessionStartedAt?: string
 }
 
 export type AppScreen =

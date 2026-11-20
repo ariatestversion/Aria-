@@ -134,7 +134,14 @@ async function main() {
     'Préparation : instrument Guitare présélectionné',
     (await page.getByRole('button', { name: 'Guitare' }).getAttribute('aria-pressed')) === 'true',
   )
+  // Non-régression : morceau de guitare sans ressource → « À l’oreille » par défaut, modifiable.
+  const pressed = async (name) => (await page.getByRole('button', { name }).getAttribute('aria-pressed')) === 'true'
+  check('NR · Préparation sans ressource : « À l’oreille, sans support » sélectionné par défaut', await pressed('À l’oreille, sans support'))
+  check('NR · Préparation sans ressource : « Partition » non présélectionnée', !(await pressed('Partition')))
+  await page.getByRole('button', { name: 'Partition' }).click()
+  const switched = (await pressed('Partition')) && !(await pressed('À l’oreille, sans support'))
   await page.getByRole('button', { name: 'À l’oreille, sans support' }).click()
+  check('NR · Préparation : le support reste modifiable', switched && (await pressed('À l’oreille, sans support')))
   await page.getByLabel('Passage travaillé').fill('Couplet')
   const plan = await page.getByTestId('prep-plan').locator('li').allInnerTexts()
   const total = plan.reduce((a, t) => a + Number((t.match(/(\d+) min/) || [0, 0])[1]), 0)
@@ -180,6 +187,8 @@ async function main() {
   await page.getByLabel('Ce qui fonctionne').fill('La main droite reste régulière sur un seul accord.')
   await page.getByLabel('Ce qui mérite d’être travaillé').fill('Le rythme décroche au changement d’accord.')
   await page.getByLabel('Ta comparaison (facultatif)').fill('La prise 2 est plus régulière.')
+  const nextWithRef = await page.locator('.ds-feed').nth(3).innerText()
+  check('NR · Bilan avec prise de référence : invitation à comparer', /compare-la à la précédente/.test(nextWithRef))
   const corrective = await page.getByTestId('corrective').innerText()
   check('Bilan : exercice correctif concret lié à la difficulté notée', /rythm|Motif/i.test(corrective), corrective.split('\n')[2] || '')
   await shot(page, '07-bilan')
@@ -211,7 +220,7 @@ async function main() {
   check('Suppression d’une prise avec confirmation', (await followTakes.count()) === 1)
   check('Brouillons et séances terminées distincts', (await page.getByText('Brouillon', { exact: true }).count()) === 0)
 
-  // 5. Brouillon : non compté comme terminé
+  // 5. Brouillons — non comptés comme terminés ; reprise d’un brouillon après rechargement.
   await page.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
   await page.getByRole('button', { name: /Ma chanson/ }).click()
   await page.getByRole('button', { name: 'Préparer une séance' }).click()
@@ -219,10 +228,42 @@ async function main() {
   await page.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).click()
   await page.getByRole('button', { name: 'Terminer la séance' }).click()
   check('Séance vide refusée comme « terminée »', await page.getByText(/Pour terminer la séance/).isVisible())
+  const draftNote = 'Brouillon : la main droite tient le motif.'
+  await page.getByLabel('Ce qui fonctionne').fill(draftNote)
+  await page.getByRole('button', { name: 'Garder en brouillon' }).click()
+
+  // Second morceau, jamais enregistré : bilan sans prise de référence, gardé en brouillon.
+  await addPiece(page, 'Autre morceau')
+  await page.getByRole('button', { name: 'Préparer une séance' }).click()
+  await page.getByRole('button', { name: 'Commencer la séance' }).click()
+  await page.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).click()
+  const nextNoRef = await page.locator('.ds-feed').nth(3).innerText()
+  check('NR · Bilan sans prise : propose une première prise de référence', /première prise/.test(nextNoRef), nextNoRef.split('\n').pop())
+  check('NR · Bilan sans prise : pas d’invitation à comparer', !/compare|précédente/i.test(nextNoRef))
+  await shot(page, '13-bilan-sans-prise')
   await page.getByRole('button', { name: 'Garder en brouillon' }).click()
   await page.getByRole('navigation').getByRole('button', { name: 'Suivi' }).click()
-  check('Brouillon listé à part', (await page.getByText('Brouillon', { exact: true }).count()) === 1)
-  check('Le brouillon n’augmente pas les séances terminées', await page.getByRole('heading', { name: 'Séances terminées (1)' }).isVisible())
+  check('Brouillons listés à part (2)', await page.getByRole('heading', { name: 'Brouillons (2)' }).isVisible())
+  check('Les brouillons n’augmentent pas les séances terminées', await page.getByRole('heading', { name: 'Séances terminées (1)' }).isVisible())
+
+  // Non-régression : garder en brouillon → recharger → reprendre → terminer.
+  await page.reload()
+  await page.getByText('Envie de jouer ?').waitFor()
+  await page.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
+  await page.getByRole('button', { name: /Ma chanson/ }).click()
+  await page.getByRole('button', { name: 'Reprendre la séance' }).click()
+  await page.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).click()
+  check('NR · Reprise du brouillon : observations restaurées', (await page.getByLabel('Ce qui fonctionne').inputValue()) === draftNote)
+  await page.getByRole('button', { name: 'Terminer la séance' }).click()
+  await page.getByRole('heading', { name: 'Suivi' }).waitFor()
+  await page.reload()
+  await page.getByText('Envie de jouer ?').waitFor()
+  await page.getByRole('navigation').getByRole('button', { name: 'Suivi' }).click()
+  check('NR · Brouillon terminé : une seule séance terminée de plus (2)', await page.getByRole('heading', { name: 'Séances terminées (2)' }).isVisible())
+  check('NR · Brouillon terminé : il a disparu des brouillons', await page.getByRole('heading', { name: 'Brouillons (1)' }).isVisible())
+  const remainingDraft = await page.locator('.ds-card--muted').innerText()
+  check('NR · Les autres brouillons sont toujours présents', /Autre morceau/.test(remainingDraft) && !/Ma chanson/.test(remainingDraft))
+  await shot(page, '14-suivi-brouillon-termine')
 
   // 6. Écrans communs
   await page.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()

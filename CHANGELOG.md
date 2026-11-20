@@ -76,14 +76,22 @@ Netlify : projet existant `ariafirstversion`, **prévisualisation uniquement**.
 - Contrastes relevés au niveau WCAG AA pour les textes secondaires.
 - Documentation : `docs/DESIGN_SYSTEM.md`.
 
+### Correctifs de recette (clôture du Sprint 04)
+
+- **Suivi** : un brouillon repris puis terminé apparaissait aussi dans les brouillons. Chaque journal porte désormais l’identifiant de sa séance (`sessionStartedAt`), et terminer la séance remplace son brouillon au lieu de le dupliquer. Les doublons déjà enregistrés sont masqués à l’affichage, les autres brouillons restent, et les observations du brouillon reviennent dans le bilan à la reprise.
+- **Préparation** : « Partition » était présélectionnée sans partition importée. Le support par défaut est maintenant celui réellement présent dans la fiche, sinon « À l’oreille, sans support ». Il reste modifiable.
+- **Bilan** : sans aucune prise, la prochaine tentative propose d’enregistrer une première prise de référence. L’invitation à comparer n’apparaît que si une prise existe déjà pour ce morceau.
+- Suivi : le nombre de prises d’une séance terminée ne compte plus les prises supprimées.
+- Recette de non-régression ajoutée (NR1 à NR3). Tests : unitaires 20/20, e2e 64/64.
+
 ### Préservé du Sprint 03
 
 Onboarding en 4 étapes non répété, accueil sans « Bonjour, » vide, « Reprendre » uniquement si une séance est en cours, filtres de genres vides masqués, badge Démo, réécoute dans le Suivi, statut cloud/local dans le Profil, espace réservé sous la barre de navigation.
 
 ### Tests
 
-- `npm test` (Vitest) : 15/15.
-- `node scripts/e2e-sprint04.mjs` (Playwright, Chromium, 390×844) : 54/54.
+- `npm test` (Vitest) : 20/20.
+- `node scripts/e2e-sprint04.mjs` (Playwright, Chromium, 390×844) : 64/64, dont 10 contrôles de non-régression.
 - Détail et limites : `docs/recettes/sprint04.md`.
 - Le micro est **simulé** par le navigateur. **Aucun test sur appareil physique** n’a été réalisé.
 

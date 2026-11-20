@@ -4,7 +4,7 @@ import { Icon } from '../design/Icon'
 import { useMediaRecorder } from '../lib/recorder'
 import { isGuestEmail, probeAuthMode, restoreSession, signOutV0, type AuthMode } from './auth'
 import type { UserProfile } from '../types'
-import { buildProgram, buildReview, prepGoalsFor } from './pedagogy'
+import { buildProgram, buildReview, defaultResource, prepGoalsFor, resourceAvailable } from './pedagogy'
 import {
   DEMO_GENRES,
   DURATIONS,
@@ -26,6 +26,7 @@ import {
 import {
   canCompleteSession,
   deleteBlob,
+  findSessionLog,
   deleteTakeMeta,
   getMusicalProfile,
   getPiece,
@@ -74,24 +75,6 @@ function pieceThumb(title: string) {
 const instLabel = (id: InstrumentId) => INSTRUMENTS.find((i) => i.id === id)?.label || id
 const levelLabel = (id: LevelId) => LEVELS.find((l) => l.id === id)?.label || id
 const resourceLabel = (id: ResourceMode) => RESOURCE_MODES.find((r) => r.id === id)?.label || id
-
-const HABIT_TO_RESOURCE: Record<HabitId, ResourceMode> = {
-  score: 'score',
-  tabs: 'tabs',
-  chords: 'chords',
-  video: 'audio',
-  ear: 'ear',
-}
-
-/** Support par défaut : d’abord ce que le morceau contient réellement, sinon l’habitude du profil. */
-function defaultResource(piece: Piece, habits: HabitId[]): ResourceMode {
-  const kinds = new Set(piece.resources.filter((r) => !r.demo).map((r) => r.kind))
-  if (kinds.has('pdf')) return 'score'
-  if (kinds.has('tabs')) return 'tabs'
-  if (kinds.has('chords')) return 'chords'
-  if (kinds.has('audio') || kinds.has('video')) return 'audio'
-  return habits.length ? HABIT_TO_RESOURCE[habits[0]] : 'ear'
-}
 
 /** Numérotation chronologique des prises d’un morceau (Prise 1 = la plus ancienne). */
 function takeNumbers(all: Take[]) {
@@ -287,7 +270,8 @@ export function AriaApp() {
     setPrepLevel(musical?.level || level)
     setPrepInstrument(target.instrument)
     setPrepPassage(target.passages || '')
-    setPrepResource(target.program?.resource || defaultResource(target, musical?.habits || habits))
+    const previous = target.program?.resource
+    setPrepResource(previous && resourceAvailable(target, previous) ? previous : defaultResource(target, musical?.habits || habits))
     setPrepDifficulties('')
   }
 
@@ -651,6 +635,13 @@ export function AriaApp() {
     const pieceTakes = listTakes(email, piece.id)
     setCompareA(pieceTakes[1]?.id || '')
     setCompareB(pieceTakes[0]?.id || '')
+    // Reprise d’un brouillon : ses observations reviennent dans le bilan.
+    const draft = findSessionLog(email, piece.id, sessionStart(piece))
+    if (draft?.status === 'draft') {
+      if (!worksObs.trim()) setWorksObs(draft.observationWorks || '')
+      if (!improveObs.trim()) setImproveObs(draft.observationImprove || '')
+      if (!comparison.trim()) setComparison(draft.comparison || '')
+    }
     setSaveHint('')
     setScreen('review')
   }
@@ -664,6 +655,7 @@ export function AriaApp() {
         level: piece.program?.level || level,
         steps: piece.program?.steps,
         takes: sessionTakes,
+        hasReferenceTake: takes.length > 0,
       })
     : null
 
@@ -674,11 +666,19 @@ export function AriaApp() {
       setSaveHint('Pour terminer la séance, enregistre au moins une prise ou note une observation.')
       return false
     }
+    const sessionKey = sessionStart(piece)
+    const existing = findSessionLog(email, piece.id, sessionKey)
+    if (existing?.status === 'completed' && status === 'draft') {
+      setSaveHint('Cette séance est déjà terminée : elle reste comptée comme terminée.')
+      return false
+    }
     const stepChecks = (piece.program?.steps || [])
       .filter((s) => s.check)
       .map((s) => ({ title: s.title, check: s.check as StepCheck }))
     const log: SessionLog = {
-      id: newId('log'),
+      // Même séance = même journal : terminer un brouillon le remplace au lieu de le dupliquer.
+      id: existing?.id || newId('log'),
+      sessionStartedAt: sessionKey || undefined,
       email,
       pieceId: piece.id,
       createdAt: new Date().toISOString(),
@@ -1849,7 +1849,10 @@ export function AriaApp() {
                       {new Date(log.createdAt).toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })}
                       {log.minutes ? ` · ${log.minutes} min` : ''}
                       {log.objective ? ` · ${log.objective}` : ''}
-                      {log.takeIds?.length ? ` · ${log.takeIds.length} prise${log.takeIds.length > 1 ? 's' : ''}` : ''}
+                      {(() => {
+                        const kept = (log.takeIds || []).filter((id) => allTakes.some((t) => t.id === id)).length
+                        return kept ? ` · ${kept} prise${kept > 1 ? 's' : ''}` : ''
+                      })()}
                     </span>
                     {log.nextStep ? <span className="ds-body">{log.nextStep}</span> : null}
                   </button>

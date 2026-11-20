@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import type { Piece } from './model'
-import { allocateMinutes, buildProgram, buildReview, focusOf, prepGoalsFor } from './pedagogy'
-import { canCompleteSession } from './store'
+import type { Piece, SessionLog } from './model'
+import { allocateMinutes, buildProgram, buildReview, defaultResource, focusOf, prepGoalsFor, resourceAvailable } from './pedagogy'
+import { canCompleteSession, dedupeSessionLogs } from './store'
 
 const piece = (patch: Partial<Piece> = {}): Piece => ({
   id: 'p1',
@@ -156,5 +156,67 @@ describe('séances terminées / brouillons', () => {
     expect(canCompleteSession({ takeIds: [], observationWorks: '', observationImprove: ' ' })).toBe(false)
     expect(canCompleteSession({ takeIds: ['t1'], observationWorks: '', observationImprove: '' })).toBe(true)
     expect(canCompleteSession({ takeIds: [], observationWorks: 'ok', observationImprove: '' })).toBe(true)
+  })
+})
+
+describe('non-régression Sprint 04 — recette indépendante', () => {
+  it('morceau sans ressource : « À l’oreille, sans support » par défaut, même si le profil dit « Partition »', () => {
+    expect(defaultResource(piece(), ['score'])).toBe('ear')
+    expect(defaultResource(piece(), ['tabs', 'chords'])).toBe('ear')
+  })
+
+  it('le support par défaut suit ce qui est réellement importé', () => {
+    const withPdf = piece({ resources: [{ id: 'r1', kind: 'pdf', label: 'partition.pdf' }] })
+    const withChords = piece({ resources: [{ id: 'r2', kind: 'chords', label: 'Am F C G', text: 'Am F C G' }] })
+    const demoOnly = piece({ resources: [{ id: 'r3', kind: 'pdf', label: 'démo', demo: true }] })
+    expect(defaultResource(withPdf, ['score'])).toBe('score')
+    expect(defaultResource(withChords, ['score'])).toBe('chords')
+    expect(defaultResource(demoOnly, ['score'])).toBe('ear')
+    expect(resourceAvailable(piece(), 'score')).toBe(false)
+  })
+
+  it('bilan sans prise de référence : proposer une première prise, sans inviter à comparer', () => {
+    for (const input of [
+      { improve: '' },
+      { improve: 'le rythme décroche' },
+      { improve: '', steps: [{ title: 'Motif', check: 'retry' as const }] },
+    ]) {
+      const r = buildReview({ works: '', programObjective: 'Rythme', instrument: 'guitar', takes: [], hasReferenceTake: false, ...input })
+      expect(r.next.text).toMatch(/première prise/)
+      expect(r.next.text).not.toMatch(/compare-la|précédente/)
+    }
+  })
+
+  it('bilan avec une prise de référence : inviter à comparer', () => {
+    const r = buildReview({ works: '', improve: 'le rythme décroche', programObjective: 'Rythme', instrument: 'guitar', takes: [], hasReferenceTake: true })
+    expect(r.next.text).toMatch(/compare-la à la précédente/)
+  })
+})
+
+describe('brouillon repris puis terminé', () => {
+  const log = (patch: Partial<SessionLog>): SessionLog => ({
+    id: 'l',
+    email: 'test@aria.local',
+    pieceId: 'p1',
+    createdAt: '2026-11-20T10:00:00.000Z',
+    minutes: 15,
+    objective: 'Rythme',
+    observationWorks: '',
+    observationImprove: '',
+    nextStep: '',
+    takeIds: [],
+    source: 'user',
+    status: 'draft',
+    ...patch,
+  })
+
+  it('le brouillon de la séance terminée disparaît, les autres brouillons restent', () => {
+    const logs = dedupeSessionLogs([
+      log({ id: 'done', status: 'completed', sessionStartedAt: 'S1', createdAt: '2026-11-20T10:30:00.000Z' }),
+      log({ id: 'draft-same', status: 'draft', sessionStartedAt: 'S1' }),
+      log({ id: 'draft-other-piece', pieceId: 'p2', status: 'draft', sessionStartedAt: 'S2' }),
+      log({ id: 'draft-other-session', status: 'draft', sessionStartedAt: 'S0' }),
+    ])
+    expect(logs.map((l) => l.id)).toEqual(['done', 'draft-other-piece', 'draft-other-session'])
   })
 })

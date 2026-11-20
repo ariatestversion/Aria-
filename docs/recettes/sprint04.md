@@ -5,8 +5,8 @@
 | Suite | Commande | Résultat |
 | --- | --- | --- |
 | Compilation TypeScript + build Vite | `npm run build` | OK |
-| Tests unitaires (moteur pédagogique, bilan, séances) | `npm test` | 15/15 |
-| Parcours de bout en bout, mobile 390×844 | `node scripts/e2e-sprint04.mjs` | 54/54 |
+| Tests unitaires (moteur pédagogique, bilan, séances) | `npm test` | 20/20 |
+| Parcours de bout en bout, mobile 390×844 | `node scripts/e2e-sprint04.mjs` | 64/64 |
 
 ### Ce que couvre le parcours de bout en bout
 
@@ -37,6 +37,16 @@
   - aucun contrôle n’est masqué par la barre de navigation.
 - **Variante marine.** Appliquée en aperçu, puis la variante par défaut est restaurée. Aucune erreur JavaScript pendant le parcours.
 
+### Non-régression — recette indépendante (clôture du Sprint 04)
+
+| # | Cas | Attendu | Tests |
+| --- | --- | --- | --- |
+| NR1 | Garder une séance en brouillon, recharger, la reprendre et la terminer | Une seule séance terminée de plus, le brouillon correspondant disparaît, les autres brouillons restent, les observations du brouillon sont restaurées | e2e (avec rechargement réel) + unitaire `dedupeSessionLogs` |
+| NR2 | Morceau de guitare sans ressource, préparer une séance | « À l’oreille, sans support » sélectionné par défaut, « Partition » non présélectionnée, choix modifiable | e2e + unitaires `defaultResource` |
+| NR3 | Bilan d’une séance sans prise | Proposer une première prise de référence ; l’invitation à comparer n’apparaît que si une prise de référence existe | e2e (cas sans prise et cas avec prise) + unitaires |
+
+Contrôle : les tests NR, lancés sur l’ancienne prévisualisation `6b00649f…`, échouent bien (NR2, NR3 et la restauration du brouillon en échec, puis arrêt du parcours au cas NR1). Ils passent sur la version corrigée.
+
 ### Limites des tests automatisés
 
 - **Le micro est simulé** par Chromium (`--use-fake-device-for-media-stream`). Le signal enregistré est un son de test.
@@ -45,17 +55,31 @@
 
 ## Tests sur appareil physique
 
-**Non réalisés dans ce sprint.** Aucun test sur iPhone ou Android n’a été effectué. La checklist ci-dessous reste à exécuter et ne doit pas être déclarée réussie avant de l’avoir été.
+**Aucun test sur appareil physique n’a été réalisé par Claude.** Claude travaille dans un conteneur cloud sans iPhone ni Android : ni Safari iOS, ni micro réel. Tous les résultats ci-dessus proviennent de Chromium avec un micro simulé.
+
+### Test décisif pour la mise en production — Safari iPhone (à réaliser par la recette)
+
+Sur la prévisualisation finale :
+
+1. Ouvrir le lien dans **Safari** (pas dans une application tierce), puis Commencer → onboarding.
+2. Bibliothèque → ajouter un morceau → Préparer une séance → Commencer la séance.
+3. Enregistrer → autoriser le micro → jouer environ 10 s → Arrêter. Recommencer : **deux prises du même passage**.
+4. Faire le bilan : écouter la prise A puis la prise B (son audible, Pause fonctionnelle). Terminer la séance.
+5. **Fermer l’onglet** (sélecteur d’onglets → croix), puis rouvrir le lien de prévisualisation.
+6. Suivi → les deux prises sont listées → **Lecture** de chacune : le son doit être audible.
 
 | Cas | iPhone · Safari | Android · Chrome |
 | --- | --- | --- |
 | Autoriser le micro → enregistrer → arrêter → réécouter | non testé | non testé |
 | Deux prises du même passage, comparaison A/B dans le bilan | non testé | non testé |
-| Recharger → Suivi → réécouter une prise | non testé | non testé |
+| Fermer l’onglet, rouvrir → Suivi → les deux prises sont audibles | non testé | non testé |
 | Supprimer une prise (avec confirmation) | non testé | non testé |
 | Refuser le micro → message → autoriser dans les réglages → Réessayer | non testé | non testé |
 | Métronome audible, enregistrement en même temps | non testé | non testé |
 | Quitter l’écran pendant l’enregistrement → prise sauvegardée automatiquement | non testé | non testé |
 | Lisibilité, zones tactiles, aucune superposition avec la barre système | non testé | non testé |
 
-Point d’attention connu : Safari iOS enregistre en `audio/mp4`. Le code le gère (`pickMimeType`), mais ce n’est pas vérifié sur appareil.
+Points d’attention propres à Safari iOS, non vérifiés :
+- Format d’enregistrement `audio/mp4`, choisi par `pickMimeType`.
+- Conservation des blobs dans IndexedDB après fermeture de l’onglet.
+- Effacement automatique des données de site par Safari après 7 jours sans visite (ITP). Une prise ancienne peut alors afficher « Audio introuvable ».

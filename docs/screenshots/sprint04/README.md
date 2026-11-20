@@ -20,3 +20,5 @@ Conditions de capture :
 | `10-profil.png` | Profil, avec l’aperçu de la variante identitaire |
 | `11-variante-marine-accueil.png` | Accueil en variante marine `#152642` (aperçu, non appliquée par défaut) |
 | `12-micro-refuse.png` | Micro refusé : message explicite et bouton « Réessayer le micro » |
+| `13-bilan-sans-prise.png` | Bilan sans prise : prochaine séance = première prise de référence (NR3) |
+| `14-suivi-brouillon-termine.png` | Suivi après rechargement : brouillon repris et terminé, l’autre brouillon conservé (NR1) |
