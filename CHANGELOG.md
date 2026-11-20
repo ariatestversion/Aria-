@@ -109,7 +109,7 @@ Onboarding en 4 étapes non répété, accueil sans « Bonjour, » vide, « Repr
 ### Publication
 
 - Captures : `docs/screenshots/sprint04/`.
-- Prévisualisation définitive V0.4, SHA et vérifications : `docs/SOURCE.md` et `SOURCE_VERSION.json`.
+- **Prévisualisation définitive V0.4** : https://6b0076bca18fd5cc811ba140--ariafirstversion.netlify.app, commit `99a313e` (`version.json` vérifié, bundles identiques, e2e 65/65 sur l’URL).
 - Prévisualisations précédentes : `6b00649f…` (`cf42503`) et `6b006f0b…` (`820bfe3`), remplacées.
 - Production verrouillée sur le Sprint 02 (`6aff204b…`) : **mise en production non autorisée**.
 ---

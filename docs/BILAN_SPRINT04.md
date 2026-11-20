@@ -1,6 +1,6 @@
 # Bilan définitif — Sprint 04 · Prototype fonctionnel V0.4
 
-Dépôt `ariatestversion/Aria-`, branche `claude/sprint04-experience-musicale`, base `23ea182` (source Cursor `104645c`, Sprint 03). Prévisualisation définitive, SHA et vérifications : voir `docs/SOURCE.md` et `SOURCE_VERSION.json`.
+Dépôt `ariatestversion/Aria-`, branche `claude/sprint04-experience-musicale`, base `23ea182` (source Cursor `104645c`, Sprint 03). **Prévisualisation définitive V0.4** : https://6b0076bca18fd5cc811ba140--ariafirstversion.netlify.app (commit `99a313e`, `version.json` vérifié). Détails : `docs/SOURCE.md` et `SOURCE_VERSION.json`.
 Production : verrouillée sur le Sprint 02. **Aucune mise en production.**
 
 ## 1. Fonctionnalités acquises

@@ -5,7 +5,7 @@ Ce registre distingue trois sources de résultats :
 - **les tests physiques**, réalisés par la recette avec de vrais micros et appareils ;
 - **les tests encore à faire.**
 
-Version de référence : voir « Prévisualisation définitive » en fin de document.
+Version de référence V0.4 : commit `99a313e`, prévisualisation https://6b0076bca18fd5cc811ba140--ariafirstversion.netlify.app (`version.json` = `99a313e`).
 
 ## 1. Tests automatisés (Claude, micro simulé)
 

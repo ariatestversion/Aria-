@@ -24,16 +24,16 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 `npm run build` génère `public/version.json` (commit, branche, date) : c’est la preuve de correspondance entre le commit GitHub et le déploiement Netlify. `SOURCE_VERSION.json` enregistre le dernier couple commit / déploiement de prévisualisation.
 
-## État Sprint 04 (clôture)
+## État Sprint 04 — prototype V0.4 (clôture)
 
-- Branche `claude/sprint04-experience-musicale`. Source déployée : commit `820bfe3`. Le commit qui suit ne contient que la documentation de livraison.
-- **Prévisualisation finale** : https://6b006f0b3d9e6991f197cd84--ariafirstversion.netlify.app (déploiement `6b006f0b3d9e6991f197cd84`, non publié).
+- Branche `claude/sprint04-experience-musicale`. **Source déployée : commit `99a313e`** (`99a313eb9beff358f3ea95cfcb18cc495a4de343`). Le commit suivant ne contient que cette documentation de livraison.
+- **Prévisualisation définitive V0.4** : https://6b0076bca18fd5cc811ba140--ariafirstversion.netlify.app (déploiement `6b0076bca18fd5cc811ba140`, non publié).
 - **Production verrouillée** sur le Sprint 02 : déploiement `6aff204b188f1862668a1bab`, commit `d86e813`, `locked: true`. Aucune mise en production ni aucun déverrouillage n’a été fait.
 - **Correspondance GitHub ↔ Netlify** :
-  - `version.json` de la prévisualisation : `820bfe3c0cf0357f7c742948942a2832a34ebfa3`, branche `claude/sprint04-experience-musicale` ;
-  - `assets/index-Dmv66NZJ.js` et `assets/index-Bom41a6f.css` identiques (SHA-256) au build local de `820bfe3` ;
-  - `scripts/e2e-sprint04.mjs` sur l’URL de prévisualisation : 64/64 (micro simulé).
-- Prévisualisation intermédiaire `6b00649f007a205b699926b3` (source `cf42503`) : remplacée par celle-ci. Son `version.json` affichait le commit synthétique Netlify `4ed8405`, ce qui a été corrigé depuis.
+  - `version.json` = `99a313e`, branche `claude/sprint04-experience-musicale` ;
+  - `assets/index-DDrk4lBb.js` et `assets/index-Bom41a6f.css` identiques (SHA-256) au build local ;
+  - e2e 65/65 sur l’URL (micro simulé).
+- Prévisualisations précédentes, remplacées : `6b00649f…` (`cf42503`) et `6b006f0b…` (`820bfe3`, celle des tests physiques).
 
 ### Déploiement par le connecteur Netlify (procédure)
 

@@ -1,9 +1,10 @@
 {
-  "commit": "820bfe3c0cf0357f7c742948942a2832a34ebfa3",
-  "short": "820bfe3",
-  "netlifyDeployId": "6b006f0b3d9e6991f197cd84",
-  "netlifyPreview": "https://6b006f0b3d9e6991f197cd84--ariafirstversion.netlify.app",
+  "version": "V0.4",
+  "commit": "99a313eb9beff358f3ea95cfcb18cc495a4de343",
+  "short": "99a313e",
+  "netlifyDeployId": "6b0076bca18fd5cc811ba140",
+  "netlifyPreview": "https://6b0076bca18fd5cc811ba140--ariafirstversion.netlify.app",
   "branch": "claude/sprint04-experience-musicale",
   "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813)",
-  "verification": "version.json du déploiement = 820bfe3 ; bundles JS/CSS identiques (SHA-256) au build local ; e2e 64/64 sur l'URL de prévisualisation (micro simulé)"
+  "verification": "version.json du déploiement = 99a313e ; bundles JS/CSS identiques (SHA-256) au build local ; e2e 65/65 sur l'URL de prévisualisation (micro simulé)"
 }
