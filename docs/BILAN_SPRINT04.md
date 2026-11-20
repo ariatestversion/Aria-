@@ -1,6 +1,6 @@
 # Bilan définitif — Sprint 04 · ARIA MVP Alpha V0.4
 
-> **Statut : clôturé et figé.** Fusionné dans `main`, tag Git `v0.4.0-alpha`. Recette indépendante Work : trois anomalies retestées résolues, **produit apte à une alpha accompagnée**. Production Netlify toujours verrouillée sur le Sprint 02.
+> **Statut : clôturé et figé.** Fusionné dans `main` (merge `5fead7f`). Tag Git `v0.4.0-alpha` **à créer sur GitHub par la porteuse du projet** : la session Claude ne peut pas pousser de tags (refus HTTP 403 du proxy). Recette indépendante Work : trois anomalies retestées résolues, **produit apte à une alpha accompagnée**. Production Netlify toujours verrouillée sur le Sprint 02.
 
 Dépôt `ariatestversion/Aria-`, branche `claude/sprint04-experience-musicale`, base `23ea182` (source Cursor `104645c`, Sprint 03). **Prévisualisation définitive MVP Alpha V0.4** : https://6b0078bb87479237251ba188--ariafirstversion.netlify.app (commit `91441b1`, `version.json` vérifié). Détails : `docs/SOURCE.md` et `SOURCE_VERSION.json`.
 Production : verrouillée sur le Sprint 02. **Aucune mise en production.**
@@ -103,6 +103,7 @@ Points d’attention, non qualifiés comme anomalies faute de test :
 
 1. Tests physiques restants : Safari iPhone ouvert directement, Android (registre de recette, section 6).
 2. Décision sur les SVG « Ode to Joy ».
-3. Sur autorisation explicite : déverrouillage de la production et publication de la V0.4 (tag `v0.4.0-alpha`) sur le lien principal.
+3. Sur autorisation explicite : déverrouillage de la production et publication de la V0.4 sur le lien principal.
+4. Création du tag `v0.4.0-alpha` sur GitHub (voir `docs/SOURCE.md`).
 
 Version figée : aucun nouveau développement, aucune refonte graphique, aucun Sprint 05 sans nouvelle instruction.

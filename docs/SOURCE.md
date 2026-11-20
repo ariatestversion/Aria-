@@ -26,7 +26,9 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 ## État Sprint 04 — ARIA MVP Alpha V0.4 (clôture)
 
-- **Clôturé et figé** : branche fusionnée dans `main` (merge commit, historique conservé), tag annoté **`v0.4.0-alpha`** sur ce merge. Le code applicatif du tag est identique à `91441b1`, le commit déployé en prévisualisation ; seuls la documentation et le script e2e diffèrent.
+- **Clôturé et figé** : branche fusionnée dans `main` (merge commit `5fead7f`, historique conservé).
+- **Tag `v0.4.0-alpha` : à créer sur GitHub.** La session Claude ne peut pas pousser de tags (refus HTTP 403 du proxy). À faire depuis GitHub : *Releases → Draft a new release → Choose a tag : `v0.4.0-alpha` → Target : `main`* (dernier commit de `main`, voir ci-dessous) → *Set as a pre-release* → *Publish release*.
+- Le code applicatif de `main` est identique à `91441b1`. Le code applicatif du tag est identique à `91441b1`, le commit déployé en prévisualisation ; seuls la documentation et le script e2e diffèrent.
 
 - Branche `claude/sprint04-experience-musicale`. **Source déployée : commit `91441b1`** (`91441b163ee40e8829755cc780673e0e592f931f`). Les commits suivants ne touchent que les tests e2e et la documentation de livraison.
 - **Prévisualisation définitive MVP Alpha V0.4** : https://6b0078bb87479237251ba188--ariafirstversion.netlify.app (déploiement `6b0078bb87479237251ba188`, non publié).
