@@ -24,6 +24,12 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 `npm run build` génère `public/version.json` (commit, branche, date) : c’est la preuve de correspondance entre le commit GitHub et le déploiement Netlify. `SOURCE_VERSION.json` enregistre le dernier couple commit / déploiement de prévisualisation.
 
+## État Sprint 04
+
+- Branche `claude/sprint04-experience-musicale`, commit source `22c2a93` (`version.json` du build : `22c2a93`).
+- Prévisualisation Netlify **non publiée** : le connecteur Netlify ne sait faire que des déploiements de production (voir CHANGELOG). La production actuelle (`6aff204b188f1862668a1bab`) n’est pas modifiée.
+- `SOURCE_VERSION.json` décrit encore la base Sprint 03. Il sera mis à jour avec le couple commit / déploiement une fois la prévisualisation publiée.
+
 ## Publication
 
 | Cible | URL |

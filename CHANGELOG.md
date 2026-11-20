@@ -89,7 +89,14 @@ Onboarding en 4 étapes non répété, accueil sans « Bonjour, » vide, « Repr
 
 ### Publication
 
-Captures : `docs/screenshots/sprint04/`. Prévisualisation Netlify uniquement : voir `docs/SOURCE.md`. La production n’est pas modifiée.
+Captures : `docs/screenshots/sprint04/`. Code poussé sur la branche `claude/sprint04-experience-musicale` (commit source `22c2a93`).
+
+**Prévisualisation Netlify : non publiée (blocage documenté).** L’unique opération de déploiement du connecteur Netlify (`deploy-site`) envoie le code à `POST /sites/{id}/builds` et ne propose ni brouillon ni prévisualisation. Sur `ariafirstversion`, qui n’est relié à aucun dépôt, un tel build part normalement en production. Il n’a donc pas été lancé. Déblocage possible :
+
+1. verrouiller la publication de la production dans Netlify (Deploys → déploiement actuel → *Lock to stop auto publishing*), puis déployer avec le connecteur ;
+2. ou fournir une clé d’accès personnelle Netlify pour un `netlify deploy` en mode brouillon (prévisualisation par défaut).
+
+La production n’est pas modifiée.
 
 ---
 
