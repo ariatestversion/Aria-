@@ -93,7 +93,9 @@ Onboarding en 4 étapes non répété, accueil sans « Bonjour, » vide, « Repr
 - `npm test` (Vitest) : 20/20.
 - `node scripts/e2e-sprint04.mjs` (Playwright, Chromium, 390×844) : 64/64, dont 10 contrôles de non-régression.
 - Détail et limites : `docs/recettes/sprint04.md`.
-- Le micro est **simulé** par le navigateur. **Aucun test sur appareil physique** n’a été réalisé.
+- Tests automatisés : le micro est **simulé** par le navigateur.
+- Test physique réalisé par la recette le 2026-11-20 sur la prévisualisation `820bfe3`, **Chrome sur Mac, micro réel** : réussi. Deux prises audibles, toujours accessibles après deux fermetures et réouvertures du navigateur, qualité sonore satisfaisante.
+- **Safari iPhone et Android : non testés.**
 
 ### Publication
 
@@ -105,7 +107,8 @@ Captures : `docs/screenshots/sprint04/`. Code poussé sur la branche `claude/spr
 - Bundles identiques au build local de `820bfe3`.
 - Parcours e2e sur la prévisualisation : 64/64 (micro simulé).
 - Production verrouillée sur le Sprint 02 (`6aff204b…`, `locked: true`) : non publiée, non déverrouillée.
-- **Aucun test sur appareil physique** : le test Safari iPhone, décisif pour la mise en production, reste à réaliser (voir `docs/recettes/sprint04.md`).
+- Test physique Chrome sur Mac (micro réel), réalisé par la recette : réussi. **Safari iPhone et Android : non testés.** Le test Safari iPhone, décisif pour la mise en production, reste à réaliser (voir `docs/recettes/sprint04.md`).
+- **Mise en production non autorisée** à ce stade.
 
 ---
 

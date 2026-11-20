@@ -55,7 +55,25 @@ Contrôle : les tests NR, lancés sur l’ancienne prévisualisation `6b00649f�
 
 ## Tests sur appareil physique
 
-**Aucun test sur appareil physique n’a été réalisé par Claude.** Claude travaille dans un conteneur cloud sans iPhone ni Android : ni Safari iOS, ni micro réel. Tous les résultats ci-dessus proviennent de Chromium avec un micro simulé.
+**Aucun test sur appareil physique n’a été réalisé par Claude.** Claude travaille dans un conteneur cloud sans iPhone ni Android : ni Safari iOS, ni micro réel. Tous les résultats des sections précédentes proviennent de Chromium avec un micro simulé.
+
+### Test réalisé par la recette — Chrome sur Mac, micro réel
+
+| Élément | Détail |
+| --- | --- |
+| Date | 2026-11-20 |
+| Réalisé par | La recette (porteuse du projet), et non par Claude |
+| Appareil, navigateur | Mac, Google Chrome, microphone réel |
+| Version testée | Prévisualisation https://6b006f0b3d9e6991f197cd84--ariafirstversion.netlify.app, commit `820bfe3` |
+| Résultat | **Réussi** |
+
+| Cas | Résultat |
+| --- | --- |
+| Enregistrer deux prises du même passage avec le micro réel | Réussi |
+| Réécouter les deux prises : son audible | Réussi, qualité sonore jugée satisfaisante |
+| Fermer puis rouvrir le navigateur, deux fois de suite → les deux prises restent accessibles et audibles | Réussi |
+
+Ce test couvre uniquement Chrome sur ordinateur. Il ne remplace pas le test Safari iPhone : format d’enregistrement, conservation des données et lecture audio y sont différents.
 
 ### Test décisif pour la mise en production — Safari iPhone (à réaliser par la recette)
 
@@ -67,6 +85,8 @@ Sur la prévisualisation finale :
 4. Faire le bilan : écouter la prise A puis la prise B (son audible, Pause fonctionnelle). Terminer la séance.
 5. **Fermer l’onglet** (sélecteur d’onglets → croix), puis rouvrir le lien de prévisualisation.
 6. Suivi → les deux prises sont listées → **Lecture** de chacune : le son doit être audible.
+
+Suivi des appareils mobiles (au 2026-11-20 : non testés) :
 
 | Cas | iPhone · Safari | Android · Chrome |
 | --- | --- | --- |
@@ -83,3 +103,7 @@ Points d’attention propres à Safari iOS, non vérifiés :
 - Format d’enregistrement `audio/mp4`, choisi par `pickMimeType`.
 - Conservation des blobs dans IndexedDB après fermeture de l’onglet.
 - Effacement automatique des données de site par Safari après 7 jours sans visite (ITP). Une prise ancienne peut alors afficher « Audio introuvable ».
+
+## Statut de la mise en production
+
+**Non autorisée.** Le test Safari iPhone est le préalable décisif, et Android reste non testé. La production reste verrouillée sur le Sprint 02 (`6aff204b…`, `d86e813`).
