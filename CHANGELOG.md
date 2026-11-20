@@ -99,12 +99,13 @@ Onboarding en 4 étapes non répété, accueil sans « Bonjour, » vide, « Repr
 
 Captures : `docs/screenshots/sprint04/`. Code poussé sur la branche `claude/sprint04-experience-musicale` (commit source `22c2a93`).
 
-**Prévisualisation Netlify** : https://6b00649f007a205b699926b3--ariafirstversion.netlify.app (déploiement `6b00649f007a205b699926b3`, source `cf42503`).
+**Prévisualisation finale** : https://6b006f0b3d9e6991f197cd84--ariafirstversion.netlify.app (déploiement `6b006f0b3d9e6991f197cd84`).
 
-- Production verrouillée au préalable sur le Sprint 02 (`6aff204b…`, `locked: true`) : non publiée, non déverrouillée.
-- Bundles identiques au build local de `cf42503`.
-- Parcours e2e sur la prévisualisation : 54/54.
-- `version.json` du déploiement : `4ed8405` (commit synthétique créé par Netlify à partir de l’archive). C’est corrigé dans `scripts/write-version.mjs` pour les prochains déploiements ; voir `docs/SOURCE.md`.
+- `version.json` = `820bfe3`, le commit GitHub de la branche.
+- Bundles identiques au build local de `820bfe3`.
+- Parcours e2e sur la prévisualisation : 64/64 (micro simulé).
+- Production verrouillée sur le Sprint 02 (`6aff204b…`, `locked: true`) : non publiée, non déverrouillée.
+- **Aucun test sur appareil physique** : le test Safari iPhone, décisif pour la mise en production, reste à réaliser (voir `docs/recettes/sprint04.md`).
 
 ---
 

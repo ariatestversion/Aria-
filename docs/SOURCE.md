@@ -24,15 +24,16 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 `npm run build` génère `public/version.json` (commit, branche, date) : c’est la preuve de correspondance entre le commit GitHub et le déploiement Netlify. `SOURCE_VERSION.json` enregistre le dernier couple commit / déploiement de prévisualisation.
 
-## État Sprint 04
+## État Sprint 04 (clôture)
 
-- Branche `claude/sprint04-experience-musicale`. Source déployée : commit `cf42503`.
-- **Prévisualisation Netlify** : https://6b00649f007a205b699926b3--ariafirstversion.netlify.app (déploiement `6b00649f007a205b699926b3`, non publié).
-- **Production verrouillée** sur le Sprint 02 : déploiement `6aff204b188f1862668a1bab`, commit `d86e813`. Verrou posé dans Netlify (*Lock to stop auto publishing*) et vérifié par l’API (`locked: true`). Aucune mise en production ni aucun déverrouillage n’a été fait.
+- Branche `claude/sprint04-experience-musicale`. Source déployée : commit `820bfe3`. Le commit qui suit ne contient que la documentation de livraison.
+- **Prévisualisation finale** : https://6b006f0b3d9e6991f197cd84--ariafirstversion.netlify.app (déploiement `6b006f0b3d9e6991f197cd84`, non publié).
+- **Production verrouillée** sur le Sprint 02 : déploiement `6aff204b188f1862668a1bab`, commit `d86e813`, `locked: true`. Aucune mise en production ni aucun déverrouillage n’a été fait.
 - **Correspondance GitHub ↔ Netlify** :
-  - les fichiers `assets/index-BldsOBiR.js` et `assets/index-Bom41a6f.css` du déploiement sont identiques (SHA-256) à ceux du build local de `cf42503` ;
-  - le parcours `scripts/e2e-sprint04.mjs` exécuté sur l’URL de prévisualisation donne 54/54.
-- **Écart connu** : le `version.json` de ce déploiement affiche `4ed8405` / `master`. Netlify recrée un dépôt Git synthétique à partir de l’archive envoyée par le connecteur, et l’ancien script a lu ce commit-là. C’est corrigé dans `scripts/write-version.mjs` (le fichier généré depuis le commit poussé est conservé) et sera visible au prochain déploiement.
+  - `version.json` de la prévisualisation : `820bfe3c0cf0357f7c742948942a2832a34ebfa3`, branche `claude/sprint04-experience-musicale` ;
+  - `assets/index-Dmv66NZJ.js` et `assets/index-Bom41a6f.css` identiques (SHA-256) au build local de `820bfe3` ;
+  - `scripts/e2e-sprint04.mjs` sur l’URL de prévisualisation : 64/64 (micro simulé).
+- Prévisualisation intermédiaire `6b00649f007a205b699926b3` (source `cf42503`) : remplacée par celle-ci. Son `version.json` affichait le commit synthétique Netlify `4ed8405`, ce qui a été corrigé depuis.
 
 ### Déploiement par le connecteur Netlify (procédure)
 
