@@ -9,7 +9,7 @@ Netlify : projet existant `ariafirstversion`, **prévisualisation uniquement**.
 **Clôture (2026-11-20)** :
 - recette indépendante Work sur `91441b1` : trois anomalies retestées résolues, **apte à une alpha accompagnée** ;
 - contrôles de clôture : `npm ci`, build, unitaires 23/23, e2e 68/68 ;
-- fusion dans `main` (merge `5fead7f`), version figée ; tag **`v0.4.0-alpha`** à créer sur GitHub (refus 403 pour les tags depuis la session Claude, voir `docs/SOURCE.md`) ;
+- fusion dans `main` (merge `5fead7f`), version figée ; tag **`v0.4.0-alpha`** (pre-release GitHub) sur `e3950e6` ;
 - prévisualisation définitive : https://6b0078bb87479237251ba188--ariafirstversion.netlify.app ;
 - production Netlify toujours verrouillée sur le Sprint 02 ;
 - restent à faire : tests physiques Safari iPhone (ouvert directement) et Android, avant toute publication.

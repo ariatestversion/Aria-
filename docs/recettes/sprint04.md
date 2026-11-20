@@ -137,6 +137,6 @@ Sur la prévisualisation `91441b1`, avec la liste de cas de la section 3 (« Res
 
 ## 7. Statut de la mise en production
 
-**Non autorisée.** La production reste verrouillée sur le Sprint 02 (`6aff204b…`, `d86e813`). La V0.4 est figée dans `main` (merge `5fead7f`) ; tag `v0.4.0-alpha` à créer sur GitHub. Sa publication sur le lien principal reste soumise à :
+**Non autorisée.** La production reste verrouillée sur le Sprint 02 (`6aff204b…`, `d86e813`). La V0.4 est figée dans `main` (merge `5fead7f`) ; tag `v0.4.0-alpha` sur `e3950e6`. Sa publication sur le lien principal reste soumise à :
 1. les tests physiques de la section 6 ;
 2. l’autorisation explicite de la porteuse du projet (déverrouillage et publication).
