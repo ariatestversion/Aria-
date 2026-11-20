@@ -394,6 +394,16 @@ export function defaultResource(piece: Pick<Piece, 'resources'>, habits: HabitId
   return 'ear'
 }
 
+/**
+ * Libellé de passage d’une prise. Les prises antérieures à la correction pouvaient porter
+ * l’objectif (« Justesse »…) ou « Passage » à la place du passage : on ne les affiche pas.
+ */
+export function passageLabel(passage: string | undefined) {
+  const p = (passage || '').trim()
+  if (!p || p === 'Passage' || (OBJECTIVES as readonly string[]).includes(p) || p === 'Pratique libre') return ''
+  return p
+}
+
 export type ProgramInput = {
   piece: Piece
   instrument: InstrumentId
@@ -562,9 +572,19 @@ export function buildReview(input: {
   const takeStep = hasReference
     ? 'refais une prise de 30 secondes et compare-la à la précédente'
     : 'enregistre une première prise de 30 secondes : elle servira de référence pour les prochaines comparaisons'
+  // Le conseil suit l’axe de l’objectif : monter le tempo n’a de sens que pour le rythme ou le tempo.
+  const focus = focusOf(objective) || 'expression'
+  const slower = focus === 'rhythm' || focus === 'tempo' ? '8 BPM plus lentement' : 'plus lentement'
+  const continueAdvice: Record<Focus, string> = {
+    rhythm: 'monte le tempo de 4 BPM, ou élargis au passage suivant si tout était stable',
+    tempo: 'monte le tempo de 4 BPM, ou élargis au passage suivant si tout était stable',
+    accuracy: 'rejoue le passage lentement en vérifiant chaque note fragile, puis élargis au passage suivant si toutes sonnent juste',
+    memory: 'rejoue le passage sans regarder ton support, puis ajoute la cellule suivante si tout tient de mémoire',
+    expression: 'travaille les enchaînements entre les phrases sans coupure, puis élargis au passage suivant si tout reste fluide',
+  }
   const next: ReviewItem = retrySteps.length
     ? {
-        text: `Prochaine tentative : reprends « ${retrySteps[0]} » 8 BPM plus lentement, puis ${takeStep}.`,
+        text: `Prochaine tentative : reprends « ${retrySteps[0]} » ${slower}, puis ${takeStep}.`,
         source: 'rules',
       }
     : improve
@@ -574,7 +594,7 @@ export function buildReview(input: {
         }
       : {
           text: hasReference
-            ? `Prochaine séance : garde l’objectif « ${objective} » et monte le tempo de 4 BPM, ou élargis au passage suivant si tout était stable.`
+            ? `Prochaine séance : garde l’objectif « ${objective} » et ${continueAdvice[focus]}.`
             : `Prochaine séance : garde l’objectif « ${objective} » et enregistre une première prise de 30 secondes : elle servira de référence pour les prochaines comparaisons.`,
           source: 'rules',
         }

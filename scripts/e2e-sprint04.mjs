@@ -297,7 +297,9 @@ async function main() {
   const p2 = await c2.newPage()
   await onboardGuitar(p2)
   await addPiece(p2, 'Test micro')
-  await p2.getByRole('button', { name: 'S’enregistrer' }).click()
+  // Séance sans passage saisi (objectif Rythme) : sert aussi au contrôle du libellé de passage.
+  await p2.getByRole('button', { name: 'Préparer une séance' }).click()
+  await p2.getByRole('button', { name: 'Commencer la séance' }).click()
   await p2.getByRole('button', { name: 'Démarrer l’enregistrement' }).click()
   const denied = p2.getByText('Micro refusé.')
   await denied.waitFor({ timeout: 5000 }).catch(() => undefined)
@@ -313,6 +315,12 @@ async function main() {
   const rec = p2.getByText('REC · enregistrement en cours')
   await rec.waitFor({ timeout: 5000 }).catch(() => undefined)
   check('Micro autorisé ensuite : l’enregistrement démarre au réessai', await rec.isVisible())
+  await p2.waitForTimeout(1500)
+  await p2.getByRole('button', { name: 'Arrêter et sauvegarder la prise' }).click()
+  await p2.getByText(/Prise sauvegardée sur cet appareil/).waitFor()
+  await p2.getByRole('navigation').getByRole('button', { name: 'Suivi' }).click()
+  const detail = await p2.getByTestId('follow-take').first().innerText()
+  check('NR · Prise sans passage saisi : l’objectif n’est pas affiché comme passage', !/·\s*Rythme\b|·\s*Passage\b/.test(detail), detail.split('\n')[1] || '')
   await b2.close()
 
   const failed = results.filter((r) => !r.ok)

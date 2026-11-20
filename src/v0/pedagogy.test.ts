@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Piece, SessionLog } from './model'
-import { allocateMinutes, buildProgram, buildReview, defaultResource, focusOf, prepGoalsFor, resourceAvailable } from './pedagogy'
+import { allocateMinutes, buildProgram, buildReview, defaultResource, focusOf, passageLabel, prepGoalsFor, resourceAvailable } from './pedagogy'
 import { canCompleteSession, dedupeSessionLogs } from './store'
 
 const piece = (patch: Partial<Piece> = {}): Piece => ({
@@ -218,5 +218,34 @@ describe('brouillon repris puis terminé', () => {
       log({ id: 'draft-other-session', status: 'draft', sessionStartedAt: 'S0' }),
     ])
     expect(logs.map((l) => l.id)).toEqual(['done', 'draft-other-piece', 'draft-other-session'])
+  })
+})
+
+describe('corrections pédagogiques de clôture (V0.4)', () => {
+  const nextFor = (programObjective: string) =>
+    buildReview({ works: '', improve: '', programObjective, instrument: 'guitar', takes: [], hasReferenceTake: true }).next.text
+
+  it('le conseil par défaut suit l’objectif : pas de « monte le tempo » pour la justesse', () => {
+    expect(nextFor('Justesse')).not.toMatch(/tempo|BPM/)
+    expect(nextFor('Justesse')).toMatch(/note fragile/)
+    expect(nextFor('Mémoire')).toMatch(/sans regarder ton support/)
+    expect(nextFor('Fluidité et expression')).toMatch(/enchaînements/)
+    expect(nextFor('Rythme')).toMatch(/monte le tempo de 4 BPM/)
+    expect(nextFor('Tempo')).toMatch(/monte le tempo de 4 BPM/)
+  })
+
+  it('reprise d’une étape : pas de BPM imposé hors rythme / tempo', () => {
+    const retry = (programObjective: string) =>
+      buildReview({ works: '', improve: '', programObjective, instrument: 'guitar', steps: [{ title: 'X', check: 'retry' }], hasReferenceTake: true }).next.text
+    expect(retry('Justesse')).not.toMatch(/BPM/)
+    expect(retry('Rythme')).toMatch(/8 BPM plus lentement/)
+  })
+
+  it('le libellé de passage n’affiche jamais l’objectif à la place du passage', () => {
+    expect(passageLabel('Justesse')).toBe('')
+    expect(passageLabel('Passage')).toBe('')
+    expect(passageLabel('')).toBe('')
+    expect(passageLabel(undefined)).toBe('')
+    expect(passageLabel('Refrain')).toBe('Refrain')
   })
 })

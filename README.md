@@ -27,7 +27,8 @@ npm run e2e                   # parcours mobile Playwright (micro simulé)
 
 - [`CHANGELOG.md`](CHANGELOG.md)
 - [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md) — couleurs, typographie, espacements, composants
-- [`docs/recettes/sprint04.md`](docs/recettes/sprint04.md) — tests réalisés et à réaliser
+- [`docs/recettes/sprint04.md`](docs/recettes/sprint04.md) — registre de recette (automatisé, physique, à faire)
+- [`docs/BILAN_SPRINT04.md`](docs/BILAN_SPRINT04.md) — bilan du prototype V0.4
 - [`docs/LICENCES.md`](docs/LICENCES.md) — contenus audio/images encore à vérifier
 
 ## Publication

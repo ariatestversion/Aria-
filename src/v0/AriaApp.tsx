@@ -4,7 +4,7 @@ import { Icon } from '../design/Icon'
 import { useMediaRecorder } from '../lib/recorder'
 import { isGuestEmail, probeAuthMode, restoreSession, signOutV0, type AuthMode } from './auth'
 import type { UserProfile } from '../types'
-import { buildProgram, buildReview, defaultResource, prepGoalsFor, resourceAvailable } from './pedagogy'
+import { buildProgram, buildReview, defaultResource, passageLabel, prepGoalsFor, resourceAvailable } from './pedagogy'
 import {
   DEMO_GENRES,
   DURATIONS,
@@ -600,7 +600,8 @@ export function AriaApp() {
         id: takeId,
         email,
         pieceId: current.id,
-        passage: current.passages || current.program?.passage || current.program?.objective || 'Passage',
+        // Seul un passage réellement saisi est enregistré (jamais l’objectif à sa place).
+        passage: current.passages || current.program?.passage || '',
         createdAt: new Date().toISOString(),
         seconds: Math.max(1, seconds),
         mime: blob.type || 'audio/webm',
@@ -1912,7 +1913,7 @@ export function AriaApp() {
                           key={t.id}
                           take={t}
                           label={takeLabel(t)}
-                          detail={`${takeDetail(t)}${t.passage ? ` · ${t.passage}` : ''}`}
+                          detail={`${takeDetail(t)}${passageLabel(t.passage) ? ` · ${passageLabel(t.passage)}` : ''}`}
                           onDelete={removeTake}
                           testId="follow-take"
                         />

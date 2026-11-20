@@ -1,6 +1,6 @@
 # Changelog — ARIA
 
-## [Sprint 04] — Expérience musicale & Design System (2026-11-20)
+## [V0.4 — Sprint 04] — Expérience musicale & Design System (2026-11-20)
 
 Branche : `claude/sprint04-experience-musicale` (depuis `main` = `23ea182`, source Cursor `104645c`)  
 Dépôt de référence : `ariatestversion/Aria-`. Développement : Claude Code (reprise de Cursor).  
@@ -84,32 +84,34 @@ Netlify : projet existant `ariafirstversion`, **prévisualisation uniquement**.
 - Suivi : le nombre de prises d’une séance terminée ne compte plus les prises supprimées.
 - Recette de non-régression ajoutée (NR1 à NR3). Tests : unitaires 20/20, e2e 64/64.
 
+### Clôture V0.4 — corrections pédagogiques issues des tests physiques
+
+- **Bilan** : le conseil par défaut suit l’objectif. « Monte le tempo de 4 BPM » est réservé au Rythme et au Tempo. Justesse, Mémoire et Fluidité reçoivent un conseil propre à leur axe, et la reprise d’une étape n’impose plus de BPM hors rythme ou tempo (NR4).
+- **Suivi** : l’objectif (« Justesse », « Rythme »…) n’est plus enregistré ni affiché comme passage quand aucun passage n’a été saisi. Les anciennes prises concernées sont aussi corrigées à l’affichage (NR5).
+- Registre de recette consolidé (`docs/recettes/sprint04.md`), état des droits des médias (`docs/LICENCES.md`), bilan définitif (`docs/BILAN_SPRINT04.md`).
+- `package.json` : version `0.4.0`.
+
 ### Préservé du Sprint 03
 
 Onboarding en 4 étapes non répété, accueil sans « Bonjour, » vide, « Reprendre » uniquement si une séance est en cours, filtres de genres vides masqués, badge Démo, réécoute dans le Suivi, statut cloud/local dans le Profil, espace réservé sous la barre de navigation.
 
 ### Tests
 
-- `npm test` (Vitest) : 20/20.
-- `node scripts/e2e-sprint04.mjs` (Playwright, Chromium, 390×844) : 64/64, dont 10 contrôles de non-régression.
-- Détail et limites : `docs/recettes/sprint04.md`.
-- Tests automatisés : le micro est **simulé** par le navigateur.
-- Test physique réalisé par la recette le 2026-11-20 sur la prévisualisation `820bfe3`, **Chrome sur Mac, micro réel** : réussi. Deux prises audibles, toujours accessibles après deux fermetures et réouvertures du navigateur, qualité sonore satisfaisante.
-- **Safari iPhone et Android : non testés.**
+- **Automatisés (micro simulé)** :
+  - `npm test` : 23/23 ;
+  - `node scripts/e2e-sprint04.mjs` (Playwright, Chromium, 390×844) : 65/65, dont 11 contrôles de non-régression (NR1 à NR5), en local et sur la prévisualisation définitive.
+- **Physiques (réalisés par la recette, micro réel)** :
+  - Chrome sur Mac : réussi. Deux prises audibles, conservées après deux fermetures du navigateur.
+  - iPhone, navigateur intégré à ChatGPT : réussi.
+- **Non testés** : Safari iPhone ouvert directement, Android.
+- Registre complet : `docs/recettes/sprint04.md`.
 
 ### Publication
 
-Captures : `docs/screenshots/sprint04/`. Code poussé sur la branche `claude/sprint04-experience-musicale` (commit source `22c2a93`).
-
-**Prévisualisation finale** : https://6b006f0b3d9e6991f197cd84--ariafirstversion.netlify.app (déploiement `6b006f0b3d9e6991f197cd84`).
-
-- `version.json` = `820bfe3`, le commit GitHub de la branche.
-- Bundles identiques au build local de `820bfe3`.
-- Parcours e2e sur la prévisualisation : 64/64 (micro simulé).
-- Production verrouillée sur le Sprint 02 (`6aff204b…`, `locked: true`) : non publiée, non déverrouillée.
-- Test physique Chrome sur Mac (micro réel), réalisé par la recette : réussi. **Safari iPhone et Android : non testés.** Le test Safari iPhone, décisif pour la mise en production, reste à réaliser (voir `docs/recettes/sprint04.md`).
-- **Mise en production non autorisée** à ce stade.
-
+- Captures : `docs/screenshots/sprint04/`.
+- Prévisualisation définitive V0.4, SHA et vérifications : `docs/SOURCE.md` et `SOURCE_VERSION.json`.
+- Prévisualisations précédentes : `6b00649f…` (`cf42503`) et `6b006f0b…` (`820bfe3`), remplacées.
+- Production verrouillée sur le Sprint 02 (`6aff204b…`) : **mise en production non autorisée**.
 ---
 
 ## [Sprint 03] — Parcours utilisateur & architecture UX (2026-11-20)
