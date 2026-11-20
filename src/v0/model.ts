@@ -34,13 +34,30 @@ export type PieceResource = {
   demo?: boolean
 }
 
+/** Support utilisé pour travailler le morceau (avec ou sans partition). */
+export type ResourceMode = 'score' | 'tabs' | 'chords' | 'audio' | 'ear'
+
+export type StepKind = 'warmup' | 'focus' | 'apply' | 'record' | 'free'
+
+/** Auto-évaluation de l’utilisateur sur le critère de réussite d’une étape. */
+export type StepCheck = 'ok' | 'retry'
+
 export type WorkProgramStep = {
   id: string
   title: string
+  /** Consigne concrète. */
   what: string
   how: string
   why: string
+  /** Critère de réussite observable par l’utilisateur. */
   success: string
+  /** Durée conseillée de l’étape (minutes). Absent sur les programmes antérieurs au Sprint 04. */
+  minutes?: number
+  kind?: StepKind
+  /** Tempo de départ conseillé pour le métronome. */
+  bpm?: number
+  /** Auto-évaluation saisie par l’utilisateur (jamais calculée). */
+  check?: StepCheck
   done?: boolean
 }
 
@@ -51,6 +68,15 @@ export type WorkProgram = {
   difficulties: string
   updatedAt: string
   stepIndex: number
+  /** Sprint 04 — contexte de préparation (absent sur les anciens programmes). */
+  startedAt?: string
+  instrument?: InstrumentId
+  level?: LevelId
+  goals?: string[]
+  passage?: string
+  resource?: ResourceMode
+  /** Limites honnêtes des règles appliquées (ex. instrument peu couvert). */
+  notes?: string[]
 }
 
 export type Piece = {
@@ -79,6 +105,8 @@ export type Take = {
   createdAt: string
   seconds: number
   mime: string
+  /** Étape de séance pendant laquelle la prise a été faite (Sprint 04). */
+  stepTitle?: string
 }
 
 export type SessionLogStatus = 'draft' | 'completed'
@@ -97,6 +125,17 @@ export type SessionLog = {
   source: 'user' | 'rules'
   /** Completed = réelle séance sauvegardée ; draft = brouillon non compté. */
   status: SessionLogStatus
+  /** Sprint 04 — exercice correctif issu des règles pédagogiques. */
+  corrective?: string
+  /** Sprint 04 — auto-évaluation des étapes par l’utilisateur. */
+  stepChecks?: { title: string; check: StepCheck }[]
+  /** Sprint 04 — comparaison de prises écrite par l’utilisateur. */
+  comparison?: string
+  /**
+   * Identifiant de la séance (= début du programme). Un brouillon repris puis terminé
+   * met à jour le même journal au lieu d’en créer un second.
+   */
+  sessionStartedAt?: string
 }
 
 export type AppScreen =
@@ -134,6 +173,19 @@ export const HABITS: { id: HabitId; label: string }[] = [
   { id: 'chords', label: 'Accords' },
   { id: 'video', label: 'Vidéo' },
   { id: 'ear', label: 'À l’oreille' },
+]
+
+/** Objectifs proposés à l’onboarding et à la préparation (libellés stockés tels quels). */
+export const OBJECTIVES = ['Rythme', 'Justesse', 'Tempo', 'Mémoire', 'Fluidité et expression'] as const
+
+export const DURATIONS = [15, 20, 30, 45, 60] as const
+
+export const RESOURCE_MODES: { id: ResourceMode; label: string }[] = [
+  { id: 'score', label: 'Partition' },
+  { id: 'tabs', label: 'Tablature' },
+  { id: 'chords', label: 'Grille d’accords' },
+  { id: 'audio', label: 'Enregistrement de référence' },
+  { id: 'ear', label: 'À l’oreille, sans support' },
 ]
 
 export const DEMO_GENRES = ['Classique', 'Jazz', 'Pop', 'R&B', 'Folk', 'Étude'] as const

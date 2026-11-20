@@ -1,128 +1,530 @@
-import type { InstrumentId, LevelId, Piece, WorkProgram, WorkProgramStep } from './model'
+import type {
+  HabitId,
+  InstrumentId,
+  LevelId,
+  Piece,
+  ResourceMode,
+  StepCheck,
+  StepKind,
+  WorkProgram,
+  WorkProgramStep,
+} from './model'
+import { OBJECTIVES } from './model'
 import { newId } from './store'
 
-function step(partial: Omit<WorkProgramStep, 'id'>): WorkProgramStep {
-  return { id: newId('step'), ...partial }
+/**
+ * Moteur pédagogique ARIA — règles explicites et testables.
+ *
+ * Aucune de ces règles n’écoute le son : elles combinent l’instrument, le niveau,
+ * l’objectif, le temps disponible, le passage et le support déclarés par l’utilisateur.
+ * Les critères de réussite sont formulés pour être observés par l’utilisateur lui-même.
+ */
+
+export const RULES_VERSION = 'sprint04-v1'
+
+type Family = 'keys' | 'fretted' | 'voice' | 'drums' | 'other'
+type Focus = 'rhythm' | 'accuracy' | 'tempo' | 'memory' | 'expression'
+
+export function familyOf(instrument: InstrumentId): Family {
+  if (instrument === 'piano') return 'keys'
+  if (instrument === 'guitar' || instrument === 'bass') return 'fretted'
+  if (instrument === 'voice') return 'voice'
+  if (instrument === 'drums') return 'drums'
+  return 'other'
 }
 
-/** Explicit, testable rules. Piano is fully specified; other instruments get honest limited support. */
-export function buildProgram(input: {
+/** Associe un libellé d’objectif (ou un texte libre) à un axe pédagogique. */
+export function focusOf(text: string): Focus | null {
+  const t = text.toLowerCase()
+  if (/rythm|pulsation|régulier|regulier|décal|decal|temps fort|groove|strum|grattage/.test(t)) return 'rhythm'
+  if (/tempo|vitesse|rapide|lent|bpm/.test(t)) return 'tempo'
+  if (/juste|justesse|fausse|note|intonation|accordage|désaccord|desaccord|son sale|frise|grésil|gresil/.test(t)) return 'accuracy'
+  if (/mémoire|memoire|par c(œ|oe)ur|oubli|perd/.test(t)) return 'memory'
+  if (/fluid|express|nuance|phras|musical|enchaîn|enchain|changement/.test(t)) return 'expression'
+  return null
+}
+
+const BPM: Record<LevelId, number> = { beginner: 60, practicing: 72, advanced: 84 }
+
+const CELL: Record<LevelId, string> = {
+  beginner: 'deux mesures',
+  practicing: 'quatre mesures',
+  advanced: 'une phrase complète',
+}
+
+type Ctx = {
+  family: Family
+  instrument: InstrumentId
+  level: LevelId
+  bpm: number
+  cell: string
+  passage: string
+  resource: ResourceMode
+}
+
+type Draft = Omit<WorkProgramStep, 'id' | 'minutes' | 'kind'>
+
+/** Comment s’appuyer sur le support choisi, en une phrase. */
+function supportHint(ctx: Ctx): string {
+  switch (ctx.resource) {
+    case 'score':
+      return 'Repère sur la partition le début et la fin du passage avant de jouer.'
+    case 'tabs':
+      return 'Garde la tablature sous les yeux et repère les cases du passage avant de jouer.'
+    case 'chords':
+      return 'Garde la grille d’accords sous les yeux et repère les deux premiers accords du passage.'
+    case 'audio':
+      return 'Écoute deux fois le passage dans ton enregistrement de référence avant de jouer.'
+    case 'ear':
+    default:
+      return 'Sans support écrit : fredonne ou tape le passage de mémoire avant de jouer, tel que tu l’entends.'
+  }
+}
+
+function warmup(focus: Focus, ctx: Ctx): Draft {
+  const { family, bpm, instrument } = ctx
+  if (focus === 'rhythm' || focus === 'tempo') {
+    if (family === 'fretted' && instrument === 'guitar') {
+      return {
+        title: 'Main droite seule, cordes étouffées',
+        what: `Gratte des allers-retours réguliers sur les cordes étouffées, métronome à ${bpm} BPM.`,
+        how: 'Pose la main gauche à plat sur les cordes pour qu’elles ne sonnent pas. Coup vers le bas sur chaque clic, coup vers le haut entre deux clics, en comptant « 1 et 2 et 3 et 4 et ».',
+        why: 'Le rythme vient de la main droite : on la stabilise avant d’ajouter les accords.',
+        success: 'Tu tiens 8 mesures d’affilée sans t’arrêter, et chaque coup vers le bas tombe avec le clic.',
+        bpm,
+      }
+    }
+    if (family === 'fretted') {
+      return {
+        title: 'Pulsation sur corde à vide',
+        what: `Joue une note par clic sur une corde à vide, métronome à ${bpm} BPM, puis deux notes par clic.`,
+        how: 'Alterne index et majeur (ou le médiator vers le bas). Compte « 1 2 3 4 » à voix haute.',
+        why: 'Une pulsation stable est la base de la ligne de basse.',
+        success: '8 mesures sans t’arrêter, chaque note posée sur le clic.',
+        bpm,
+      }
+    }
+    if (family === 'drums') {
+      return {
+        title: 'Croches régulières',
+        what: `Joue des croches régulières à la charleston, métronome à ${bpm} BPM.`,
+        how: 'Main droite sur la charleston, compte « 1 et 2 et 3 et 4 et ». Ajoute la grosse caisse sur 1 et 3 quand c’est stable.',
+        why: 'Le groove repose sur une subdivision régulière.',
+        success: '8 mesures sans accélérer ni ralentir par rapport au clic.',
+        bpm,
+      }
+    }
+    if (family === 'voice') {
+      return {
+        title: 'Texte parlé en rythme',
+        what: `Dis les paroles du passage en rythme sur le métronome à ${bpm} BPM, sans chanter.`,
+        how: 'Tape la pulsation avec le pied ou la main pendant que tu parles.',
+        why: 'Séparer le rythme de la mélodie rend les décalages faciles à entendre.',
+        success: 'Le passage parlé deux fois de suite sans perdre la pulsation.',
+        bpm,
+      }
+    }
+    return {
+      title: 'Pulsation dans le corps',
+      what: `Tape la pulsation dans tes mains en comptant à voix haute, métronome à ${bpm} BPM.`,
+      how: 'Compte « 1 2 3 4 », puis « 1 et 2 et » pour sentir la subdivision.',
+      why: 'Sentir la pulsation avant de jouer évite de presser.',
+      success: '8 mesures tapées sans décalage avec le clic.',
+      bpm,
+    }
+  }
+  if (focus === 'accuracy') {
+    const tune =
+      family === 'fretted'
+        ? 'Accorde ton instrument avec un accordeur, puis joue lentement chaque note du passage en appuyant juste derrière la frette.'
+        : family === 'voice'
+          ? 'Prends la première note du passage sur un instrument ou une application de référence, et tiens-la 4 secondes.'
+          : family === 'keys'
+            ? 'Joue lentement les notes du passage main par main en les nommant à voix haute.'
+            : 'Vérifie l’accord ou la préparation de ton instrument, puis joue lentement les notes du passage.'
+    return {
+      title: 'Mise au point des notes',
+      what: 'Prépare ton instrument et repère les notes du passage.',
+      how: tune,
+      why: 'Une note juste au départ évite de répéter une erreur.',
+      success: 'Tu peux nommer ou montrer chaque note du passage sans hésiter.',
+    }
+  }
+  if (focus === 'memory') {
+    return {
+      title: 'Lecture active',
+      what: `Découpe le passage en cellules de ${ctx.cell} et observe comment elles s’enchaînent.`,
+      how: supportHint(ctx),
+      why: 'On mémorise mieux ce qu’on a structuré.',
+      success: 'Tu sais dire combien il y a de cellules et ce qui change entre elles.',
+    }
+  }
+  return {
+    title: 'Mise en place',
+    what: 'Installe-toi et joue le passage lentement, sans chercher la vitesse.',
+    how: `${supportHint(ctx)} Respire, relâche les épaules.`,
+    why: 'Un départ calme laisse de la place pour écouter le son.',
+    success: 'Le passage joué une fois sans t’arrêter, même lentement.',
+  }
+}
+
+function focusStep(focus: Focus, ctx: Ctx): Draft {
+  const { family, bpm, instrument, cell } = ctx
+  switch (focus) {
+    case 'rhythm':
+      if (instrument === 'guitar') {
+        return {
+          title: 'Motif rythmique sur un seul accord',
+          what: `Joue en boucle un motif rythmique sur un seul accord du passage, métronome à ${bpm} BPM.`,
+          how:
+            ctx.resource === 'ear' || ctx.resource === 'audio'
+              ? 'Écoute ou fredonne le début du morceau, tape son rythme dans tes mains, puis reproduis-le à la main droite. Si tu ne le retrouves pas, prends le motif « bas – bas-haut – haut-bas-haut ».'
+              : 'Prends le motif indiqué sur ton support, ou à défaut « bas – bas-haut – haut-bas-haut ». La main gauche tient un seul accord.',
+          why: 'Isoler le rythme sur un accord facile libère l’attention pour la régularité.',
+          success: '4 répétitions consécutives du motif sans t’arrêter ni te décaler du clic.',
+          bpm,
+        }
+      }
+      if (family === 'fretted') {
+        return {
+          title: 'Rythme de la ligne sur une note',
+          what: `Joue le rythme de la ligne du passage sur une seule note, métronome à ${bpm} BPM.`,
+          how: 'Garde le rythme exact mais remplace toutes les notes par la fondamentale du premier accord.',
+          why: 'On règle le placement avant les déplacements de la main gauche.',
+          success: '4 répétitions consécutives sans décalage avec le clic.',
+          bpm,
+        }
+      }
+      if (family === 'keys') {
+        return {
+          title: 'Main par main en comptant',
+          what: `Joue ${cell} du passage main par main en comptant à voix haute, métronome à ${bpm} BPM.`,
+          how: 'Main gauche seule, puis main droite seule. Compte les temps et les « et ».',
+          why: 'Compter à voix haute rend audible chaque décalage.',
+          success: 'Chaque main joue la cellule deux fois de suite alignée sur le clic.',
+          bpm,
+        }
+      }
+      if (family === 'drums') {
+        return {
+          title: 'Groove du passage',
+          what: `Joue le groove du passage en boucle, métronome à ${bpm} BPM.`,
+          how: 'Commence par charleston + grosse caisse, ajoute la caisse claire sur 2 et 4.',
+          why: 'Les membres s’ajoutent un par un sur une base stable.',
+          success: '4 mesures consécutives sans décalage entre les membres.',
+          bpm,
+        }
+      }
+      if (family === 'voice') {
+        return {
+          title: 'Mélodie sur « la »',
+          what: `Chante la mélodie du passage sur la syllabe « la », métronome à ${bpm} BPM.`,
+          how: 'Garde la pulsation au pied. Les attaques des notes tombent sur les temps prévus.',
+          why: 'Sans les paroles, le placement rythmique est plus facile à contrôler.',
+          success: 'Le passage chanté deux fois de suite sans perdre la pulsation.',
+          bpm,
+        }
+      }
+      return {
+        title: 'Passage sur la pulsation',
+        what: `Joue ${cell} du passage en suivant le métronome à ${bpm} BPM.`,
+        how: 'Si ça décroche, baisse de 8 BPM plutôt que de t’arrêter.',
+        why: 'La régularité passe avant la vitesse.',
+        success: 'La cellule jouée deux fois de suite sans décalage.',
+        bpm,
+      }
+    case 'tempo':
+      return {
+        title: 'Paliers de tempo',
+        what: `Joue ${cell} du passage à ${bpm} BPM, puis monte de 4 BPM à chaque réussite.`,
+        how: 'Deux passages propres de suite = palier validé. Si ça accroche, redescends d’un palier.',
+        why: 'La vitesse se construit par petits paliers stables.',
+        success: 'Deux paliers validés au-dessus du tempo de départ.',
+        bpm,
+      }
+    case 'accuracy':
+      return {
+        title: 'Notes fragiles isolées',
+        what: `Repère les notes qui accrochent dans ${cell} et rejoue-les seules.`,
+        how:
+          family === 'fretted'
+            ? 'Joue chaque note fragile 3 fois : elle doit sonner claire, sans frisement. Puis ajoute la note d’avant et celle d’après.'
+            : family === 'voice'
+              ? 'Compare chaque note fragile à ta référence (instrument ou application), tiens-la, puis enchaîne avec la suivante.'
+              : 'Joue chaque note fragile 3 fois lentement, puis ajoute la note d’avant et celle d’après.',
+        why: 'Corriger à petite échelle évite de graver l’erreur.',
+        success: 'Chaque note fragile jouée juste 3 fois de suite.',
+      }
+    case 'memory':
+      return {
+        title: 'Cellule sans support',
+        what: `Joue la première cellule (${cell}) en regardant ton support, puis sans le regarder.`,
+        how: 'Alterne : une fois avec, une fois sans. Passe à la cellule suivante quand c’est sûr.',
+        why: 'Le rappel actif ancre la mémoire mieux que la répétition passive.',
+        success: 'Deux cellules jouées sans regarder ton support.',
+      }
+    case 'expression':
+    default:
+      return {
+        title: instrument === 'guitar' ? 'Enchaînement sans coupure' : 'Lien des phrases',
+        what:
+          instrument === 'guitar'
+            ? 'Enchaîne deux accords ou deux phrases du passage sans couper le son.'
+            : 'Relie la fin d’une phrase au début de la suivante sans rupture.',
+        how: 'Joue lentement la jonction : les dernières notes d’une phrase et les premières de la suivante, 5 fois.',
+        why: 'La continuité rend le passage musical.',
+        success: 'Trois jonctions de suite sans silence involontaire.',
+      }
+  }
+}
+
+function applyStep(focus: Focus, ctx: Ctx): Draft {
+  const { instrument, bpm, cell, family } = ctx
+  if (focus === 'rhythm' && instrument === 'guitar') {
+    return {
+      title: 'Changer d’accord sans casser le rythme',
+      what: 'Enchaîne deux accords du passage, deux mesures chacun, en gardant le motif.',
+      how: 'La main droite ne s’arrête jamais. Si la main gauche n’est pas prête, gratte les cordes à vide sur le dernier « et » avant le changement.',
+      why: 'C’est au changement d’accord que le rythme décroche le plus souvent.',
+      success: '4 changements d’affilée sans arrêter la main droite.',
+      bpm,
+    }
+  }
+  if (focus === 'rhythm' || focus === 'tempo') {
+    return {
+      title: family === 'keys' ? 'Mains ensemble, tempo lent' : 'Passage complet au tempo de travail',
+      what: `Joue tout le passage au tempo de travail (${bpm} BPM ou le palier atteint).`,
+      how: 'Ne t’arrête pas sur une erreur : garde la pulsation et rattrape au temps suivant.',
+      why: 'Tenir la pulsation malgré une erreur, c’est ce qui compte en situation réelle.',
+      success: 'Le passage joué en entier sans t’arrêter.',
+      bpm,
+    }
+  }
+  if (focus === 'memory') {
+    return {
+      title: 'Enchaînement de mémoire',
+      what: 'Enchaîne toutes les cellules travaillées sans regarder ton support.',
+      how: 'Si tu bloques, regarde une seconde puis reprends au début de la cellule.',
+      why: 'Relier les cellules construit la mémoire du passage entier.',
+      success: 'Le passage joué de mémoire avec au plus un coup d’œil.',
+    }
+  }
+  return {
+    title: 'Remise en contexte',
+    what: `Rejoue ${cell} en entier avec les corrections.`,
+    how: 'Tempo confortable. Écoute si les notes travaillées sonnent comme dans l’exercice.',
+    why: 'Une correction ne compte que si elle tient dans le passage.',
+    success: 'Le passage joué deux fois avec les notes corrigées.',
+  }
+}
+
+function recordStep(ctx: Ctx): Draft {
+  return {
+    title: 'Prise de contrôle',
+    what: 'Enregistre le passage une fois, puis réécoute-le.',
+    how:
+      ctx.level === 'beginner'
+        ? 'Une prise courte (30 à 60 s) au tempo confortable. Réécoute-la en entier avant de juger.'
+        : 'Deux prises au maximum. Réécoute-les et garde la plus claire.',
+    why: 'L’écoute révèle ce que tu ne perçois pas en jouant.',
+    success: 'Une prise réécoutée et une observation notée dans le bilan.',
+  }
+}
+
+/** Répartit `total` minutes selon des poids, en entiers, somme exacte, ≥ 2 min par étape. */
+export function allocateMinutes(total: number, weights: number[]): number[] {
+  const sum = weights.reduce((a, b) => a + b, 0)
+  const raw = weights.map((w) => (w / sum) * total)
+  const out = raw.map((r) => Math.max(2, Math.floor(r)))
+  let diff = total - out.reduce((a, b) => a + b, 0)
+  const order = raw
+    .map((r, i) => ({ i, frac: r - Math.floor(r) }))
+    .sort((a, b) => b.frac - a.frac)
+  let k = 0
+  while (diff > 0) {
+    out[order[k % order.length].i] += 1
+    diff -= 1
+    k += 1
+  }
+  while (diff < 0) {
+    const i = out.indexOf(Math.max(...out))
+    out[i] -= 1
+    diff += 1
+  }
+  return out
+}
+
+/**
+ * Objectifs pré-sélectionnés à la préparation : l’objectif propre au morceau d’abord,
+ * puis ceux choisis à l’onboarding / dans le profil (2 au maximum, le 1er est principal).
+ */
+export function prepGoalsFor(piece: Pick<Piece, 'objective'>, profileGoals: string[]): string[] {
+  const out: string[] = []
+  const pieceGoal = piece.objective.trim()
+  if (pieceGoal && (OBJECTIVES as readonly string[]).includes(pieceGoal)) out.push(pieceGoal)
+  for (const g of profileGoals) if (!out.includes(g)) out.push(g)
+  return out.slice(0, 2)
+}
+
+const HABIT_TO_RESOURCE: Record<HabitId, ResourceMode> = {
+  score: 'score',
+  tabs: 'tabs',
+  chords: 'chords',
+  video: 'audio',
+  ear: 'ear',
+}
+
+/** Un support n’est proposé par défaut que s’il existe réellement dans la fiche du morceau. */
+export function resourceAvailable(piece: Pick<Piece, 'resources'>, mode: ResourceMode) {
+  if (mode === 'ear') return true
+  const kinds = new Set(piece.resources.filter((r) => !r.demo).map((r) => r.kind))
+  if (mode === 'score') return kinds.has('pdf')
+  if (mode === 'audio') return kinds.has('audio') || kinds.has('video')
+  return kinds.has(mode)
+}
+
+/**
+ * Support par défaut à la préparation : l’habitude du profil si ce support est présent dans la
+ * fiche, sinon le premier support réellement importé, sinon « À l’oreille, sans support ».
+ * Le choix reste modifiable.
+ */
+export function defaultResource(piece: Pick<Piece, 'resources'>, habits: HabitId[]): ResourceMode {
+  for (const h of habits) if (resourceAvailable(piece, HABIT_TO_RESOURCE[h])) return HABIT_TO_RESOURCE[h]
+  for (const mode of ['score', 'tabs', 'chords', 'audio'] as const) if (resourceAvailable(piece, mode)) return mode
+  return 'ear'
+}
+
+/**
+ * Libellé de passage d’une prise. Les prises antérieures à la correction pouvaient porter
+ * l’objectif (« Justesse »…) ou « Passage » à la place du passage : on ne les affiche pas.
+ */
+export function passageLabel(passage: string | undefined) {
+  const p = (passage || '').trim()
+  if (!p || p === 'Passage' || (OBJECTIVES as readonly string[]).includes(p) || p === 'Pratique libre') return ''
+  return p
+}
+
+export type ProgramInput = {
   piece: Piece
+  instrument: InstrumentId
   level: LevelId
   minutes: number
-  objective: string
+  /** Objectifs par ordre de priorité ; le premier est l’objectif principal. */
+  goals: string[]
+  passage: string
+  resource: ResourceMode
   difficulties: string
-  instrument: InstrumentId
-}): WorkProgram {
-  const minutes = Math.max(10, Math.min(90, input.minutes || 25))
-  const objective = input.objective.trim() || 'Travailler avec précision et régularité'
-  const hard = input.difficulties.trim().toLowerCase()
-  const passage = input.piece.passages.trim() || 'le passage choisi'
-  const steps: WorkProgramStep[] = []
+}
 
-  if (input.instrument === 'piano') {
-    steps.push(
-      step({
-        title: 'Mise en place',
-        what: `Installer la posture et lire ${passage} sans tempo forcé.`,
-        how: 'Assis stable, mains détendues, jouer les notes à vitesse lente, une main après l’autre si besoin.',
-        why: 'Une base claire évite de graver les tensions.',
-        success: 'Tu joues le passage une fois sans t’arrêter, même très lentement.',
-      }),
-    )
-    if (hard.includes('rythme') || hard.includes('tempo')) {
-      steps.push(
-        step({
-          title: 'Rythme isolé',
-          what: 'Fixer le rythme du passage avant la vitesse.',
-          how: 'Compter à voix haute ou taper la pulsation, puis jouer sur cette pulsation uniquement.',
-          why: 'Le rythme stable porte ensuite la justesse et le phrasé.',
-          success: 'Deux passages d’affilée restent alignés sur la pulsation choisie.',
-        }),
-      )
-    } else if (hard.includes('justesse') || hard.includes('fausse') || hard.includes('note')) {
-      steps.push(
-        step({
-          title: 'Notes cibles',
-          what: 'Sécuriser les notes fragiles du passage.',
-          how: 'Jouer seulement les mesures concernées, nommer les notes, répéter trois fois juste.',
-          why: 'Corriger tôt empêche de répéter l’erreur dans la prise.',
-          success: 'Les notes ciblées sont justes trois fois de suite.',
-        }),
-      )
-    } else {
-      steps.push(
-        step({
-          title: 'Lien des phrases',
-          what: `Relier ${passage} sans rupture.`,
-          how: 'Chevaucher la fin d’une cellule et le début de la suivante à tempo réduit.',
-          why: 'La continuité rend le morceau jouable en prise complète.',
-          success: 'Une enchaînement complet sans pause involontaire.',
-        }),
-      )
-    }
-    if (input.level === 'beginner') {
-      steps.push(
-        step({
-          title: 'Petite prise',
-          what: 'Enregistrer une prise courte du passage travaillé.',
-          how: 'Une seule prise, tempo confortable, puis écoute immédiate.',
-          why: 'L’écoute révèle ce que les mains ne sentent pas encore.',
-          success: 'Tu as une prise réécoutée et une observation écrite.',
-        }),
-      )
-    } else {
-      steps.push(
-        step({
-          title: 'Prise utile',
-          what: 'Enregistrer le passage dans les conditions de jeu visées.',
-          how: 'Deux prises max. Garder la plus claire.',
-          why: 'Comparer deux prises oriente la prochaine séance.',
-          success: 'Une prise sauvegardée et une prochaine étape précise.',
-        }),
-      )
-    }
-  } else {
-    steps.push(
-      step({
-        title: 'Cadre de séance',
-        what: `Travailler ${passage} avec l’objectif : ${objective}.`,
-        how: 'Découper en cellules courtes, répéter lentement, puis assembler.',
-        why: 'Règle générale Aria V0 — les consignes détaillées piano ne s’appliquent pas encore à cet instrument.',
-        success: 'Tu as joué le passage au moins deux fois sans perdre le fil.',
-      }),
-      step({
-        title: 'Observation',
-        what: 'Noter ce qui fonctionne et ce qui bloque.',
-        how: 'Après une prise, écrire une phrase pour chaque point.',
-        why: 'Sans analyse audio automatique, ton observation guide la suite.',
-        success: 'Deux observations écrites et une prochaine étape.',
-      }),
-    )
+export function buildProgram(input: ProgramInput): WorkProgram {
+  const minutes = Math.max(10, Math.min(90, Math.round(input.minutes || 20)))
+  const goals = input.goals.map((g) => g.trim()).filter(Boolean)
+  const objective = goals[0] || 'Rythme'
+  const primary: Focus = focusOf(objective) || focusOf(input.difficulties) || 'expression'
+  const secondaryRaw = goals.slice(1).map(focusOf).find((f) => f && f !== primary) || focusOf(input.difficulties)
+  const secondary: Focus | null = secondaryRaw && secondaryRaw !== primary ? secondaryRaw : null
+  const family = familyOf(input.instrument)
+  const ctx: Ctx = {
+    family,
+    instrument: input.instrument,
+    level: input.level,
+    bpm: BPM[input.level],
+    cell: CELL[input.level],
+    passage: input.passage.trim() || 'le passage choisi',
+    resource: input.resource,
   }
 
-  if (minutes >= 40 && input.instrument === 'piano') {
-    steps.splice(
-      2,
-      0,
-      step({
-        title: 'Tempo progressif',
-        what: 'Monter le tempo par paliers.',
-        how: 'Trois passages à tempo A, puis +5–10 % si c’est stable.',
-        why: 'La vitesse vient après la clarté.',
-        success: 'Le tempo cible reste propre sur un passage entier.',
-      }),
-    )
+  const drafts: { kind: StepKind; draft: Draft; weight: number }[] = [
+    { kind: 'warmup', draft: warmup(primary, ctx), weight: 0.2 },
+    { kind: 'focus', draft: focusStep(primary, ctx), weight: 0.35 },
+  ]
+  if (secondary && minutes >= 30) {
+    drafts.push({ kind: 'focus', draft: focusStep(secondary, ctx), weight: 0.22 })
+  }
+  drafts.push({ kind: 'apply', draft: applyStep(primary, ctx), weight: 0.25 })
+  drafts.push({ kind: 'record', draft: recordStep(ctx), weight: 0.2 })
+
+  const split = allocateMinutes(
+    minutes,
+    drafts.map((d) => d.weight),
+  )
+  const difficulty = input.difficulties.trim()
+  const steps: WorkProgramStep[] = drafts.map((d, i) => ({
+    id: newId('step'),
+    kind: d.kind,
+    minutes: split[i],
+    ...d.draft,
+    what:
+      d.kind === 'focus' && i === 1 && difficulty
+        ? `${d.draft.what} Garde en tête la difficulté que tu as notée : « ${difficulty} ».`
+        : d.draft.what,
+  }))
+
+  const notes: string[] = []
+  if (family === 'other') {
+    notes.push('Instrument « Autre » : ARIA applique des règles générales, non spécifiques à ton instrument.')
+  }
+  if (input.resource === 'score' && !input.piece.resources.some((r) => r.kind === 'pdf')) {
+    notes.push('Aucune partition importée pour ce morceau : tu peux en ajouter une depuis sa fiche.')
   }
 
+  const now = new Date().toISOString()
   return {
     steps,
     objective,
     minutes,
-    difficulties: input.difficulties.trim(),
-    updatedAt: new Date().toISOString(),
-    stepIndex: input.piece.program?.stepIndex ?? 0,
+    difficulties: difficulty,
+    updatedAt: now,
+    startedAt: now,
+    stepIndex: 0,
+    instrument: input.instrument,
+    level: input.level,
+    goals: goals.length ? goals : [objective],
+    passage: input.passage.trim(),
+    resource: input.resource,
+    notes,
   }
+}
+
+/** Exercice correctif (règle pédagogique) à partir de ce que l’utilisateur veut corriger. */
+export function correctiveExercise(input: {
+  improve: string
+  objective: string
+  instrument: InstrumentId
+  level: LevelId
+  retrySteps: string[]
+}): { title: string; text: string; success: string; minutes: number } {
+  const focus = focusOf(input.improve) || focusOf(input.retrySteps.join(' ')) || focusOf(input.objective) || 'expression'
+  const ctx: Ctx = {
+    family: familyOf(input.instrument),
+    instrument: input.instrument,
+    level: input.level,
+    bpm: Math.max(50, BPM[input.level] - 8),
+    cell: CELL.beginner,
+    passage: 'le passage',
+    resource: 'ear',
+  }
+  const draft = focusStep(focus, ctx)
+  return {
+    title: draft.title,
+    text: `${draft.what} ${draft.how}`,
+    success: draft.success,
+    minutes: 5,
+  }
+}
+
+export type ReviewSource = 'user' | 'self-check' | 'rules' | 'facts'
+
+export type ReviewItem = { text: string; source: ReviewSource; empty?: boolean }
+
+export type Review = {
+  works: ReviewItem
+  improve: ReviewItem
+  corrective: ReviewItem & { title: string; success: string; minutes: number }
+  next: ReviewItem
+  facts: ReviewItem
+  analysis: string
+  limits: string | null
 }
 
 export function buildReview(input: {
@@ -130,21 +532,95 @@ export function buildReview(input: {
   improve: string
   programObjective: string
   instrument: InstrumentId
-}) {
+  level?: LevelId
+  steps?: { title: string; check?: StepCheck }[]
+  takes?: { seconds: number }[]
+  /** Une prise de ce morceau existe déjà (cette séance ou une précédente). */
+  hasReferenceTake?: boolean
+}): Review {
   const works = input.works.trim()
   const improve = input.improve.trim()
-  const next =
-    improve
-      ? `Prochaine séance : reprendre « ${improve} » avant d’élargir le passage.`
-      : `Prochaine séance : consolider l’objectif « ${input.programObjective} » sur une prise courte.`
+  const steps = input.steps || []
+  const okSteps = steps.filter((s) => s.check === 'ok').map((s) => s.title)
+  const retrySteps = steps.filter((s) => s.check === 'retry').map((s) => s.title)
+  const level = input.level || 'beginner'
+  const objective = input.programObjective.trim() || 'ton objectif'
+
+  const worksItem: ReviewItem = works
+    ? { text: works, source: 'user' }
+    : okSteps.length
+      ? { text: `Critères atteints selon toi : ${okSteps.join(', ')}.`, source: 'self-check' }
+      : { text: 'Non renseigné — note ce qui t’a semblé solide à la réécoute.', source: 'user', empty: true }
+
+  const improveItem: ReviewItem = improve
+    ? { text: improve, source: 'user' }
+    : retrySteps.length
+      ? { text: `À reprendre selon toi : ${retrySteps.join(', ')}.`, source: 'self-check' }
+      : { text: 'Non renseigné — note ce que tu veux corriger en priorité.', source: 'user', empty: true }
+
+  const corr = correctiveExercise({
+    improve,
+    objective,
+    instrument: input.instrument,
+    level,
+    retrySteps,
+  })
+
+  // Sans prise de référence, on propose d’en enregistrer une première ; la comparaison n’est
+  // suggérée que lorsqu’une prise existe déjà pour ce morceau.
+  const hasReference = input.hasReferenceTake ?? (input.takes || []).length > 0
+  const takeStep = hasReference
+    ? 'refais une prise de 30 secondes et compare-la à la précédente'
+    : 'enregistre une première prise de 30 secondes : elle servira de référence pour les prochaines comparaisons'
+  // Le conseil suit l’axe de l’objectif : monter le tempo n’a de sens que pour le rythme ou le tempo.
+  const focus = focusOf(objective) || 'expression'
+  const slower = focus === 'rhythm' || focus === 'tempo' ? '8 BPM plus lentement' : 'plus lentement'
+  const continueAdvice: Record<Focus, string> = {
+    rhythm: 'monte le tempo de 4 BPM, ou élargis au passage suivant si tout était stable',
+    tempo: 'monte le tempo de 4 BPM, ou élargis au passage suivant si tout était stable',
+    accuracy: 'rejoue le passage lentement en vérifiant chaque note fragile, puis élargis au passage suivant si toutes sonnent juste',
+    memory: 'rejoue le passage sans regarder ton support, puis ajoute la cellule suivante si tout tient de mémoire',
+    expression: 'travaille les enchaînements entre les phrases sans coupure, puis élargis au passage suivant si tout reste fluide',
+  }
+  const next: ReviewItem = retrySteps.length
+    ? {
+        text: `Prochaine tentative : reprends « ${retrySteps[0]} » ${slower}, puis ${takeStep}.`,
+        source: 'rules',
+      }
+    : improve
+      ? {
+          text: `Prochaine séance : commence par l’exercice correctif (5 min), puis ${takeStep}.`,
+          source: 'rules',
+        }
+      : {
+          text: hasReference
+            ? `Prochaine séance : garde l’objectif « ${objective} » et ${continueAdvice[focus]}.`
+            : `Prochaine séance : garde l’objectif « ${objective} » et enregistre une première prise de 30 secondes : elle servira de référence pour les prochaines comparaisons.`,
+          source: 'rules',
+        }
+
+  const takes = input.takes || []
+  const total = takes.reduce((a, t) => a + (t.seconds || 0), 0)
+  const facts: ReviewItem = {
+    text: takes.length
+      ? `${takes.length} prise${takes.length > 1 ? 's' : ''} enregistrée${takes.length > 1 ? 's' : ''} · ${Math.round(total)} s au total.`
+      : 'Aucune prise enregistrée pendant cette séance.',
+    source: 'facts',
+  }
+
+  const limits =
+    familyOf(input.instrument) === 'other'
+      ? 'Instrument « Autre » : les recommandations sont générales.'
+      : null
 
   return {
-    works: works || 'Non renseigné — ajoute ce qui t’a semblé solide à l’écoute.',
-    improve: improve || 'Non renseigné — ajoute ce que tu veux corriger en priorité.',
+    works: worksItem,
+    improve: improveItem,
+    corrective: { ...corr, source: 'rules', text: corr.text },
     next,
-    disclaimer:
-      input.instrument === 'piano'
-        ? 'Recommandations pédagogiques à partir de tes observations et des règles piano V0. Ce n’est pas une analyse audio.'
-        : 'Recommandations générales V0. Cet instrument n’a pas encore de règles pédagogiques détaillées. Ce n’est pas une analyse audio.',
+    facts,
+    analysis:
+      'Analyse automatique : aucune. ARIA n’écoute pas encore le contenu de tes prises — aucune note, aucun score ni aucune erreur n’est détecté automatiquement.',
+    limits,
   }
 }

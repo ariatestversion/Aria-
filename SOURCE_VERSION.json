@@ -1,7 +1,10 @@
 {
-  "commit": "104645c0b27e473aa179ba4199ff251530475099",
-  "short": "104645c",
-  "netlifyDeployId": "6b00481375bb6fd8ad2fadc4",
-  "netlifyPreview": "https://6b00481375bb6fd8ad2fadc4--ariafirstversion.netlify.app",
-  "branch": "cursor/aria-sprint03-parcours-ux-47c6"
+  "version": "ARIA — MVP Alpha V0.4",
+  "commit": "91441b163ee40e8829755cc780673e0e592f931f",
+  "short": "91441b1",
+  "netlifyDeployId": "6b0078bb87479237251ba188",
+  "netlifyPreview": "https://6b0078bb87479237251ba188--ariafirstversion.netlify.app",
+  "branch": "claude/sprint04-experience-musicale",
+  "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813)",
+  "verification": "version.json du déploiement = 91441b1 ; bundles JS/CSS identiques (SHA-256) au build local ; e2e 68/68 sur l'URL (micro simulé) ; médias retirés non servis"
 }

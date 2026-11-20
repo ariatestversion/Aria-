@@ -112,11 +112,49 @@ function normalizeSessionLog(log: SessionLog): SessionLog {
   return { ...log, status: hasTakes || hasNotes ? 'completed' : 'draft' }
 }
 
+/**
+ * Journaux antérieurs au correctif (sans `sessionStartedAt`) : on les rattache à la séance
+ * en cours du morceau s’ils ont été créés après son début.
+ */
+function inferSessionKey(log: SessionLog, pieces: Piece[]): SessionLog {
+  if (log.sessionStartedAt) return log
+  const start = pieces.find((p) => p.id === log.pieceId)?.program?.startedAt
+  return start && log.createdAt >= start ? { ...log, sessionStartedAt: start } : log
+}
+
+/**
+ * Un brouillon disparaît dès que la même séance (même morceau, même début) est terminée.
+ * Les autres brouillons restent.
+ */
+export function dedupeSessionLogs(logs: SessionLog[]): SessionLog[] {
+  const completed = new Set(
+    logs.filter((l) => l.status === 'completed' && l.sessionStartedAt).map((l) => `${l.pieceId}|${l.sessionStartedAt}`),
+  )
+  const seenDraft = new Set<string>()
+  return logs.filter((l) => {
+    if (l.status !== 'draft' || !l.sessionStartedAt) return true
+    const key = `${l.pieceId}|${l.sessionStartedAt}`
+    if (completed.has(key) || seenDraft.has(key)) return false
+    seenDraft.add(key)
+    return true
+  })
+}
+
 export function listSessionLogs(email: string, pieceId?: string): SessionLog[] {
-  return readJson<SessionLog[]>(SESSIONS, [])
-    .filter((s) => s.email === email.trim().toLowerCase() && (!pieceId || s.pieceId === pieceId))
-    .map(normalizeSessionLog)
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+  const pieces = readJson<Piece[]>(PIECES, [])
+  return dedupeSessionLogs(
+    readJson<SessionLog[]>(SESSIONS, [])
+      .filter((s) => s.email === email.trim().toLowerCase() && (!pieceId || s.pieceId === pieceId))
+      .map(normalizeSessionLog)
+      .map((l) => inferSessionKey(l, pieces))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+  )
+}
+
+/** Journal déjà enregistré pour cette séance (brouillon ou terminé), s’il existe. */
+export function findSessionLog(email: string, pieceId: string, sessionStartedAt: string) {
+  if (!sessionStartedAt) return null
+  return listSessionLogs(email, pieceId).find((l) => l.sessionStartedAt === sessionStartedAt) || null
 }
 
 export function listCompletedSessionLogs(email: string, pieceId?: string): SessionLog[] {

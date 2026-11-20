@@ -1,7 +1,7 @@
 {
   "name": "aria",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.4.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,7 +16,9 @@
     "build:both": "npm run build:noir && npm run build:colors",
     "deploy:pages": "bash scripts/deploy-pages.sh",
     "preview": "vite preview",
-    "deploy:netlify": "npm run build && npx netlify-cli deploy --prod --dir=dist --site=ariafirstversion"
+    "deploy:netlify": "npm run build && npx netlify-cli deploy --prod --dir=dist --site=ariafirstversion",
+    "test": "vitest run",
+    "e2e": "node scripts/e2e-sprint04.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.0",
@@ -30,6 +32,7 @@
     "@vitejs/plugin-react": "^4.6.0",
     "gh-pages": "^6.3.0",
     "typescript": "~5.8.3",
-    "vite": "^7.0.4"
+    "vite": "^7.0.4",
+    "vitest": "^3.2.4"
   }
 }

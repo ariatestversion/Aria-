@@ -1,6 +1,6 @@
 # Site Netlify courant : ariafirstversion
 # https://ariafirstversion.netlify.app
-# Relié au dépôt de travail Cursor : elodie-yebga-samnick/link-doctor
+# Dépôt de référence : ariatestversion/Aria- (déploiements par prévisualisation, prod après validation)
 
 [build]
   command = "npm run build"
