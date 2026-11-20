@@ -1,0 +1,124 @@
+/*
+ * ARIA Design System — fondations (Sprint 04)
+ * Source unique des couleurs, typographies, espacements, rayons, ombres et zones tactiles.
+ * Documentation : docs/DESIGN_SYSTEM.md
+ *
+ * Deux familles de couleurs :
+ *  - identitaires (--id-*) : la marque. Crème / espresso / or par défaut.
+ *    Variante marine #152642 préparée sous [data-brand='marine'] — NON appliquée par défaut.
+ *  - fonctionnelles (--fn-*) : le sens. Vert = réussite, jaune = vigilance / axe de travail,
+ *    rouge = erreur (contour + icône) et enregistrement (plein + point animé + « REC »).
+ *    Une couleur fonctionnelle n’est jamais utilisée seule : toujours un libellé ou une icône.
+ */
+
+html[data-v0='1'] {
+  /* —— Identité (par défaut : crème, espresso, or) —— */
+  --id-bg: #f5f0e6;
+  --id-surface: #fbf7f0;
+  --id-surface-sunken: #efe7da;
+  --id-ink: #3c2a21;
+  --id-primary: #3c2a21;
+  --id-on-primary: #f5f0e6;
+  --id-accent: #b08a45;
+  --id-accent-soft: rgba(176, 138, 69, 0.16);
+  --id-accent-ink: #7a5a1f;
+
+  /* Encres dérivées */
+  --ink: var(--id-ink);
+  --ink-muted: rgba(60, 42, 33, 0.78);
+  --ink-faint: rgba(60, 42, 33, 0.68);
+  --line: rgba(60, 42, 33, 0.14);
+  --line-strong: rgba(60, 42, 33, 0.28);
+
+  /* —— Fonctionnel —— */
+  --fn-success: #2f6b45;
+  --fn-success-soft: rgba(47, 107, 69, 0.12);
+  --fn-warning: #8a5a00;
+  --fn-warning-strong: #d79a1a;
+  --fn-warning-soft: rgba(215, 154, 26, 0.16);
+  --fn-error: #b42318;
+  --fn-error-soft: rgba(180, 35, 24, 0.08);
+  --fn-record: #d92d20;
+  --fn-record-soft: rgba(217, 45, 32, 0.12);
+  --fn-info: #3c2a21;
+  --fn-info-soft: rgba(60, 42, 33, 0.06);
+
+  /* —— Typographie —— */
+  --font-sans: Manrope, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --fs-display: clamp(1.6rem, 5vw, 2rem);
+  --fs-title: 1.25rem;
+  --fs-subtitle: 1.05rem;
+  --fs-body: 1rem;
+  --fs-small: 0.9rem;
+  --fs-caption: 0.78rem;
+  --fw-regular: 500;
+  --fw-medium: 600;
+  --fw-bold: 700;
+  --fw-heavy: 800;
+  --lh-tight: 1.2;
+  --lh-body: 1.5;
+
+  /* —— Espacements (base 4 px) —— */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --page-x: 16px;
+  --page-max: 560px;
+
+  /* —— Dimensions —— */
+  --touch: 44px;
+  --btn-h: 52px;
+  --btn-h-sm: 44px;
+  --field-h: 48px;
+  --icon-sm: 18px;
+  --icon: 20px;
+  --icon-lg: 26px;
+
+  /* —— Rayons, bordures, ombres —— */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 18px;
+  --r-xl: 22px;
+  --r-pill: 999px;
+  --bw: 1px;
+  --bw-strong: 1.5px;
+  --shadow-1: 0 1px 2px rgba(60, 42, 33, 0.06), 0 6px 18px rgba(60, 42, 33, 0.05);
+  --shadow-2: 0 10px 28px rgba(60, 42, 33, 0.12);
+  --focus-ring: 0 0 0 3px rgba(176, 138, 69, 0.55);
+
+  /* —— Navigation —— */
+  --dock-h: calc(72px + env(safe-area-inset-bottom));
+  --dock-gap: 16px;
+
+  /* —— Mouvement —— */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur: 160ms;
+}
+
+/* —— Variante identitaire marine (aperçu, en attente de validation) ——
+ * Activée uniquement par ?brand=marine ou l’aperçu du Profil (stocké sur l’appareil).
+ * Seules les couleurs identitaires changent ; la palette fonctionnelle reste identique.
+ */
+html[data-v0='1'][data-brand='marine'] {
+  --id-bg: #f4f1ea;
+  --id-surface: #fbfaf6;
+  --id-surface-sunken: #e8e6df;
+  --id-ink: #152642;
+  --id-primary: #152642;
+  --id-on-primary: #f4f1ea;
+  --id-accent: #b08a45;
+  --id-accent-soft: rgba(176, 138, 69, 0.18);
+  --id-accent-ink: #6f5219;
+  --ink-muted: rgba(21, 38, 66, 0.78);
+  --ink-faint: rgba(21, 38, 66, 0.66);
+  --line: rgba(21, 38, 66, 0.14);
+  --line-strong: rgba(21, 38, 66, 0.3);
+  --fn-info: #152642;
+  --fn-info-soft: rgba(21, 38, 66, 0.06);
+}

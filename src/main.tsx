@@ -2,6 +2,8 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ErrorBoundary } from './ErrorBoundary'
 import './styles.css'
+import './design/tokens.css'
+import './design/components.css'
 import './v0/aria-v0.css'
 import { AriaApp } from './v0/AriaApp'
 

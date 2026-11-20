@@ -1,5 +1,98 @@
 # Changelog — ARIA
 
+## [Sprint 04] — Expérience musicale & Design System (2026-11-20)
+
+Branche : `claude/sprint04-experience-musicale` (depuis `main` = `23ea182`, source Cursor `104645c`)  
+Dépôt de référence : `ariatestversion/Aria-`. Développement : Claude Code (reprise de Cursor).  
+Netlify : projet existant `ariafirstversion`, **prévisualisation uniquement**.
+
+### Audio
+
+- Nouveau lecteur de prise : boutons **Lecture / Pause / Supprimer** libellés, curseur de position, durée. Ce lecteur est utilisé partout : Séance, fiche morceau, Bilan, Suivi.
+- Une seule prise joue à la fois.
+- Si le fichier audio d’une prise a disparu de l’appareil, le lecteur affiche « Audio introuvable ».
+- Suppression avec confirmation explicite.
+- Plusieurs prises par morceau ou passage, numérotées dans l’ordre chronologique et rattachées à l’étape de séance.
+- Le Suivi regroupe les prises par morceau. Elles se réécoutent après rechargement (IndexedDB).
+- Micro refusé :
+  - message explicite, avec la marche à suivre ;
+  - bouton **Réessayer le micro** ;
+  - le refus est aussi détecté via `SecurityError` et l’état de permission ;
+  - les erreurs d’enregistrement ont leur propre bouton **Réessayer**.
+- Quitter l’écran pendant un enregistrement arrête et sauvegarde la prise. Un badge REC reste visible dans la barre de navigation.
+- Distinction terminée / brouillon conservée. Une séance ne compte désormais que ses propres prises, et non plus toutes les prises du morceau.
+
+### Personnalisation et séances
+
+- **Correctif** : les objectifs et la durée choisis à l’onboarding n’étaient pas rechargés après une connexion ou un retour en mode découverte. Ils sont maintenant présélectionnés à la préparation. L’objectif principal est le premier choisi.
+- La préparation prend en compte :
+  - l’instrument ;
+  - le niveau ;
+  - les objectifs (2 au maximum) ;
+  - le temps disponible ;
+  - le passage ;
+  - le support (partition, tablature, grille d’accords, enregistrement de référence, ou à l’oreille sans support) ;
+  - une difficulté facultative.
+- Un aperçu des étapes et de leurs durées s’affiche avant de commencer.
+- Chaque étape a une **consigne**, une manière de faire, une **durée** et un **critère de réussite observable**. La somme des durées est égale au temps disponible.
+- Une étape supplémentaire est ajoutée pour l’objectif secondaire à partir de 30 min.
+- Plus de choix imposé entre séance « guidée » et « libre » : on peut enregistrer à tout moment, passer ou revenir sur une étape, et terminer plus tôt.
+- Métronome local en Web Audio (±4 BPM), minuteur d’étape, et accès aux ressources et notes pendant la séance.
+- Une nouvelle séance repart à l’étape 1. Avant, elle héritait de l’index d’étape de la séance précédente.
+
+### Pédagogie et bilan
+
+- Nouveau moteur de règles (`src/v0/pedagogy.ts`) par famille d’instrument (clavier, guitare/basse, voix, batterie, autre) et par axe (rythme, justesse, tempo, mémoire, fluidité). Le tempo de départ dépend du niveau : 60 / 72 / 84 BPM.
+- Scénario de référence (guitare, 15 min, rythme, sans partition) :
+
+  | Durée | Étape |
+  | --- | --- |
+  | 3 min | Main droite seule, cordes étouffées |
+  | 5 min | Motif rythmique sur un accord |
+  | 4 min | Changer d’accord sans casser le rythme |
+  | 3 min | Prise de contrôle |
+
+- Le bilan s’organise en quatre rubriques :
+  - **Ce qui fonctionne** ;
+  - **Ce qui mérite d’être travaillé** ;
+  - **Exercice correctif** (règle ARIA, 5 min, avec critère) ;
+  - **Prochaine tentative**.
+- Chaque information du bilan affiche sa source : *Ton observation*, *Ton auto-évaluation* (étapes « Oui, réussi » / « Pas encore »), *Règle pédagogique ARIA*, *Données de la prise*. L’encart « Analyse automatique : aucune » rappelle qu’ARIA n’écoute pas le contenu des prises.
+- Réécoute et comparaison A/B de deux prises, avec une note de comparaison facultative.
+- Aucun score, aucune erreur musicale ni aucune analyse audio n’est inventé.
+
+### Design System
+
+- `src/design/tokens.css` :
+  - palette identitaire (crème, espresso, or) distincte de la palette fonctionnelle : vert = réussite, jaune = vigilance, rouge = erreur (contour) et enregistrement (plein, animé, « REC ») ;
+  - typographie Manrope pour tous les textes fonctionnels ;
+  - échelle d’espacement de 4 px, rayons, bordures, ombres ;
+  - zones tactiles de 44 px minimum ;
+  - anneau de focus.
+- Variante identitaire marine `#152642` préparée, **non appliquée par défaut**. Aperçu via `?brand=marine` ou Profil → Apparence.
+- `src/design/components.css` (composants `ds-*`) et `src/design/Icon.tsx` (jeu d’icônes unique).
+- Écrans Séance et Bilan entièrement redessinés. Accueil, Bibliothèque, Suivi, Profil, Onboarding et fiche morceau alignés sur les mêmes fondations.
+- Largeur fixe (560 px max, marges de 16 px), barre de navigation stable avec un espace réservé sous le contenu. La hauteur des écrans suit leur contenu.
+- Contrastes relevés au niveau WCAG AA pour les textes secondaires.
+- Documentation : `docs/DESIGN_SYSTEM.md`.
+
+### Préservé du Sprint 03
+
+Onboarding en 4 étapes non répété, accueil sans « Bonjour, » vide, « Reprendre » uniquement si une séance est en cours, filtres de genres vides masqués, badge Démo, réécoute dans le Suivi, statut cloud/local dans le Profil, espace réservé sous la barre de navigation.
+
+### Tests
+
+- `npm test` (Vitest) : 15/15.
+- `node scripts/e2e-sprint04.mjs` (Playwright, Chromium, 390×844) : 54/54.
+- Détail et limites : `docs/recettes/sprint04.md`.
+- Le micro est **simulé** par le navigateur. **Aucun test sur appareil physique** n’a été réalisé.
+
+### Publication
+
+Captures : `docs/screenshots/sprint04/`. Prévisualisation Netlify uniquement : voir `docs/SOURCE.md`. La production n’est pas modifiée.
+
+---
+
 ## [Sprint 03] — Parcours utilisateur & architecture UX (2026-11-20)
 
 Branche : `cursor/aria-sprint03-parcours-ux-47c6`  

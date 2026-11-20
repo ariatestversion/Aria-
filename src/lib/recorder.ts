@@ -144,7 +144,14 @@ export function useMediaRecorder() {
     } catch (err) {
       stopStream()
       const name = err instanceof DOMException ? err.name : ''
-      if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+      let permissionDenied = false
+      try {
+        const perm = await navigator.permissions?.query({ name: 'microphone' as PermissionName })
+        permissionDenied = perm?.state === 'denied'
+      } catch {
+        /* API Permissions indisponible (Safari ancien, Firefox) */
+      }
+      if (name === 'NotAllowedError' || name === 'PermissionDeniedError' || name === 'SecurityError' || permissionDenied) {
         setStatus('denied')
         setErrorMessage(
           recMsg(

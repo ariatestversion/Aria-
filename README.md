@@ -1,13 +1,10 @@
 # ARIA — Just Play Something.
 
-Application de pratique musicale (React + Vite + TypeScript).
+Application de pratique musicale (React + Vite + TypeScript) : travailler ses morceaux sans professeur.
 
 ## Dépôt source
 
-Voir [`docs/SOURCE.md`](docs/SOURCE.md).
-
-- **Public / hors Cursor :** https://github.com/ariatestversion/Aria- (`main`)
-- **Travail Cursor :** `elodie-yebga-samnick/link-doctor`
+Dépôt de référence : https://github.com/ariatestversion/Aria- (`main`). Voir [`docs/SOURCE.md`](docs/SOURCE.md).
 
 ## Démarrage
 
@@ -17,13 +14,23 @@ cp .env.example .env.local   # optionnel (Supabase anon)
 npm run dev
 ```
 
+## Vérifications
+
+```bash
+npm run build                 # TypeScript + Vite, génère public/version.json
+npm test                      # tests unitaires (Vitest)
+npx vite preview --port 43123 &
+npm run e2e                   # parcours mobile Playwright (micro simulé)
+```
+
+## Documentation
+
+- [`CHANGELOG.md`](CHANGELOG.md)
+- [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md) — couleurs, typographie, espacements, composants
+- [`docs/recettes/sprint04.md`](docs/recettes/sprint04.md) — tests réalisés et à réaliser
+- [`docs/LICENCES.md`](docs/LICENCES.md) — contenus audio/images encore à vérifier
+
 ## Publication
 
-- Netlify : https://ariafirstversion.netlify.app/
-- GitHub Pages : https://ariatestversion.github.io/Aria-/
-
-`npm run build` génère `public/version.json` (commit SHA) pour aligner GitHub et Netlify.
-
-## Licences médias
-
-Voir [`docs/LICENCES.md`](docs/LICENCES.md) — contenus audio/images encore à vérifier.
+- Netlify : projet `ariafirstversion`. Une prévisualisation est publiée à chaque sprint ; la production n’est mise à jour qu’après validation.
+- `npm run build` génère `public/version.json` (SHA du commit) pour faire correspondre GitHub et Netlify.
