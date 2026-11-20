@@ -26,6 +26,8 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 ## État Sprint 04 — ARIA MVP Alpha V0.4 (clôture)
 
+- **Clôturé et figé** : branche fusionnée dans `main` (merge commit, historique conservé), tag annoté **`v0.4.0-alpha`** sur ce merge. Le code applicatif du tag est identique à `91441b1`, le commit déployé en prévisualisation ; seuls la documentation et le script e2e diffèrent.
+
 - Branche `claude/sprint04-experience-musicale`. **Source déployée : commit `91441b1`** (`91441b163ee40e8829755cc780673e0e592f931f`). Les commits suivants ne touchent que les tests e2e et la documentation de livraison.
 - **Prévisualisation définitive MVP Alpha V0.4** : https://6b0078bb87479237251ba188--ariafirstversion.netlify.app (déploiement `6b0078bb87479237251ba188`, non publié).
 - **Production verrouillée** sur le Sprint 02 : déploiement `6aff204b188f1862668a1bab`, commit `d86e813`, `locked: true`. Aucune mise en production ni aucun déverrouillage n’a été fait.

@@ -1,5 +1,7 @@
 # Bilan définitif — Sprint 04 · ARIA MVP Alpha V0.4
 
+> **Statut : clôturé et figé.** Fusionné dans `main`, tag Git `v0.4.0-alpha`. Recette indépendante Work : trois anomalies retestées résolues, **produit apte à une alpha accompagnée**. Production Netlify toujours verrouillée sur le Sprint 02.
+
 Dépôt `ariatestversion/Aria-`, branche `claude/sprint04-experience-musicale`, base `23ea182` (source Cursor `104645c`, Sprint 03). **Prévisualisation définitive MVP Alpha V0.4** : https://6b0078bb87479237251ba188--ariafirstversion.netlify.app (commit `91441b1`, `version.json` vérifié). Détails : `docs/SOURCE.md` et `SOURCE_VERSION.json`.
 Production : verrouillée sur le Sprint 02. **Aucune mise en production.**
 
@@ -56,7 +58,7 @@ Production : verrouillée sur le Sprint 02. **Aucune mise en production.**
 
 ## 2. Anomalies restantes
 
-Aucune anomalie ouverte n’est connue à la date de clôture. Les 5 anomalies relevées en recette (NR1 à NR5) sont corrigées et couvertes par des tests (voir `docs/recettes/sprint04.md`).
+Aucune anomalie ouverte n’est connue à la date de clôture. Les 5 anomalies relevées en recette (NR1 à NR5) sont corrigées et couvertes par des tests (voir `docs/recettes/sprint04.md`). La recette indépendante Work confirme la résolution des trois anomalies retestées sur `91441b1`.
 
 Points d’attention, non qualifiés comme anomalies faute de test :
 - **Safari iPhone ouvert directement** et **Android** : non testés.
@@ -72,7 +74,7 @@ Points d’attention, non qualifiés comme anomalies faute de test :
 - **Visuels neutres** : les photos sont remplacées par des fonds abstraits et des icônes. La structure des écrans est conservée, sans nouvel arbitrage graphique.
 - **Variante marine non validée** : elle n’est pas appliquée par défaut.
 - **Déploiement par le connecteur Netlify** : il n’existe pas de mode brouillon. La prévisualisation repose sur le verrouillage de la production. Le site n’est relié à aucun dépôt GitHub, donc il n’y a pas de prévisualisation automatique par branche.
-- **Pas de fusion dans `main`** : le Sprint 04 vit sur sa branche, en attente de validation.
+- **Production non publiée** : la V0.4 est fusionnée dans `main` et taguée, mais le lien principal Netlify reste sur le Sprint 02 (verrouillé).
 - **Bundle JS d’environ 530 kB** (avertissement Vite) : il inclut l’ancien prototype et Supabase. Pas d’optimisation au Sprint 04.
 
 ## 4. Tests
@@ -85,12 +87,22 @@ Points d’attention, non qualifiés comme anomalies faute de test :
 | Physique · iPhone, navigateur intégré à ChatGPT · micro réel (recette) | Réussi |
 | Physique · Safari iPhone ouvert directement | Non testé (reporté à dimanche ou lundi) |
 | Physique · Android | Non testé (reporté à dimanche ou lundi) |
+| Recette indépendante Work (`91441b1`) | Trois anomalies retestées résolues ; apte à une alpha accompagnée |
+| Contrôles de clôture (dernier build, avant fusion) | `npm ci`, build, 23/23, e2e 68/68 en local et sur la prévisualisation |
 
-## 5. Suite prévue
+## 5. Droits des médias — état à la clôture
 
-1. Tests physiques complémentaires sur Safari iPhone ouvert directement et sur Android (dimanche ou lundi).
-2. Validation finale indépendante.
-3. Sur autorisation explicite : fusion du Sprint 04 dans `main`, puis publication de V0.4 sur le lien principal Netlify (déverrouillage de la production).
-4. Décision sur les fichiers SVG « Ode to Joy » restants (retrait recommandé).
+- **Fait, dans le périmètre de l’arbitrage** : les 4 fichiers audio inutilisés, les 3 images et les 3 illustrations d’instruments, de provenance non établie, sont retirés du code et de la V0.4. Ils sont remplacés par des éléments créés pour ARIA (CSS, SVG, icônes), sans droits tiers. Vérification automatique : aucune requête vers ces médias.
+- **Ce n’est pas une validation juridique** : aucun avis juridique externe n’a été obtenu.
+- **Restes, hors arbitrage** :
+  - 2 fichiers SVG « Ode to Joy » et une note texte, inutilisés et de provenance non établie, toujours publiés (retrait recommandé) ;
+  - les médias retirés sont toujours servis par la production Sprint 02 tant que la V0.4 n’y est pas publiée ;
+  - ils restent dans l’historique Git, où ils ne sont plus publiés.
 
-Aucun Sprint 05 ni aucune nouvelle fonctionnalité avant cette validation.
+## 6. Suite prévue
+
+1. Tests physiques restants : Safari iPhone ouvert directement, Android (registre de recette, section 6).
+2. Décision sur les SVG « Ode to Joy ».
+3. Sur autorisation explicite : déverrouillage de la production et publication de la V0.4 (tag `v0.4.0-alpha`) sur le lien principal.
+
+Version figée : aucun nouveau développement, aucune refonte graphique, aucun Sprint 05 sans nouvelle instruction.

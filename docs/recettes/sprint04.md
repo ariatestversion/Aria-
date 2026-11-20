@@ -103,9 +103,40 @@ Protocole Safari iPhone :
 Points d’attention propres à Safari :
 - Effacement automatique des données d’un site non visité depuis 7 jours (ITP). Une prise ancienne afficherait alors « Audio introuvable ».
 
-## 4. Statut de la mise en production
+## 4. Recette indépendante Work — verdict
 
-**Non autorisée.** Production verrouillée sur le Sprint 02 (`6aff204b…`, `d86e813`) jusqu’à :
-1. les tests Safari iPhone (ouvert directement) et Android ;
-2. la validation finale indépendante ;
-3. l’autorisation explicite de fusionner dans `main` et de publier sur le lien principal.
+| Élément | Détail |
+| --- | --- |
+| Recette | Work, recette indépendante |
+| Version testée | Prévisualisation https://6b0078bb87479237251ba188--ariafirstversion.netlify.app, commit `91441b1` |
+| Résultat | **Les trois anomalies retestées sont résolues** |
+| Verdict | **Produit apte à une alpha accompagnée** |
+
+Verdict rapporté par la porteuse du projet le 2026-11-20. Le rapport détaillé de Work n’est pas joint à ce dépôt.
+
+## 5. Contrôles de clôture (Claude, dernier build)
+
+Exécutés avant la fusion dans `main`, sur la branche au commit `bf78758`. Ce commit ne diffère de `91441b1` que par la documentation et le script e2e : le code applicatif est identique (vérifié par `git diff`).
+
+| Contrôle | Résultat |
+| --- | --- |
+| `npm ci` (installation propre) | OK |
+| `npm run build` | OK |
+| `npm test` | 23/23 |
+| `node scripts/e2e-sprint04.mjs` (local, micro simulé) | 68/68 |
+| e2e sur la prévisualisation `91441b1` | 68/68 |
+| Prévisualisation accessible, `version.json` = `91441b1` | OK |
+| Production : `version.json` = `d86e813`, déploiement `6aff204b…` `locked: true` | OK (inchangée) |
+
+## 6. Tests physiques restant à effectuer
+
+Sur la prévisualisation `91441b1`, avec la liste de cas de la section 3 (« Restant à vérifier ») :
+1. **Safari iPhone, ouvert directement** (pas dans une application tierce) : enregistrement de deux prises, réécoute dans le bilan, fermeture de l’onglet, réécoute depuis le Suivi.
+2. **Android · Chrome** : mêmes cas.
+3. À l’occasion : refus du micro puis autorisation, métronome pendant l’enregistrement, quitter l’écran pendant un enregistrement.
+
+## 7. Statut de la mise en production
+
+**Non autorisée.** La production reste verrouillée sur le Sprint 02 (`6aff204b…`, `d86e813`). La V0.4 est figée dans `main` (tag `v0.4.0-alpha`). Sa publication sur le lien principal reste soumise à :
+1. les tests physiques de la section 6 ;
+2. l’autorisation explicite de la porteuse du projet (déverrouillage et publication).

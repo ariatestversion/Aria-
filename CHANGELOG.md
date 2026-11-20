@@ -6,6 +6,14 @@ Branche : `claude/sprint04-experience-musicale` (depuis `main` = `23ea182`, sour
 Dépôt de référence : `ariatestversion/Aria-`. Développement : Claude Code (reprise de Cursor).  
 Netlify : projet existant `ariafirstversion`, **prévisualisation uniquement**.
 
+**Clôture (2026-11-20)** :
+- recette indépendante Work sur `91441b1` : trois anomalies retestées résolues, **apte à une alpha accompagnée** ;
+- contrôles de clôture : `npm ci`, build, unitaires 23/23, e2e 68/68 ;
+- fusion dans `main` et tag **`v0.4.0-alpha`**, version figée ;
+- prévisualisation définitive : https://6b0078bb87479237251ba188--ariafirstversion.netlify.app ;
+- production Netlify toujours verrouillée sur le Sprint 02 ;
+- restent à faire : tests physiques Safari iPhone (ouvert directement) et Android, avant toute publication.
+
 ### Audio
 
 - Nouveau lecteur de prise : boutons **Lecture / Pause / Supprimer** libellés, curseur de position, durée. Ce lecteur est utilisé partout : Séance, fiche morceau, Bilan, Suivi.
