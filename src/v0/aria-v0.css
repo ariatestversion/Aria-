@@ -7,6 +7,8 @@
 /* Alias historiques — utilisés par l’écran de connexion (AuthGate) et styles.css. */
 html[data-v0='1'] {
   /* Motif de portées dessiné en SVG inline (création ARIA, sans droits tiers). */
+  /* Vagues abstraites (vignettes et visuel de reprise), création ARIA. */
+  --staff-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='112' viewBox='0 0 220 112'%3E%3Cg fill='none' stroke='%23e8d4ad' stroke-opacity='.45' stroke-width='2'%3E%3Cpath d='M0 40c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 56c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 72c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3C/g%3E%3C/svg%3E");
   --staff-lines: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='110'%3E%3Cpath d='M0 30h160M0 40h160M0 50h160M0 60h160M0 70h160' stroke='%23f7f1e8' stroke-opacity='.09' stroke-width='1'/%3E%3C/svg%3E");
   --cream: var(--id-bg);
   --paper: var(--id-surface);
@@ -95,50 +97,48 @@ html[data-v0='1'] button { touch-action: manipulation; }
   position: relative;
   overflow: hidden;
   border-radius: var(--r-xl);
-  min-height: 168px;
   border: 0;
   width: 100%;
   text-align: left;
-  color: #f7f1e8;
-  padding: var(--sp-4) 72px var(--sp-5) var(--sp-5);
-  margin-top: var(--sp-2);
-  /* Carte neutre (portées stylisées + dégradé identitaire) : aucune image externe. */
-  background:
-    radial-gradient(80% 70% at 85% 10%, color-mix(in srgb, var(--id-accent) 40%, transparent), transparent 65%),
-    var(--staff-lines),
-    linear-gradient(160deg, color-mix(in srgb, var(--id-primary) 88%, white) 0%, color-mix(in srgb, var(--id-primary) 80%, black) 100%);
+  padding: 0;
+  margin-top: var(--sp-4);
+  background: var(--hero-bg);
+  color: var(--hero-ink);
   display: grid;
-  align-content: end;
-  gap: var(--sp-1);
-  box-shadow: var(--shadow-2);
   cursor: pointer;
   font: inherit;
 }
+/* Visuel : la DA prévoit une photo 3:1 ; sans photo aux droits établis, motif de vagues dessiné pour ARIA. */
+.v0-resume-visual {
+  display: block;
+  height: 112px;
+  background: var(--staff-waves) center / 220px auto repeat-x, var(--hero-visual);
+}
+.v0-resume-body { display: grid; gap: var(--sp-1); padding: var(--sp-4) var(--sp-5) var(--sp-5); }
 .v0-resume small {
   font-size: var(--fs-caption);
   font-weight: var(--fw-bold);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: rgba(247, 241, 232, 0.94);
+  color: var(--hero-label);
 }
 .v0-resume b {
-  font-size: 1.25rem;
-  font-family: var(--font-display);
-  font-weight: 560;
-  color: #f7f1e8;
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  font-weight: var(--fw-title);
   line-height: 1.25;
+  color: var(--hero-ink);
 }
-.v0-resume-play {
-  position: absolute;
-  right: var(--sp-4);
-  bottom: var(--sp-5);
-  width: 48px;
-  height: 48px;
-  border-radius: var(--r-pill);
-  background: rgba(247, 241, 232, 0.95);
-  color: #3c2a21;
+.v0-resume-cta {
   display: grid;
-  place-items: center;
+  grid-template-columns: 24px 1fr 24px;
+  align-items: center;
+  min-height: 48px;
+  margin-top: var(--sp-3);
+  padding: 0 var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--hero-btn-bg);
+  color: var(--hero-btn-ink);
+  font-weight: var(--fw-bold);
+  text-align: center;
 }
 .v0-quick {
   display: grid;
@@ -147,9 +147,9 @@ html[data-v0='1'] button { touch-action: manipulation; }
 }
 .v0-quick button {
   appearance: none;
-  border: var(--bw) solid var(--line);
+  border: var(--bw) solid var(--card-border);
   border-radius: var(--r-lg);
-  background: var(--id-surface);
+  background: var(--card-bg);
   color: var(--ink);
   min-height: 76px;
   padding: var(--sp-3) var(--sp-1);
@@ -160,7 +160,7 @@ html[data-v0='1'] button { touch-action: manipulation; }
   font-size: var(--fs-caption);
   font-weight: var(--fw-bold);
   cursor: pointer;
-  box-shadow: var(--shadow-1);
+  box-shadow: var(--card-shadow);
 }
 
 /* —— Onboarding —— */
@@ -172,9 +172,9 @@ html[data-v0='1'] button { touch-action: manipulation; }
 .v0-inst {
   position: relative;
   appearance: none;
-  border: var(--bw-strong) solid var(--line);
+  border: var(--bw-strong) solid var(--card-border);
   border-radius: var(--r-lg);
-  background: var(--id-surface);
+  background: var(--card-bg);
   color: var(--ink);
   min-height: 112px;
   padding: var(--sp-4) var(--sp-3);
@@ -210,7 +210,7 @@ html[data-v0='1'] .v0-inst.on .v0-inst-icon { color: var(--id-on-primary); }
   max-width: 100%;
   min-height: var(--dock-h);
   padding: 6px max(8px, calc((100% - var(--page-max)) / 2)) calc(6px + env(safe-area-inset-bottom));
-  background: color-mix(in srgb, var(--id-surface) 96%, transparent);
+  background: color-mix(in srgb, var(--dock-bg) 97%, transparent);
   border-top: var(--bw) solid var(--line);
   backdrop-filter: blur(10px);
   box-shadow: 0 -8px 24px rgba(60, 42, 33, 0.06);
@@ -231,7 +231,13 @@ html[data-v0='1'] .v0-inst.on .v0-inst-icon { color: var(--id-on-primary); }
   border-radius: var(--r-md);
   cursor: pointer;
 }
-html[data-v0='1'] .v0-dock button.on { color: var(--id-primary); background: var(--fn-info-soft); }
+html[data-v0='1'] .v0-dock button.on { color: var(--dock-active-ink); background: var(--dock-active-bg); }
+.v0-dock-icon { display: grid; place-items: center; width: 56px; height: 32px; border-radius: var(--r-pill); }
+/* DA 1 : pastille derrière l’icône seulement */
+html[data-v0='1']:not([data-brand]) .v0-dock button.on,
+html[data-v0='1'][data-brand='marine'] .v0-dock button.on { background: transparent; }
+html[data-v0='1']:not([data-brand]) .v0-dock button.on .v0-dock-icon,
+html[data-v0='1'][data-brand='marine'] .v0-dock button.on .v0-dock-icon { background: var(--dock-active-bg); }
 .v0-dock-rec { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); }
 
 /* —— Accueil (welcome) —— */
@@ -253,7 +259,7 @@ html[data-v0='1'] .v0-dock button.on { color: var(--id-primary); background: var
     radial-gradient(70% 45% at 22% 18%, color-mix(in srgb, var(--id-accent) 38%, transparent), transparent 62%),
     radial-gradient(60% 40% at 88% 78%, color-mix(in srgb, var(--id-accent) 20%, transparent), transparent 64%),
     var(--staff-lines),
-    linear-gradient(180deg, color-mix(in srgb, var(--id-primary) 92%, white) 0%, color-mix(in srgb, var(--id-primary) 78%, black) 100%);
+    linear-gradient(180deg, var(--welcome-top) 0%, var(--welcome-bottom) 100%);
   transform: scale(1.02);
   animation: v0-ken 18s ease-in-out infinite alternate;
 }

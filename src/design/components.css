@@ -13,19 +13,21 @@ html[data-v0='1'] body {
 
 /* —— Typographie —— */
 .ds-h1 {
-  font-family: var(--font-display);
+  font-family: var(--font-title);
   font-size: var(--fs-display);
-  font-weight: 560;
+  font-weight: var(--fw-title);
   line-height: var(--lh-tight);
-  letter-spacing: -0.015em;
+  letter-spacing: var(--ls-title);
   margin: 0 0 var(--sp-2);
   color: var(--ink);
   overflow-wrap: anywhere;
 }
+.ds-h1--home { font-size: var(--fs-home); }
+.ds-greeting { margin: 0 0 var(--sp-1); color: var(--ink-muted); font-size: var(--fs-subtitle); font-weight: var(--fw-regular); }
 .ds-h2 {
   font-family: var(--font-sans);
   font-size: var(--fs-title);
-  font-weight: var(--fw-heavy);
+  font-weight: var(--fw-bold);
   line-height: var(--lh-tight);
   margin: 0;
   color: var(--ink);
@@ -101,11 +103,12 @@ html[data-v0='1'] body {
 .ds-section-title {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: var(--fs-caption);
-  font-weight: var(--fw-heavy);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
+  font-size: var(--section-size);
+  font-weight: var(--section-weight);
+  letter-spacing: var(--section-spacing);
+  text-transform: var(--section-transform);
+  color: var(--section-color);
+  line-height: 1.33;
 }
 
 .ds-actions { display: grid; gap: var(--sp-3); margin-top: var(--sp-6); }
@@ -177,8 +180,8 @@ html[data-v0='1'] .ds-btn--warning-outline.is-on { background: var(--fn-warning-
   width: var(--touch);
   height: var(--touch);
   border-radius: var(--r-pill);
-  border: var(--bw) solid var(--line);
-  background: var(--id-surface);
+  border: var(--bw) solid var(--card-border);
+  background: var(--card-bg);
   color: var(--ink);
   display: inline-grid;
   place-items: center;
@@ -195,9 +198,9 @@ html[data-v0='1'] :is(button, a, input, select, textarea, summary, [tabindex]):f
 .ds-field {
   width: 100%;
   min-height: var(--field-h);
-  border: var(--bw) solid var(--line-strong);
+  border: var(--bw) solid var(--field-border);
   border-radius: var(--r-md);
-  background: var(--id-surface);
+  background: var(--field-bg);
   color: var(--ink);
   padding: var(--sp-3) var(--sp-4);
   font: inherit;
@@ -218,7 +221,7 @@ textarea.ds-field { min-height: 92px; resize: vertical; line-height: 1.45; }
   padding: 0 var(--sp-4);
   border-radius: var(--r-pill);
   border: var(--bw-strong) solid var(--line-strong);
-  background: var(--id-surface);
+  background: var(--card-bg);
   color: var(--ink);
   font-weight: var(--fw-bold);
   font-size: var(--fs-small);
@@ -240,7 +243,7 @@ html[data-v0='1'] .ds-chip.is-on { background: var(--id-primary); border-color: 
   padding: var(--sp-3) var(--sp-4);
   border-radius: var(--r-lg);
   border: var(--bw-strong) solid var(--line);
-  background: var(--id-surface);
+  background: var(--card-bg);
   color: var(--ink);
   cursor: pointer;
 }
@@ -271,7 +274,7 @@ html[data-v0='1'] .ds-option.is-on span { color: var(--id-on-primary); opacity: 
   line-height: 1.2;
   cursor: pointer;
 }
-html[data-v0='1'] .ds-seg button.is-on { background: var(--id-surface); color: var(--ink); box-shadow: var(--shadow-1); }
+html[data-v0='1'] .ds-seg button.is-on { background: var(--card-bg); color: var(--ink); box-shadow: var(--card-shadow); }
 
 /* —— Cartes —— */
 .ds-card {
@@ -281,10 +284,10 @@ html[data-v0='1'] .ds-seg button.is-on { background: var(--id-surface); color: v
   text-align: left;
   padding: var(--sp-4);
   border-radius: var(--r-lg);
-  border: var(--bw) solid var(--line);
-  background: var(--id-surface);
+  border: var(--bw) solid var(--card-border);
+  background: var(--card-bg);
   color: var(--ink);
-  box-shadow: var(--shadow-1);
+  box-shadow: var(--card-shadow);
 }
 .ds-card--button { cursor: pointer; font: inherit; appearance: none; }
 .ds-card--accent { background: var(--id-accent-soft); border-color: transparent; box-shadow: none; }
@@ -300,20 +303,27 @@ html[data-v0='1'] .ds-seg button.is-on { background: var(--id-surface); color: v
   min-height: 72px;
   padding: var(--sp-2) var(--sp-3);
   border-radius: var(--r-lg);
-  border: var(--bw) solid var(--line);
-  background: var(--id-surface);
+  border: var(--bw) solid var(--card-border);
+  background: var(--card-bg);
   color: var(--ink);
   text-align: left;
   font: inherit;
   cursor: pointer;
-  box-shadow: var(--shadow-1);
+  box-shadow: var(--card-shadow);
 }
 .ds-row-card-text { display: grid; gap: 2px; min-width: 0; }
 .ds-row-card-text b { font-size: var(--fs-body); overflow-wrap: anywhere; }
 .ds-row-card-text span { color: var(--ink-muted); font-size: var(--fs-small); }
 .ds-row-card > .ds-icon { color: var(--ink-faint); }
 .ds-thumb { width: 52px; height: 52px; border-radius: var(--r-sm); object-fit: cover; background: var(--id-surface-sunken); }
-.ds-thumb--icon { display: grid; place-items: center; color: var(--id-accent-ink); background: var(--id-accent-soft); }
+.ds-thumb--icon { display: var(--thumb-display); place-items: center; color: var(--thumb-ink); background: var(--thumb-1); }
+.ds-thumb--icon[data-tint='2'] { background: var(--thumb-2); }
+.ds-thumb--icon[data-tint='3'] { background: var(--thumb-3); }
+.ds-thumb-waves { display: block; }
+.ds-thumb-inst { display: none; }
+html[data-v0='1'][data-brand='espresso'] .ds-thumb-waves { display: none; }
+html[data-v0='1'][data-brand='espresso'] .ds-thumb-inst { display: block; }
+html[data-v0='1'][data-brand='electrique'] .ds-row-card { grid-template-columns: 1fr auto; }
 
 .ds-empty { display: grid; gap: var(--sp-3); justify-items: start; padding: var(--sp-2) 0; }
 
@@ -403,7 +413,7 @@ html[data-v0='1'] .ds-seg button.is-on { background: var(--id-surface); color: v
 }
 .ds-progress i { display: block; height: 100%; width: var(--p, 25%); background: var(--id-primary); border-radius: inherit; transition: width 0.25s var(--ease); }
 
-.ds-steps { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; margin: 0 0 var(--sp-3); }
+.ds-steps { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; margin: var(--sp-4) 0 var(--sp-2); }
 .ds-steps-seg {
   appearance: none;
   border: 0;
@@ -431,18 +441,32 @@ html[data-v0='1'] .ds-seg button.is-on { background: var(--id-surface); color: v
 .ds-steps-seg.is-current::after { height: 8px; box-shadow: 0 0 0 2px var(--id-bg), 0 0 0 4px var(--id-primary); }
 
 /* —— Séance —— */
-.ds-stepcard {
+.ds-stepblock {
   display: grid;
   gap: var(--sp-4);
   margin-top: var(--sp-2);
-  padding: var(--sp-5) var(--sp-4);
+  padding: var(--sp-5) var(--sp-5);
   border-radius: var(--r-xl);
-  background: var(--id-surface);
-  border: var(--bw) solid var(--line);
-  box-shadow: var(--shadow-2);
+  background: var(--block-bg);
+  color: var(--block-ink);
+  border-left: 4px solid var(--block-rule);
   text-align: left;
 }
+html[data-v0='1'][data-brand='espresso'] .ds-stepblock { border: var(--bw) solid var(--card-border); box-shadow: var(--shadow-2); }
+.ds-stepblock .ds-h2,
+.ds-stepblock .ds-body,
+.ds-stepblock .ds-body-lg { color: var(--block-ink); }
+.ds-stepblock-label { display: block; font-size: var(--fs-caption); font-weight: var(--fw-bold); color: var(--block-label); margin-bottom: 2px; }
 .ds-stepcard-block { display: grid; gap: var(--sp-1); }
+.ds-stepcard-tools {
+  display: grid;
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  background: var(--card-bg);
+  border: var(--bw) solid var(--card-border);
+}
 .ds-criterion {
   display: flex;
   gap: var(--sp-3);
@@ -454,6 +478,8 @@ html[data-v0='1'] .ds-seg button.is-on { background: var(--id-surface); color: v
 }
 .ds-criterion > .ds-icon { flex-shrink: 0; color: var(--id-accent-ink); margin-top: 2px; }
 .ds-criterion--inline { margin: 0; background: transparent; padding: 0; }
+.ds-stepblock .ds-criterion { padding: 0; background: transparent; color: var(--block-ink); }
+.ds-stepblock .ds-criterion > .ds-icon { color: var(--block-label); }
 .ds-why summary::-webkit-details-marker { display: none; }
 .ds-why summary::before { content: '+'; display: inline-grid; place-items: center; width: 22px; height: 22px; margin-right: 8px; border-radius: 50%; border: var(--bw) solid var(--line-strong); font-weight: var(--fw-heavy); }
 .ds-why[open] summary::before { content: '–'; }
@@ -479,8 +505,8 @@ html[data-v0='1'] .ds-seg button.is-on { background: var(--id-surface); color: v
   min-height: 60px;
   padding: var(--sp-2) var(--sp-1);
   border-radius: var(--r-md);
-  border: var(--bw) solid var(--line);
-  background: var(--id-surface);
+  border: var(--bw) solid var(--card-border);
+  background: var(--card-bg);
   color: var(--ink);
   font-size: var(--fs-caption);
   font-weight: var(--fw-bold);
@@ -492,15 +518,15 @@ html[data-v0='1'] .ds-toolbar button.is-on { border-color: var(--id-primary); bo
   margin-top: var(--sp-2);
   padding: var(--sp-4);
   border-radius: var(--r-lg);
-  border: var(--bw) solid var(--line);
-  background: var(--id-surface);
+  border: var(--bw) solid var(--card-border);
+  background: var(--card-bg);
   text-align: left;
 }
 .ds-reslist { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); }
-.ds-reslist li { display: grid; gap: 2px; padding: var(--sp-3); border-radius: var(--r-md); background: var(--id-surface); border: var(--bw) solid var(--line); }
+.ds-reslist li { display: grid; gap: 2px; padding: var(--sp-3); border-radius: var(--r-md); background: var(--card-bg); border: var(--bw) solid var(--card-border); }
 .ds-reslist li span { color: var(--ink-muted); font-size: var(--fs-small); overflow-wrap: anywhere; white-space: pre-wrap; }
 
-.ds-metronome { margin-top: var(--sp-2); padding: var(--sp-4); border-radius: var(--r-lg); border: var(--bw) solid var(--line); background: var(--id-surface); display: grid; gap: var(--sp-3); }
+.ds-metronome { margin-top: var(--sp-2); padding: var(--sp-4); border-radius: var(--r-lg); border: var(--bw) solid var(--card-border); background: var(--card-bg); display: grid; gap: var(--sp-3); }
 .ds-metronome-beats { display: flex; justify-content: center; gap: var(--sp-3); }
 .ds-metronome-beats i { width: 14px; height: 14px; border-radius: 50%; background: var(--line-strong); transition: transform 80ms; }
 .ds-metronome-beats i.is-on { background: var(--id-primary); transform: scale(1.25); }
@@ -509,42 +535,41 @@ html[data-v0='1'] .ds-toolbar button.is-on { border-color: var(--id-primary); bo
 .ds-metronome-bpm { min-width: 84px; text-align: center; font-weight: var(--fw-bold); color: var(--ink-muted); }
 .ds-metronome-bpm b { font-size: 1.4rem; color: var(--ink); font-variant-numeric: tabular-nums; }
 
-/* Enregistreur — l’enregistrement en cours est rouge PLEIN + point clignotant + « REC ». */
+/* Enregistreur — bouton pleine largeur. Au repos : couleur d’action du thème.
+   En cours : traitement « enregistrement » (DA 1 : rose + point rouge ; DA 2 : rouge plein),
+   toujours avec libellé « Arrêter » et temps écoulé. L’erreur garde un contour + une icône. */
 .ds-recorder {
   margin-top: var(--sp-4);
-  padding: var(--sp-4);
-  border-radius: var(--r-xl);
-  background: var(--id-surface);
-  border: var(--bw) solid var(--line);
+  display: grid;
+  gap: var(--sp-2);
   text-align: left;
 }
-.ds-recorder.is-recording { border-color: var(--fn-record); box-shadow: 0 0 0 3px var(--fn-record-soft); }
-.ds-recorder-row { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); flex-wrap: wrap; }
-.ds-recorder-status { display: grid; gap: var(--sp-1); min-width: 0; flex: 1 1 140px; }
-.ds-recorder-ready { display: inline-flex; align-items: center; gap: 6px; font-weight: var(--fw-bold); font-size: var(--fs-small); color: var(--ink-muted); }
-.ds-recorder-context { font-size: var(--fs-caption); color: var(--ink-faint); overflow-wrap: anywhere; }
-.ds-recorder-clock { font-variant-numeric: tabular-nums; font-size: 1.9rem; font-weight: var(--fw-heavy); line-height: 1.1; color: var(--ink); }
 .ds-recbtn {
   appearance: none;
-  flex: 0 0 auto;
-  display: inline-flex;
+  display: grid;
+  grid-template-columns: 24px 1fr 24px;
   align-items: center;
-  justify-content: center;
-  gap: var(--sp-2);
-  min-width: 150px;
-  min-height: 56px;
-  padding: 0 var(--sp-5);
-  border-radius: var(--r-pill);
-  border: 0;
-  background: var(--fn-record);
-  color: #fff;
-  font-weight: var(--fw-heavy);
+  width: 100%;
+  min-height: var(--btn-h);
+  padding: 0 var(--sp-4);
+  border-radius: var(--r-md);
+  border: var(--bw-strong) solid var(--rec-idle-bg);
+  background: var(--rec-idle-bg);
+  color: var(--rec-idle-ink);
+  font: inherit;
+  font-weight: var(--fw-bold);
   font-size: var(--fs-body);
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(217, 45, 32, 0.28);
 }
-.ds-recbtn.is-on { animation: ds-pulse 1.3s var(--ease) infinite; }
-.ds-recbtn:disabled { background: var(--line-strong); box-shadow: none; cursor: not-allowed; }
+.ds-recbtn > span { text-align: center; font-variant-numeric: tabular-nums; }
+.ds-recbtn-dot { width: 12px; height: 12px; border-radius: 50%; background: currentColor; justify-self: center; }
+.ds-recbtn.is-on { background: var(--rec-on-bg); color: var(--rec-on-ink); border-color: var(--rec-on-border); }
+.ds-recbtn.is-on .ds-recbtn-dot { animation: ds-blink 1s steps(2, start) infinite; }
+.ds-recbtn:disabled { background: var(--line-strong); border-color: var(--line-strong); cursor: not-allowed; }
+.ds-recorder-status { display: flex; align-items: center; gap: var(--sp-2); min-height: 24px; font-size: var(--fs-small); font-weight: var(--fw-bold); color: var(--ink-muted); }
+.ds-recorder-status.is-on { color: var(--fn-record); }
+.ds-recorder-status .ds-dot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.ds-recorder-context { font-weight: var(--fw-regular); color: var(--ink-muted); }
 
 /* Lecteur de prise */
 .ds-take {
@@ -552,8 +577,8 @@ html[data-v0='1'] .ds-toolbar button.is-on { border-color: var(--id-primary); bo
   gap: var(--sp-3);
   padding: var(--sp-3) var(--sp-4);
   border-radius: var(--r-lg);
-  border: var(--bw) solid var(--line);
-  background: var(--id-surface);
+  border: var(--bw) solid var(--card-border);
+  background: var(--card-bg);
   text-align: left;
 }
 .ds-take.is-playing { border-color: var(--id-accent); }
@@ -579,8 +604,8 @@ html[data-v0='1'] .ds-toolbar button.is-on { border-color: var(--id-primary); bo
   gap: var(--sp-2);
   padding: var(--sp-4);
   border-radius: var(--r-lg);
-  background: var(--id-surface);
-  border: var(--bw) solid var(--line);
+  background: var(--card-bg);
+  border: var(--bw) solid var(--card-border);
   border-left-width: 5px;
   text-align: left;
 }
@@ -597,8 +622,8 @@ html[data-v0='1'] .ds-toolbar button.is-on { border-color: var(--id-primary); bo
   gap: var(--sp-2) var(--sp-3);
   padding: var(--sp-3) var(--sp-4);
   border-radius: var(--r-md);
-  background: var(--id-surface);
-  border: var(--bw) solid var(--line);
+  background: var(--card-bg);
+  border: var(--bw) solid var(--card-border);
 }
 .ds-plan li.is-current { border-color: var(--id-primary); }
 .ds-plan-min { min-width: 52px; font-variant-numeric: tabular-nums; font-weight: var(--fw-heavy); color: var(--id-accent-ink); font-size: var(--fs-small); }

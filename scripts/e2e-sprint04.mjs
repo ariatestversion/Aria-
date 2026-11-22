@@ -18,7 +18,7 @@ const { chromium } = require('playwright')
 
 const BASE = process.argv[2] || 'http://localhost:43123/'
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
-const SHOT_DIR = join(ROOT, 'docs/screenshots/sprint04')
+const SHOT_DIR = join(ROOT, process.env.SHOT_DIR || 'docs/screenshots/sprint04')
 const SHOTS = process.env.SHOTS === '1'
 if (SHOTS) mkdirSync(SHOT_DIR, { recursive: true })
 
@@ -100,7 +100,7 @@ async function addPiece(page, title) {
 
 async function record(page, ms) {
   await page.getByRole('button', { name: 'Démarrer l’enregistrement' }).click()
-  await page.getByText('REC · enregistrement en cours').waitFor()
+  await page.getByText(/Enregistrement en cours ·/).waitFor()
   await page.waitForTimeout(ms)
   await page.getByRole('button', { name: 'Arrêter et sauvegarder la prise' }).click()
   await page.getByText(/Prise sauvegardée sur cet appareil/).waitFor()
@@ -283,13 +283,20 @@ async function main() {
   await page.getByRole('navigation').getByRole('button', { name: 'Profil' }).click()
   await shot(page, '10-profil')
   await layoutAudit(page, 'Profil')
-  await page.getByRole('button', { name: 'Marine (aperçu)' }).click()
-  check('Variante marine : appliquée seulement en aperçu', (await page.evaluate(() => document.documentElement.dataset.brand)) === 'marine')
-  await page.getByRole('navigation').getByRole('button', { name: 'Accueil' }).click()
-  await shot(page, '11-variante-marine-accueil')
-  await page.getByRole('navigation').getByRole('button', { name: 'Profil' }).click()
-  await page.getByRole('button', { name: 'Crème & espresso' }).click()
-  check('Variante par défaut restaurée', (await page.evaluate(() => document.documentElement.dataset.brand)) === undefined)
+  // Direction visuelle : trois thèmes comparables, Marine (DA 1) par défaut sur cette branche.
+  const theme = () => page.evaluate(() => document.documentElement.dataset.brand)
+  check('Direction visuelle : Marine (DA 1) par défaut', (await theme()) === 'marine')
+  for (const [label, id] of [
+    ['Bleu électrique (DA 2)', 'electrique'],
+    ['Crème & espresso (V0.4)', 'espresso'],
+    ['Marine (DA 1)', 'marine'],
+  ]) {
+    await page.getByRole('navigation').getByRole('button', { name: 'Profil' }).click()
+    await page.getByRole('button', { name: new RegExp(`^${label.replace(/[()]/g, '\\$&')}`) }).click()
+    check(`Direction visuelle : thème ${label} appliqué`, (await theme()) === id)
+    await page.getByRole('navigation').getByRole('button', { name: 'Accueil' }).click()
+    await layoutAudit(page, `Accueil · ${label}`)
+  }
   check('Aucune erreur JavaScript', errors.length === 0, errors.join(' | '))
   check('Médias : aucune ressource en échec (404)', missing.length === 0, missing.join(' | '))
   check('Médias : aucune requête vers les médias retirés (presets, instruments, audio, images)', mediaRequests.length === 0, mediaRequests.join(' | '))
@@ -329,7 +336,7 @@ async function main() {
     window.__denyMic = false
   })
   await retry.click()
-  const rec = p2.getByText('REC · enregistrement en cours')
+  const rec = p2.getByText(/Enregistrement en cours ·/)
   await rec.waitFor({ timeout: 5000 }).catch(() => undefined)
   check('Micro autorisé ensuite : l’enregistrement démarre au réessai', await rec.isVisible())
   await p2.waitForTimeout(1500)
