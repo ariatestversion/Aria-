@@ -18,3 +18,8 @@
 - Ne pas limiter ARIA au piano. Ne pas ajouter de données fictives. Pas d’API payante.
 - Ne jamais inventer d’analyse audio, de score ou d’erreur musicale. Distinguer observation de l’utilisateur, règle pédagogique et analyse automatique (aujourd’hui : aucune).
 - Ne jamais déclarer réalisé un test sur appareil physique qui ne l’a pas été.
+
+## Registre des liens
+
+- Document de référence : « ARIA — Liens de référence », https://claude.ai/artifact/RiTaMWPZDgCLgzUM7abiTG (document Claude du compte de la porteuse du projet).
+- Après chaque déploiement Netlify, création ou avancée de branche, tag ou changement de production : mettre à jour ce document (tableaux Netlify et GitHub, commit, statut). Ne jamais en créer un second.
