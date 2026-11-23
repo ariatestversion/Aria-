@@ -50,9 +50,9 @@ type Tab = 'home' | 'library' | 'follow' | 'profile'
 type Tool = 'none' | 'metronome' | 'resources' | 'notes'
 
 /** Thèmes comparables sur la branche de prévisualisation de la direction visuelle. */
-type Theme = 'marine' | 'electrique' | 'espresso'
+type Theme = 'marine' | 'electrique' | 'espresso' | 'ivoire'
 const THEME_KEY = 'aria.v0.theme'
-const isTheme = (v: string | null): v is Theme => v === 'marine' || v === 'electrique' || v === 'espresso'
+const isTheme = (v: string | null): v is Theme => v === 'marine' || v === 'electrique' || v === 'espresso' || v === 'ivoire'
 
 const instLabel = (id: InstrumentId) => INSTRUMENTS.find((i) => i.id === id)?.label || id
 const levelLabel = (id: LevelId) => LEVELS.find((l) => l.id === id)?.label || id
@@ -1994,6 +1994,7 @@ export function AriaApp() {
                     ['marine', 'Marine (DA 1)', 'Marine, papier, Manrope — référence de travail'],
                     ['electrique', 'Bleu électrique (DA 2)', 'Blanc, gris clair, bleu électrique, anthracite'],
                     ['espresso', 'Crème & espresso (V0.4)', 'Version actuelle publiée en prévisualisation'],
+                    ['ivoire', 'Ivoire & marine (DA 4)', 'Ivoire, gris clair, bleu ciel, marine, anthracite ; rouge réservé à l’enregistrement'],
                   ] as const
                 ).map(([id, label, hint]) => (
                   <button

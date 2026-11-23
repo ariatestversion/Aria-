@@ -305,3 +305,92 @@ html[data-v0='1'][data-brand='espresso'] {
   --page-x: 16px;
   --dock-h: calc(72px + env(safe-area-inset-bottom));
 }
+
+/* ———————————————————— DA 4 · Ivoire & marine (proposition du 23/11/2026) ————————————————————
+ * Ivoire : fond principal · Gris clair : surfaces secondaires (et marges latérales sur ordinateur)
+ * Bleu ciel : accents et sélections · Marine : cartes principales et consignes
+ * Anthracite : textes, navigation, éléments structurants · Rouge : enregistrement UNIQUEMENT.
+ * Le rouge étant réservé à l’enregistrement, l’erreur et la suppression passent en anthracite
+ * (contour + icône d’alerte + libellé), sans couleur rouge.
+ */
+html[data-v0='1'][data-brand='ivoire'] {
+  --id-bg: #f7f3ea; /* Ivoire */
+  --id-surface: #eceef1; /* Gris clair */
+  --id-surface-sunken: #e2e5ea;
+  --id-ink: #1c1e22; /* Anthracite */
+  --id-primary: #152642; /* Marine */
+  --id-on-primary: #ffffff;
+  --id-accent: #cfe3f5; /* Bleu ciel */
+  --id-accent-soft: #cfe3f5;
+  --id-accent-ink: #1c1e22;
+
+  --ink-muted: #4f5560; /* 6,77:1 sur ivoire */
+  --ink-faint: #4f5560;
+  --line: rgba(28, 30, 34, 0.14);
+  --line-strong: #7d8592; /* 3,36:1 sur ivoire */
+
+  /* Vert / jaune non définis par la palette : états fonctionnels V0.4 conservés (avec libellés). */
+  --fn-success: #2f6b45;
+  --fn-success-soft: rgba(47, 107, 69, 0.12);
+  --fn-warning: #8a5a00;
+  --fn-warning-strong: #d79a1a;
+  --fn-warning-soft: rgba(215, 154, 26, 0.16);
+  --fn-error: #1c1e22; /* pas de rouge hors enregistrement */
+  --fn-error-soft: #eceef1;
+  --fn-record: #c62828; /* Rouge — enregistrement uniquement */
+  --fn-record-soft: rgba(198, 40, 40, 0.1);
+  --fn-info: #1c1e22;
+  --fn-info-soft: #eceef1;
+
+  --font-title: Manrope, system-ui, sans-serif;
+  --fw-title: 700;
+  --ls-title: -0.02em;
+  --section-transform: none;
+  --section-size: 1.125rem;
+  --section-weight: 700;
+  --section-color: var(--ink);
+  --section-spacing: 0;
+
+  --hero-bg: #152642;
+  --hero-ink: #ffffff;
+  --hero-label: #cfe3f5;
+  --hero-btn-bg: #cfe3f5;
+  --hero-btn-ink: #1c1e22;
+  --hero-visual: linear-gradient(135deg, #22365c 0%, #152642 100%);
+  --welcome-top: #22365c;
+  --welcome-bottom: #1c1e22;
+  --staff-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='112' viewBox='0 0 220 112'%3E%3Cg fill='none' stroke='%23cfe3f5' stroke-opacity='.4' stroke-width='2'%3E%3Cpath d='M0 40c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 56c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 72c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3C/g%3E%3C/svg%3E");
+
+  --block-bg: #152642;
+  --block-ink: #ffffff;
+  --block-label: #cfe3f5;
+  --block-rule: transparent;
+
+  --rec-idle-bg: #152642; /* au repos : marine ; rouge seulement pendant l’enregistrement */
+  --rec-idle-ink: #ffffff;
+  --rec-on-bg: #c62828;
+  --rec-on-ink: #ffffff;
+  --rec-on-border: #c62828;
+
+  --card-bg: #eceef1;
+  --card-border: rgba(28, 30, 34, 0.12); /* gris clair / ivoire = 1,05:1 : bordure indispensable */
+  --card-shadow: none;
+  --field-bg: #ffffff;
+  --field-border: #7d8592;
+  --dock-bg: #f7f3ea;
+  --dock-active-bg: #cfe3f5;
+  --dock-active-ink: #1c1e22;
+
+  --thumb-1: #cfe3f5;
+  --thumb-2: #e6dfcf;
+  --thumb-3: #dde1e7;
+  --thumb-ink: #152642;
+  --thumb-display: grid;
+
+  --r-lg: 16px;
+  --shadow-1: none;
+  --shadow-2: 0 10px 28px rgba(21, 38, 66, 0.12);
+  --focus-ring: 0 0 0 2px #f7f3ea, 0 0 0 4px #152642;
+  --page-x: 20px;
+  --dock-h: calc(70px + env(safe-area-inset-bottom));
+}

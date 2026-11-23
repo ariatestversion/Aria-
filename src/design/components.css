@@ -668,3 +668,16 @@ html[data-v0='1'] .ds-toolbar button.is-on { border-color: var(--id-primary); bo
   .ds-recbtn.is-on,
   .ds-badge--record .ds-icon { animation: none !important; }
 }
+
+/* DA 4 : chips sélectionnées et options actives en bleu ciel (état sélectionné), texte anthracite. */
+html[data-v0='1'][data-brand='ivoire'] .ds-chip.is-on,
+html[data-v0='1'][data-brand='ivoire'] .ds-option.is-on { background: var(--id-accent); border-color: var(--id-ink); color: var(--id-ink); }
+html[data-v0='1'][data-brand='ivoire'] .ds-option.is-on span { color: var(--ink-muted); opacity: 1; }
+html[data-v0='1'][data-brand='ivoire'] .ds-take-delete { color: var(--ink) !important; }
+/* DA 4 sur ordinateur : marges latérales en gris clair, colonne de contenu en ivoire (même structure). */
+@media (min-width: 840px) {
+  html[data-v0='1'][data-brand='ivoire'] .v0-app { background: var(--id-surface); }
+  html[data-v0='1'][data-brand='ivoire'] .v0-main { background: var(--id-bg); border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+}
+html[data-v0='1'][data-brand='ivoire'] .v0-inst.on { background: var(--id-accent); border-color: var(--id-ink); color: var(--id-ink); }
+html[data-v0='1'][data-brand='ivoire'] .v0-inst.on .v0-inst-icon { color: var(--id-ink); }

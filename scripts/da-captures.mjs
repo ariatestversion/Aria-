@@ -15,7 +15,7 @@ const BASE = process.argv[2] || 'http://localhost:43123/'
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '..', 'docs/screenshots/da-preview')
 mkdirSync(OUT, { recursive: true })
 
-const THEMES = ['marine', 'electrique', 'espresso']
+const THEMES = ['marine', 'electrique', 'espresso', 'ivoire']
 
 async function shot(page, name) {
   await page.waitForTimeout(300)
@@ -25,33 +25,37 @@ async function shot(page, name) {
 }
 
 const browser = await chromium.launch({ args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'] })
-const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, locale: 'fr-FR' })
-await context.grantPermissions(['microphone'])
-const page = await context.newPage()
-const nav = (name) => page.getByRole('navigation').getByRole('button', { name }).click()
 
-// Données de démonstration identiques pour les trois thèmes (mode découverte, exemples marqués Démo).
-await page.goto(`${BASE}?reset`)
-await page.getByRole('button', { name: 'Commencer' }).click()
-await page.getByRole('button', { name: /Guitare/ }).click()
-await page.getByRole('button', { name: 'Continuer' }).click()
-await page.getByRole('button', { name: /Je pratique/ }).click()
-await page.getByRole('button', { name: 'Continuer' }).click()
-await page.getByRole('button', { name: /^Rythme/ }).click()
-await page.getByRole('button', { name: 'Continuer' }).click()
-await page.getByRole('button', { name: '20 min' }).click()
-await page.getByRole('button', { name: 'Entrer dans Aria' }).click()
-await nav('Bibliothèque')
-await page.getByRole('button', { name: 'Charger des exemples de démonstration' }).click()
-await page.getByRole('button', { name: /Gymnopédie/ }).click()
-await page.getByRole('button', { name: 'Préparer une séance' }).click()
-await page.getByRole('button', { name: 'Commencer la séance' }).click()
-await page.getByRole('button', { name: 'Démarrer l’enregistrement' }).click()
-await page.waitForTimeout(1500)
-await page.getByRole('button', { name: 'Arrêter et sauvegarder la prise' }).click()
-await page.getByText(/Prise sauvegardée/).waitFor()
+/** Données identiques pour chaque thème : contexte neuf, mêmes réglages, mêmes démos, une prise. */
+async function setup() {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, locale: 'fr-FR' })
+  await context.grantPermissions(['microphone'])
+  const page = await context.newPage()
+  const nav = (name) => page.getByRole('navigation').getByRole('button', { name }).click()
+  await page.goto(`${BASE}?reset`)
+  await page.getByRole('button', { name: 'Commencer' }).click()
+  await page.getByRole('button', { name: /Guitare/ }).click()
+  await page.getByRole('button', { name: 'Continuer' }).click()
+  await page.getByRole('button', { name: /Je pratique/ }).click()
+  await page.getByRole('button', { name: 'Continuer' }).click()
+  await page.getByRole('button', { name: /^Rythme/ }).click()
+  await page.getByRole('button', { name: 'Continuer' }).click()
+  await page.getByRole('button', { name: '20 min' }).click()
+  await page.getByRole('button', { name: 'Entrer dans Aria' }).click()
+  await nav('Bibliothèque')
+  await page.getByRole('button', { name: 'Charger des exemples de démonstration' }).click()
+  await page.getByRole('button', { name: /Gymnopédie/ }).click()
+  await page.getByRole('button', { name: 'Préparer une séance' }).click()
+  await page.getByRole('button', { name: 'Commencer la séance' }).click()
+  await page.getByRole('button', { name: 'Démarrer l’enregistrement' }).click()
+  await page.waitForTimeout(1500)
+  await page.getByRole('button', { name: 'Arrêter et sauvegarder la prise' }).click()
+  await page.getByText(/Prise sauvegardée/).waitFor()
+  return { context, page, nav }
+}
 
 for (const theme of THEMES) {
+  const { context, page, nav } = await setup()
   await page.goto(`${BASE}?theme=${theme}`)
   await page.getByText('Envie de jouer ?').waitFor()
   await shot(page, `${theme}-1-accueil`)
@@ -72,6 +76,7 @@ for (const theme of THEMES) {
   await shot(page, `${theme}-5-suivi`)
   await nav('Profil')
   await shot(page, `${theme}-6-profil`)
+  await context.close()
 }
 // Écran de bienvenue (sans données)
 const fresh = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, locale: 'fr-FR' })

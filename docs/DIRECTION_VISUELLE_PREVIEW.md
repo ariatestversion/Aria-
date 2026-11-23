@@ -4,15 +4,16 @@ Branche `claude/da-preview`, créée depuis `main` (V0.4, tag `v0.4.0-alpha`). *
 
 ## Ce que montre la prévisualisation
 
-Une seule application avec les **mêmes parcours, fonctionnalités et données que la V0.4**. Trois directions visuelles se choisissent dans **Profil → Direction visuelle (aperçu)**, ou par l’URL `?theme=marine|electrique|espresso`. Le choix est mémorisé sur l’appareil uniquement.
+Une seule application avec les **mêmes parcours, fonctionnalités et données que la V0.4**. Quatre directions visuelles se choisissent dans **Profil → Direction visuelle (aperçu)**, ou par l’URL `?theme=marine|electrique|espresso|ivoire`. Le choix est mémorisé sur l’appareil uniquement.
 
 | Thème | Source | Par défaut |
 | --- | --- | --- |
 | **Marine (DA 1)** | Dossier « ARIA — Direction visuelle » (6 pages) : marine `#152642`, papier, encre, ardoise, sable, Manrope | **Oui**, c’est la référence de travail |
 | **Bleu électrique (DA 2)** | Dossier « Direction visuelle actuelle » (3 pages, 22/11/2026) : blanc, gris clair, bleu `#2448EA`, anthracite, rouge | Non |
 | **Crème & espresso (V0.4)** | Version actuelle, recettée et taguée `v0.4.0-alpha` | Non |
+| **Ivoire & marine (DA 4)** | Palette décrite le 23/11/2026 : ivoire, gris clair, bleu ciel, marine, anthracite, rouge réservé à l’enregistrement | Non |
 
-Captures comparatives, avec les mêmes données dans les trois thèmes : `docs/screenshots/da-preview/<thème>-<écran>.png`. Elles sont générées par `node scripts/da-captures.mjs`.
+Captures comparatives : `docs/screenshots/da-preview/<thème>-<écran>.png`, générées par `node scripts/da-captures.mjs`. Chaque thème part de **données strictement identiques** : contexte neuf, mêmes réglages, mêmes démos, une prise.
 
 ## Fidélité et interprétations
 
@@ -43,6 +44,28 @@ Interprétations et écarts volontaires :
 11. **Photographie absente** : la photo Unsplash des maquettes n’est pas intégrée (voir ci-dessous). Elle est remplacée par un visuel de vagues dessiné pour ARIA, ce que la DA 1 prévoit « lorsque l’image manque ».
 12. **Hors périmètre DA 2** : les modes « Audio · Vidéo · Photo » et les titres de morceaux d’exemple des maquettes sont de nouvelles fonctionnalités ou des contenus, donc non intégrés.
 
+## DA 4 · Ivoire & marine — choix de mise en œuvre
+
+La palette a été décrite par rôles. Les teintes exactes ont été choisies et vérifiées :
+
+| Rôle | Teinte | Usage dans l’app | Contraste |
+| --- | --- | --- | --- |
+| Ivoire | `#F7F3EA` | Fond principal, barre de navigation | Anthracite dessus : 15,1:1 |
+| Gris clair | `#ECEEF1` | Cartes secondaires, prises, accès rapides ; marges latérales sur ordinateur (≥ 840 px) | 1,05:1 avec l’ivoire, d’où une **bordure** sur chaque carte |
+| Bleu ciel | `#CFE3F5` | Sélections (chips, options, instruments), onglet actif, bouton de la carte de reprise, libellés sur marine | Anthracite dessus : 12,7:1 ; sur marine : 11,5:1 |
+| Marine | `#152642` | Carte de reprise, bloc de consigne, boutons principaux | Blanc dessus : 15,1:1 |
+| Anthracite | `#1C1E22` | Textes, icônes, navigation, contours | 15,1:1 sur ivoire ; texte secondaire `#4F5560` : 6,8:1 |
+| Rouge | `#C62828` | **Uniquement pendant l’enregistrement** (bouton « Arrêter · 00:12 », point, badge REC) | Blanc dessus : 5,6:1 |
+
+Conséquences de « rouge uniquement pour l’enregistrement » :
+- au repos, le bouton d’enregistrement est marine, et il devient rouge pendant la prise ;
+- les erreurs (micro refusé…) et la suppression d’une prise sont **en anthracite**, avec un contour, une icône d’alerte et un libellé ;
+- le vert (réussite) et le jaune (axe de travail) ne figurent pas dans la palette : ces états V0.4 sont conservés, toujours avec un libellé.
+
+Interprétations :
+- « Panneaux latéraux sur ordinateur » : l’application n’a pas de panneau latéral, et la structure ne change pas. Sur grand écran, les marges de part et d’autre de la colonne passent en gris clair.
+- « Navigation en anthracite » : icônes et libellés de la barre en anthracite sur fond ivoire, onglet actif sur bleu ciel. Une barre entièrement anthracite est possible si vous la préférez.
+
 ## Droits des ressources
 
 | Ressource | Statut |
@@ -55,4 +78,4 @@ Interprétations et écarts volontaires :
 
 ## Tests
 
-Unitaires 23/23. e2e `scripts/e2e-sprint04.mjs` : 79/79, dont le changement de thème et un audit de mise en page de l’accueil dans les 3 thèmes. Micro simulé, aucun test sur appareil physique.
+Unitaires 23/23. e2e `scripts/e2e-sprint04.mjs` : 83/83, dont le changement de thème et un audit de mise en page de l’accueil dans les 4 thèmes. Micro simulé, aucun test sur appareil physique.

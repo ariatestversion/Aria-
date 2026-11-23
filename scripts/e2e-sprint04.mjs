@@ -289,6 +289,7 @@ async function main() {
   for (const [label, id] of [
     ['Bleu électrique (DA 2)', 'electrique'],
     ['Crème & espresso (V0.4)', 'espresso'],
+    ['Ivoire & marine (DA 4)', 'ivoire'],
     ['Marine (DA 1)', 'marine'],
   ]) {
     await page.getByRole('navigation').getByRole('button', { name: 'Profil' }).click()
