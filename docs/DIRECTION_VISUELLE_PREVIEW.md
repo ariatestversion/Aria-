@@ -1,5 +1,7 @@
 # Direction visuelle — prévisualisation comparative
 
+> **23/11/2026 : DA 4 « Ivoire & marine » retenue comme direction artistique de référence**, sous réserve de validation mobile. Spécification : `docs/DA4_IVOIRE_MARINE.md`. Prévisualisation figée (commit `14723ee`), quatre thèmes conservés pour comparaison. Backlog : `docs/BACKLOG.md`. Tests : `docs/recettes/da-preview.md`.
+
 Branche `claude/da-preview`, créée depuis `main` (V0.4, tag `v0.4.0-alpha`). **Prévisualisation uniquement** : la production reste verrouillée, `main` n’est pas modifiée.
 
 ## Ce que montre la prévisualisation
