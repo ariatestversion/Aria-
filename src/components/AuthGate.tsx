@@ -255,7 +255,9 @@ export function AuthGate({
   const lead = awaitingConfirm
     ? copy.checkEmailLead
     : mode === 'signup'
-      ? copy.signupLead
+      ? cloudMode === 'cloud'
+        ? copy.signupLead
+        : 'Mode local : ton compte est créé sur cet appareil, sans e-mail de confirmation. Tes morceaux et tes prises restent sur cet appareil.'
       : mode === 'reset'
         ? copy.resetSent
         : copy.authGateLead

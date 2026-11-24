@@ -134,6 +134,15 @@ function warmup(focus: Focus, ctx: Ctx): Draft {
       bpm,
     }
   }
+  if (focus === 'accuracy' && family === 'drums') {
+    return {
+      title: 'Mise au point des frappes',
+      what: 'Règle ton siège et tes éléments, puis frappe chaque élément du passage séparément, lentement.',
+      how: 'Caisse claire, charleston, grosse caisse, cymbales : 4 frappes chacun, au même volume, en écoutant le son.',
+      why: 'Pour une batterie, la « justesse » est la précision et la qualité de chaque frappe.',
+      success: 'Tu sais montrer quel élément joue sur chaque temps du passage, sans hésiter.',
+    }
+  }
   if (focus === 'accuracy') {
     const tune =
       family === 'fretted'
@@ -244,6 +253,15 @@ function focusStep(focus: Focus, ctx: Ctx): Draft {
         bpm,
       }
     case 'accuracy':
+      if (family === 'drums') {
+        return {
+          title: 'Frappes fragiles isolées',
+          what: `Repère dans ${cell} les frappes qui sonnent mal ou tombent à côté, et rejoue-les seules.`,
+          how: 'Joue chaque frappe fragile 3 fois lentement, au même volume, puis ajoute la frappe d’avant et celle d’après.',
+          why: 'Corriger à petite échelle évite de graver l’erreur.',
+          success: 'Chaque frappe fragile jouée 3 fois de suite au bon endroit et au bon volume.',
+        }
+      }
       return {
         title: 'Notes fragiles isolées',
         what: `Repère les notes qui accrochent dans ${cell} et rejoue-les seules.`,
@@ -272,7 +290,7 @@ function focusStep(focus: Focus, ctx: Ctx): Draft {
           instrument === 'guitar'
             ? 'Enchaîne deux accords ou deux phrases du passage sans couper le son.'
             : 'Relie la fin d’une phrase au début de la suivante sans rupture.',
-        how: 'Joue lentement la jonction : les dernières notes d’une phrase et les premières de la suivante, 5 fois.',
+        how: `Joue lentement la jonction : les dernières ${family === 'drums' ? 'frappes' : 'notes'} d’une phrase et les premières de la suivante, 5 fois.`,
         why: 'La continuité rend le passage musical.',
         success: 'Trois jonctions de suite sans silence involontaire.',
       }
@@ -313,9 +331,9 @@ function applyStep(focus: Focus, ctx: Ctx): Draft {
   return {
     title: 'Remise en contexte',
     what: `Rejoue ${cell} en entier avec les corrections.`,
-    how: 'Tempo confortable. Écoute si les notes travaillées sonnent comme dans l’exercice.',
+    how: `Tempo confortable. Écoute si les ${family === 'drums' ? 'frappes' : 'notes'} travaillées sonnent comme dans l’exercice.`,
     why: 'Une correction ne compte que si elle tient dans le passage.',
-    success: 'Le passage joué deux fois avec les notes corrigées.',
+    success: `Le passage joué deux fois avec les ${family === 'drums' ? 'frappes' : 'notes'} corrigées.`,
   }
 }
 
@@ -557,10 +575,24 @@ export function buildProgram(input: ProgramInput): WorkProgram {
     }
   }
 
-  const split = allocateMinutes(
-    minutes,
-    drafts.map((d) => d.weight),
-  )
+  // La reprise garde la durée annoncée dans le bilan ; le reste du temps est réparti entre les autres
+  // étapes (au moins 2 min chacune). Si le temps manque, la reprise prend ce qui reste.
+  const repriseIdx = fu ? drafts.findIndex((d) => d.draft.title.startsWith('Reprise ·')) : -1
+  let split: number[]
+  if (repriseIdx >= 0 && fu) {
+    const others = drafts.filter((_, i) => i !== repriseIdx)
+    const fixed = Math.max(2, Math.min(fu.minutes, minutes - 2 * others.length))
+    const rest = allocateMinutes(
+      minutes - fixed,
+      others.map((d) => d.weight),
+    )
+    split = drafts.map((_, i) => (i === repriseIdx ? fixed : rest[i < repriseIdx ? i : i - 1]))
+  } else {
+    split = allocateMinutes(
+      minutes,
+      drafts.map((d) => d.weight),
+    )
+  }
   const difficulty = input.difficulties.trim()
   const primaryIdx = drafts.findIndex((d) => d.kind === 'focus' && !d.draft.title.startsWith('Reprise ·'))
   const steps: WorkProgramStep[] = drafts.map((d, i) => ({

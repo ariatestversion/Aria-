@@ -458,6 +458,7 @@ async function main() {
   const titles3 = plan3.map((t) => t.replace(/^\d+ min\s*/, '').replace(/^Reprise · /, '').trim())
   check('QA P0 · Séance suivante : commence par « Reprise · Main droite seule, cordes étouffées »', /Reprise · Main droite seule, cordes étouffées/.test(plan3[0] || ''), plan3.join(' | '))
   check('QA P0 · Séance suivante : aucun exercice répété', new Set(titles3).size === titles3.length, titles3.join(' | '))
+  check('S06 · Durée : la reprise dure les 5 min annoncées par le bilan', /^5 min/.test((plan3[0] || '').trim()), plan3[0])
   await shot(p3, '18-qa-preparation-suite')
   await p3.getByRole('button', { name: 'Commencer la séance' }).click()
   const card3 = await p3.getByTestId('step-card').innerText()
@@ -490,6 +491,128 @@ async function main() {
   check('QA P0 · Rechargement pendant la séance : retour à la séance', (await p3.getByTestId('step-card').count()) === 1)
   check('QA · Aucune erreur JavaScript (scénarios QA)', p3errors.length === 0, p3errors.join(' | '))
   await b3.close()
+
+  // 9. Sprint 06 — comptes locaux, isolation des données, instruments peu testés, morceau personnel.
+  const b4 = await chromium.launch({ args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream', '--autoplay-policy=no-user-gesture-required'] })
+  const c4 = await b4.newContext({ viewport: VIEWPORT, deviceScaleFactor: SHOTS ? 2 : 1, locale: 'fr-FR' })
+  await c4.grantPermissions(['microphone'])
+  const p4 = await c4.newPage()
+  const p4errors = []
+  p4.on('pageerror', (e) => p4errors.push(e.message))
+  const signUp = async (first, mail) => {
+    await p4.getByRole('button', { name: 'Se connecter' }).click()
+    await p4.getByRole('button', { name: 'S’inscrire' }).click()
+    await p4.getByPlaceholder('Prénom').fill(first)
+    await p4.getByPlaceholder('E-mail').fill(mail)
+    const pw = p4.locator('input[type=password]')
+    await pw.nth(0).fill('Musique2026!')
+    await pw.nth(1).fill('Musique2026!')
+    await p4.getByRole('button', { name: 'S’inscrire' }).click()
+  }
+  const onboard = async (instrument, level, goal) => {
+    await p4.getByRole('button', { name: new RegExp(instrument) }).first().click()
+    await p4.getByRole('button', { name: 'Continuer' }).click()
+    await p4.getByRole('button', { name: new RegExp(level) }).click()
+    await p4.getByRole('button', { name: 'Continuer' }).click()
+    await p4.getByRole('button', { name: new RegExp(`^${goal}`) }).click()
+    await p4.getByRole('button', { name: 'Continuer' }).click()
+    await p4.getByRole('button', { name: '20 min' }).click()
+    await p4.getByRole('button', { name: 'Entrer dans Aria' }).click()
+    await p4.getByText('Envie de jouer ?').waitFor()
+  }
+  const addPiece4 = async (title) => {
+    await p4.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
+    await p4.getByRole('button', { name: 'Ajouter un morceau' }).click()
+    await p4.getByLabel('Titre').fill(title)
+    await p4.getByRole('button', { name: 'Enregistrer le morceau' }).click()
+  }
+  const logout4 = async () => {
+    await p4.getByRole('navigation').getByRole('button', { name: 'Profil' }).click()
+    await p4.getByRole('button', { name: 'Se déconnecter' }).click()
+    await p4.getByRole('button', { name: 'Se connecter' }).waitFor()
+  }
+  await p4.goto(`${BASE}?reset`)
+  await signUp('Lina', 'lina@test.local')
+  check('S06 · Compte local : inscription sans e-mail de confirmation annoncé à tort', true)
+  await onboard('Batterie', 'Je pratique', 'Justesse')
+  check('S06 · Compte local : prénom affiché après inscription', await p4.getByText('Bonjour Lina,').isVisible())
+
+  // Morceau personnel + ressources (lien, PDF importé)
+  await addPiece4('Mon groove')
+  await p4.getByLabel('Ajouter une ressource (texte ou lien)').fill('https://example.org/mon-groove')
+  await p4.getByRole('button', { name: '+ Réf. vidéo' }).click()
+  await p4.locator('input[type=file][accept="application/pdf"]').setInputFiles({ name: 'groove.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF') })
+  const res4 = await p4.getByTestId('resources').innerText()
+  check('S06 · Morceau personnel : ressource vidéo libellée (plus « video » brut)', /Référence vidéo/.test(res4) && !/^video$/m.test(res4), res4.replace(/\n/g, ' / '))
+  check('S06 · Morceau personnel : le lien est cliquable', (await p4.getByTestId('resources').getByRole('link', { name: 'https://example.org/mon-groove' }).count()) === 1)
+  await p4.getByRole('link', { name: 'Ouvrir « groove.pdf »' }).waitFor({ timeout: 5000 }).catch(() => undefined)
+  check('S06 · Morceau personnel : la partition PDF importée peut être ouverte', await p4.getByRole('link', { name: 'Ouvrir « groove.pdf »' }).isVisible())
+  // Chromium sans interface télécharge les PDF au lieu de les afficher : on vérifie le lien lui-même
+  // (nouvel onglet, fichier stocké sur l’appareil, contenu PDF). L’ouverture réelle est à recetter sur mobile.
+  const pdfLink = p4.getByRole('link', { name: 'Ouvrir « groove.pdf »' })
+  const pdfHref = (await pdfLink.getAttribute('href')) || ''
+  const pdfHead = await p4.evaluate(async (u) => {
+    try {
+      const b = await (await fetch(u)).blob()
+      return `${b.type} ${(await b.text()).slice(0, 5)}`
+    } catch (e) {
+      return String(e)
+    }
+  }, pdfHref)
+  check('S06 · Morceau personnel : le lien ouvre le PDF stocké dans un nouvel onglet', /^blob:/.test(pdfHref) && (await pdfLink.getAttribute('target')) === '_blank' && pdfHead === 'application/pdf %PDF-', pdfHead)
+  await shot(p4, '20-morceau-personnel-ressources')
+  await layoutAudit(p4, 'Fiche morceau personnel')
+
+  // Batterie · Justesse : vocabulaire de batterie, pas de « notes »
+  await p4.getByRole('button', { name: 'Préparer une séance' }).click()
+  const planDrums = (await p4.getByTestId('prep-plan').locator('li').allInnerTexts()).join(' | ')
+  check('S06 · Batterie · Justesse : étapes propres à la batterie (frappes)', /frappes/i.test(planDrums) && !/notes/i.test(planDrums), planDrums)
+  check('S06 · Batterie : 20 min respectées', planDrums.match(/(\d+) min/g).reduce((a, m) => a + Number(m.split(' ')[0]), 0) === 20)
+  await p4.getByRole('button', { name: 'Commencer la séance' }).click()
+  await p4.getByRole('button', { name: 'Ressources', exact: true }).click()
+  await p4.getByRole('link', { name: 'Ouvrir « groove.pdf »' }).waitFor({ timeout: 5000 }).catch(() => undefined)
+  check('S06 · Séance : la partition est accessible depuis la séance', await p4.getByRole('link', { name: 'Ouvrir « groove.pdf »' }).isVisible())
+  await record(p4, 1500)
+  await p4.getByRole('button', { name: 'Oui, réussi' }).click()
+  await p4.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).click()
+  await p4.getByLabel('Ce qui fonctionne').fill('La grosse caisse est stable.')
+  await p4.getByRole('button', { name: 'Terminer la séance' }).click()
+  await p4.getByRole('heading', { name: 'Suivi' }).waitFor()
+
+  // Déconnexion → second compte : aucune donnée du premier
+  await logout4()
+  await signUp('Sam', 'sam@test.local')
+  await onboard('Voix', 'Je me perfectionne', 'Mémoire')
+  await p4.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
+  check('S06 · Isolation : le second compte ne voit pas les morceaux du premier', (await p4.getByRole('button', { name: /Mon groove/ }).count()) === 0)
+  await p4.getByRole('navigation').getByRole('button', { name: 'Suivi' }).click()
+  check('S06 · Isolation : le second compte ne voit pas les prises du premier', (await p4.getByTestId('follow-take').count()) === 0)
+  // Voix · Mémoire · Je me perfectionne
+  await addPiece4('Ma mélodie')
+  await p4.getByRole('button', { name: 'Préparer une séance' }).click()
+  await p4.getByTestId('prep-plan').locator('li').nth(1).waitFor()
+  const planVoice = (await p4.getByTestId('prep-plan').innerText()).replace(/\n/g, ' ')
+  check('S06 · Voix · Mémoire : programme du second compte (voix, mémoire), sans reprise des choix du premier', /Lecture active|Cellule sans support/.test(planVoice) && !/frappes/i.test(planVoice), planVoice)
+  await logout4()
+
+  // Reconnexion au premier compte : mot de passe faux refusé, puis données retrouvées
+  await p4.getByRole('button', { name: 'Se connecter' }).click()
+  await p4.getByLabel('E-mail').fill('lina@test.local')
+  await p4.locator('input[type=password]').first().fill('Mauvais2026!')
+  await p4.getByRole('button', { name: 'Continuer', exact: true }).click()
+  await p4.waitForTimeout(1500)
+  check('S06 · Connexion : mot de passe incorrect refusé', (await p4.getByText('Envie de jouer ?').count()) === 0)
+  await p4.locator('input[type=password]').first().fill('Musique2026!')
+  await p4.getByRole('button', { name: 'Continuer', exact: true }).click()
+  await p4.getByText('Envie de jouer ?').waitFor({ timeout: 8000 }).catch(() => undefined)
+  check('S06 · Connexion : retour au compte après reconnexion', await p4.getByText('Bonjour Lina,').isVisible())
+  await p4.getByRole('navigation').getByRole('button', { name: 'Suivi' }).click()
+  check('S06 · Conservation : séance et prise du premier compte retrouvées', (await p4.getByTestId('follow-take').count()) === 1 && (await p4.getByRole('heading', { name: 'Séances terminées (1)' }).isVisible()))
+  await p4.getByTestId('follow-take').first().getByRole('button', { name: /^Lecture/ }).click()
+  await p4.waitForTimeout(900)
+  check('S06 · Conservation : la prise se réécoute après déconnexion / reconnexion', (await p4.evaluate(() => [...document.querySelectorAll('audio')].some((a) => !a.paused && a.currentTime > 0))))
+  check('S06 · Aucune erreur JavaScript (comptes, instruments, ressources)', p4errors.length === 0, p4errors.join(' | '))
+  await b4.close()
 
   const failed = results.filter((r) => !r.ok)
   console.log(`\n${results.length - failed.length}/${results.length} vérifications réussies`)

@@ -44,7 +44,7 @@ import {
   seedDemoPieces,
   setSessionEmail,
 } from './store'
-import { Badge, fmt, MetronomePanel, PieceThumb, RecordPanel, Section, SourceTag, StepTimer, TakePlayer } from './ui'
+import { Badge, fmt, MetronomePanel, PieceThumb, RecordPanel, ResourceList, Section, SourceTag, StepTimer, TakePlayer } from './ui'
 
 type Tab = 'home' | 'library' | 'follow' | 'profile'
 type Tool = 'none' | 'metronome' | 'resources' | 'notes'
@@ -387,7 +387,36 @@ export function AriaApp() {
     return DEMO_GENRES.filter((g) => present.has(g))
   }, [pieces])
 
+  /** Préférences musicales et saisies en cours remises à zéro : rien ne passe d’un compte à l’autre. */
+  function resetUserState() {
+    setInstruments([])
+    setLevel('beginner')
+    setHabits(['score'])
+    setGoals([])
+    setPreferredMinutes(20)
+    setOnboardStep(1)
+    setNewPiece({ title: '', artist: '', genre: 'Pop', instrument: 'piano' })
+    setShowAddPiece(false)
+    setQuery('')
+    setGenre('')
+    setWorksObs('')
+    setImproveObs('')
+    setComparison('')
+    setCompareA('')
+    setCompareB('')
+    setSaveHint('')
+    setTakeHint('')
+    setProfileHint('')
+    setResourceNote('')
+    try {
+      sessionStorage.removeItem(WHERE_KEY)
+    } catch {
+      /* ignore */
+    }
+  }
+
   function enterAfterAuth(profile: UserProfile) {
+    resetUserState()
     setGuest(false)
     setEmail(profile.email)
     setFirstName((profile.firstName || '').trim())
@@ -814,6 +843,7 @@ export function AriaApp() {
   async function logout() {
     if (recorder.status === 'recording') await recorder.stop()
     await signOutV0()
+    resetUserState()
     setGuest(false)
     setEmail('')
     setFirstName('')
@@ -854,14 +884,7 @@ export function AriaApp() {
   const resourcesPanel = piece ? (
     <div className="ds-panel">
       {piece.resources.length ? (
-        <ul className="ds-reslist">
-          {piece.resources.map((r) => (
-            <li key={r.id}>
-              <b>{r.kind === 'pdf' ? 'Partition PDF' : RESOURCE_MODES.find((m) => m.id === r.kind)?.label || r.kind}</b>
-              <span>{r.text || r.label}</span>
-            </li>
-          ))}
-        </ul>
+        <ResourceList resources={piece.resources} />
       ) : (
         <p className="ds-hint">Aucune ressource pour ce morceau. Tu peux en ajouter depuis sa fiche (partition, accords, tablature…).</p>
       )}
@@ -1384,17 +1407,7 @@ export function AriaApp() {
           </Section>
           <Section title="Ressources">
             {piece.resources.length ? (
-              <ul className="ds-reslist">
-                {piece.resources.map((r) => (
-                  <li key={r.id}>
-                    <b>{r.kind === 'pdf' ? 'Partition PDF' : RESOURCE_MODES.find((m) => m.id === r.kind)?.label || r.kind}</b>
-                    <span>
-                      {r.label}
-                      {r.demo ? ' · démonstration' : ''}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              <ResourceList resources={piece.resources} />
             ) : (
               <p className="ds-hint">Aucune ressource. Tu peux travailler sans partition : ARIA adapte la séance.</p>
             )}
@@ -1858,7 +1871,7 @@ export function AriaApp() {
                       <select id="cmp-a" className="ds-field" value={compareA} onChange={(e) => setCompareA(e.target.value)}>
                         <option value="">—</option>
                         {pieceTakes.map((t) => (
-                          <option key={t.id} value={t.id}>
+                          <option key={t.id} value={t.id} disabled={t.id === compareB}>
                             {takeLabel(t)} · {takeDetail(t)}
                           </option>
                         ))}
@@ -1869,7 +1882,7 @@ export function AriaApp() {
                       <select id="cmp-b" className="ds-field" value={compareB} onChange={(e) => setCompareB(e.target.value)}>
                         <option value="">—</option>
                         {pieceTakes.map((t) => (
-                          <option key={t.id} value={t.id}>
+                          <option key={t.id} value={t.id} disabled={t.id === compareA}>
                             {takeLabel(t)} · {takeDetail(t)}
                           </option>
                         ))}

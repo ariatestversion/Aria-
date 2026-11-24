@@ -707,3 +707,14 @@ html[data-v0='1'][data-brand='ivoire'] .v0-inst.on .v0-inst-icon { color: var(--
   gap: var(--sp-2);
   margin-top: var(--sp-2);
 }
+
+/* Liens de ressources (Sprint 06) — cible tactile ≥ 44 px */
+.ds-reslist li a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--id-primary);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}

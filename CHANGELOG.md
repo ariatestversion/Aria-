@@ -1,5 +1,51 @@
 # Changelog — ARIA
 
+## [ARIA — Alpha V0.6 · Sprint 06] — Finalisation fonctionnelle & préparation V1 (2026-11-24)
+
+**Clôture technique (2026-11-24)** :
+- retours QA favorables de Claude et de Work sur la version auditée `67aa241` ;
+- unitaires 37/37, e2e 136/136 ;
+- fusion dans `main` (merge `--no-ff`, historique conservé) ; tag proposé `v0.6.0-alpha` (à créer depuis GitHub) ;
+- prévisualisation définitive conservée : https://6b05c4864a41ea883858ac80--ariafirstversion.netlify.app ;
+- lien public inchangé (Sprint 02, verrouillé) ;
+- réserves documentées dans `docs/BILAN_SPRINT06.md` : stockage local, comptes, absence de synchronisation, tests sur appareils physiques non réalisés ;
+- base de travail des Product Designers et de la direction artistique. Pas de Sprint 07 sans autorisation.
+
+Branche : `claude/sprint06-finalisation-v1`, créée depuis `main` (`04777e0`, Alpha V0.5). Historique conservé.  
+Netlify : **prévisualisation uniquement** ; le lien public principal reste sur le Sprint 02.  
+**Statut : clôturé techniquement le 24/11** (voir ci-dessus). Aucune nouvelle fonctionnalité majeure, aucune refonte, DA 4 conservée.
+
+### Pédagogie
+- **Écart de durée corrigé (S06-1)** : la reprise annoncée « pendant 5 min » dans le bilan dure bien 5 min dans la séance suivante. Le reste du temps est réparti entre les autres étapes, et le total reste exact.
+- **Batterie** : les objectifs « Justesse » et « Fluidité » ne parlent plus de « notes ». Nouvelles étapes : « Mise au point des frappes » et « Frappes fragiles isolées » ; « frappes » remplace « notes » dans les étapes communes.
+- **Contrôle exhaustif** : plus de 10 000 programmes générés (6 instruments × 3 niveaux × objectifs principal et secondaire × 5 durées × 5 supports, avec et sans reprise). Aucun total faux, aucune étape de moins de 2 min, aucun doublon, aucun champ vide, aucun vocabulaire d’un autre instrument, et la reprise a toujours la durée et le tempo annoncés.
+
+### Comptes et données
+- **Corrigé** : après une déconnexion, l’onboarding du compte suivant repartait des choix du compte précédent (instruments, objectifs, niveau). Le second compte pouvait ainsi recevoir un programme de batterie au lieu de voix. Les préférences et les saisies en cours sont maintenant remises à zéro à la déconnexion et à la connexion.
+- **Inscription en mode local** : le texte n’annonce plus d’e-mail de confirmation, puisqu’aucun n’est envoyé.
+- Vérifié de bout en bout :
+  - inscription locale ;
+  - refus d’un mauvais mot de passe ;
+  - reconnexion ;
+  - isolation des morceaux et des prises entre deux comptes du même appareil ;
+  - réécoute d’une prise après déconnexion et reconnexion.
+
+### Morceaux personnels et ressources
+- **Partition PDF importée** : elle peut maintenant être ouverte depuis la fiche du morceau et pendant la séance (bouton « Ouvrir »). Avant, elle était seulement listée.
+- **Liens** audio et vidéo cliquables.
+- **Libellés de ressources corrigés** : « Référence vidéo » au lieu du libellé brut `video`, ainsi que « Référence audio » et « Note ».
+
+### Prises
+- Comparaison A/B : une prise ne peut plus être comparée à elle-même.
+
+### Droits des médias
+- **Retrait** des 3 fichiers « Ode to Joy » (`public/presets/`), de provenance non établie et jamais utilisés. Plus aucun média de provenance non établie n’est publié par l’application (voir `docs/LICENCES.md`).
+
+### Tests
+- Unitaires : **37/37**, dont le contrôle exhaustif et les cas propres à la batterie.
+- e2e (Chromium, micro simulé) : **136/136**, dont 18 contrôles Sprint 06 (comptes, isolation, batterie, voix, morceau personnel, PDF, durée de la reprise).
+- **Aucun test sur appareil physique.**
+
 ## [ARIA — Alpha V0.5 · Sprint 05] — Expérience de pratique & préparation Alpha (2026-11-24)
 
 **Clôture technique (2026-11-24)** :
