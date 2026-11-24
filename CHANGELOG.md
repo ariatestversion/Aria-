@@ -1,10 +1,19 @@
 # Changelog — ARIA
 
-## [Sprint 06] — Finalisation fonctionnelle & préparation V1 (en recette, 2026-11-24)
+## [ARIA — Alpha V0.6 · Sprint 06] — Finalisation fonctionnelle & préparation V1 (2026-11-24)
+
+**Clôture technique (2026-11-24)** :
+- retours QA favorables de Claude et de Work sur la version auditée `67aa241` ;
+- unitaires 37/37, e2e 136/136 ;
+- fusion dans `main` (merge `--no-ff`, historique conservé) ; tag proposé `v0.6.0-alpha` (à créer depuis GitHub) ;
+- prévisualisation définitive conservée : https://6b05c4864a41ea883858ac80--ariafirstversion.netlify.app ;
+- lien public inchangé (Sprint 02, verrouillé) ;
+- réserves documentées dans `docs/BILAN_SPRINT06.md` : stockage local, comptes, absence de synchronisation, tests sur appareils physiques non réalisés ;
+- base de travail des Product Designers et de la direction artistique. Pas de Sprint 07 sans autorisation.
 
 Branche : `claude/sprint06-finalisation-v1`, créée depuis `main` (`04777e0`, Alpha V0.5). Historique conservé.  
 Netlify : **prévisualisation uniquement** ; le lien public principal reste sur le Sprint 02.  
-**Statut : en attente de validation QA.** Aucune nouvelle fonctionnalité majeure, aucune refonte, DA 4 conservée.
+**Statut : clôturé techniquement le 24/11** (voir ci-dessus). Aucune nouvelle fonctionnalité majeure, aucune refonte, DA 4 conservée.
 
 ### Pédagogie
 - **Écart de durée corrigé (S06-1)** : la reprise annoncée « pendant 5 min » dans le bilan dure bien 5 min dans la séance suivante. Le reste du temps est réparti entre les autres étapes, et le total reste exact.

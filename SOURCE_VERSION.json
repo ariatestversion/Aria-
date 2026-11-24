@@ -1,5 +1,5 @@
 {
-  "version": "ARIA — Sprint 06 · finalisation fonctionnelle V1 (en attente de validation QA)",
+  "version": "ARIA — Alpha V0.6 (Sprint 06, clôture technique du 24/11/2026)",
   "commit": "67aa2419b4285f258f5f95b2635f26a70a951f3b",
   "short": "67aa241",
   "netlifyDeployId": "6b05c4864a41ea883858ac80",
@@ -7,5 +7,6 @@
   "branch": "claude/sprint06-finalisation-v1",
   "base": "main 04777e0 (Alpha V0.5) ; prévisualisation définitive Sprint 05 conservée : 6b05bcb61ae60f91656e77ef (d79b2d2)",
   "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813) — vérifié le 24/11 : locked true, version.json d86e813",
-  "verification": "Déploiement ready, published_at null (non publié). version.json envoyé = 67aa241. Lecture de /version.json sur l'URL de prévisualisation impossible depuis la session (hôte non autorisé) : à vérifier en ouvrant l'URL. Unitaires 37/37, e2e 136/136 en local sur le même commit. Aucun test sur appareil physique."
+  "verification": "Déploiement ready, published_at null (non publié). version.json envoyé = 67aa241. Unitaires 37/37, e2e 136/136 sur le même commit. QA Claude et Work favorables. Tests sur appareils physiques non réalisés (réserve).",
+  "status": "Figée et fusionnée dans main ; prévisualisation définitive conservée ; lien public inchangé. Base de travail Product Design et DA."
 }

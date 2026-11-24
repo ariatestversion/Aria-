@@ -5,7 +5,7 @@
 | Rôle | Dépôt / service |
 | --- | --- |
 | **Dépôt de référence** | GitHub `ariatestversion/Aria-` (id 1428103245). L’ancienne adresse `ariaversionnouvelle/Aria-` redirige vers ce même dépôt. |
-| **Branche stable** | `main` (Alpha V0.5 depuis le 24/11/2026) |
+| **Branche stable** | `main` (Alpha V0.6 depuis le 24/11/2026) |
 | **Branches de sprint** | `claude/sprint04-experience-musicale`, … (une branche dédiée par sprint) |
 | **Netlify** | Projet existant `ariafirstversion` (id `3ae885ef-950d-4291-bbf7-60bfd310e6aa`) |
 | **Développement** | Claude Code depuis le Sprint 04, en remplacement de Cursor |
@@ -24,12 +24,15 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 `npm run build` génère `public/version.json` (commit, branche, date) : c’est la preuve de correspondance entre le commit GitHub et le déploiement Netlify. `SOURCE_VERSION.json` enregistre le dernier couple commit / déploiement de prévisualisation.
 
-## État Sprint 06 — Finalisation fonctionnelle V1 (en recette)
+## État Sprint 06 — Alpha V0.6 (clôture technique, 24/11/2026)
 
-- Branche `claude/sprint06-finalisation-v1`, depuis `main` (`04777e0`, Alpha V0.5).
-- Prévisualisation, commit déployé et vérification : `SOURCE_VERSION.json`.
-- Production verrouillée sur le Sprint 02 ; `main` inchangée jusqu’à validation QA.
-- Recette : `docs/recettes/sprint06.md`.
+- **Clôturé et figé** : `claude/sprint06-finalisation-v1` fusionnée dans `main` (merge `--no-ff`, historique conservé). Branche conservée.
+- **Commit applicatif audité et figé : `67aa241`.** Le code applicatif de `main` lui est identique ; les commits suivants ne changent que la documentation.
+- **Prévisualisation définitive** : https://6b05c4864a41ea883858ac80--ariafirstversion.netlify.app (`6b05c4864a41ea883858ac80`, non publiée, conservée).
+- **Tag proposé** `v0.6.0-alpha` : à créer depuis GitHub.
+- **Lien public** : verrouillé sur le Sprint 02 (`6aff204b…`, `d86e813`), non modifié.
+- Base de travail des Product Designers et de la direction artistique. Pas de Sprint 07 sans autorisation.
+- Recette : `docs/recettes/sprint06.md` ; bilan et réserves : `docs/BILAN_SPRINT06.md`.
 
 ## État Sprint 05 — Alpha V0.5 (clôture technique, 24/11/2026)
 

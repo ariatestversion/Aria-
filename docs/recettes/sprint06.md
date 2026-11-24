@@ -1,7 +1,14 @@
 # Registre de recette — Sprint 06 · Finalisation fonctionnelle & préparation V1
 
 Branche `claude/sprint06-finalisation-v1`, depuis `main` (`04777e0`, Alpha V0.5). Prévisualisation : https://6b05c4864a41ea883858ac80--ariafirstversion.netlify.app · commit applicatif `67aa241`.
-**En attente de validation QA.** Aucune recette sur appareil physique n’a été faite pour cette version.
+**Clôture technique le 24/11/2026** après les retours QA favorables de Claude et de Work sur `67aa241`. Réserve : aucune recette sur appareil physique n’a été faite pour cette version (section 3). Bilan et réserves : `docs/BILAN_SPRINT06.md`.
+
+## 0. Verdicts QA
+
+| Audit | Version | Verdict |
+| --- | --- | --- |
+| Claude QA | `67aa241` | Favorable |
+| Work | `67aa241` | Favorable |
 
 ## 1. Tests automatisés (Claude · Chromium · micro simulé)
 
