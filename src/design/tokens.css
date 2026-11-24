@@ -1,65 +1,114 @@
 /*
- * ARIA Design System — fondations (Sprint 04)
+ * ARIA Design System — fondations
  * Source unique des couleurs, typographies, espacements, rayons, ombres et zones tactiles.
- * Documentation : docs/DESIGN_SYSTEM.md
+ * Documentation : docs/DESIGN_SYSTEM.md et docs/DIRECTION_VISUELLE_PREVIEW.md
  *
- * Deux familles de couleurs :
- *  - identitaires (--id-*) : la marque. Crème / espresso / or par défaut.
- *    Variante marine #152642 préparée sous [data-brand='marine'] — NON appliquée par défaut.
- *  - fonctionnelles (--fn-*) : le sens. Vert = réussite, jaune = vigilance / axe de travail,
- *    rouge = erreur (contour + icône) et enregistrement (plein + point animé + « REC »).
+ * Branche de prévisualisation « direction visuelle » : trois thèmes comparables dans la même app.
+ *   - (défaut)                     DA 1 « Marine » — marine #152642, papier, Manrope (référence de travail)
+ *   - [data-brand='electrique']    DA 2 « Bleu électrique » — blanc, gris clair, bleu #2448EA, anthracite
+ *   - [data-brand='espresso']      V0.4 actuelle — crème, espresso, or, titres Fraunces
+ *
+ * Familles de couleurs :
+ *  - identitaires (--id-*) et sémantiques de mise en forme (--hero-*, --block-*, --rec-*, --card-*, --field-*, --dock-*) ;
+ *  - fonctionnelles (--fn-*) : vert = réussite, jaune = vigilance, rouge = erreur (contour + icône)
+ *    et enregistrement (traitement distinct, toujours avec libellé et temps écoulé).
  *    Une couleur fonctionnelle n’est jamais utilisée seule : toujours un libellé ou une icône.
  */
 
+/* ———————————————————— DA 1 · Marine (défaut de la branche de prévisualisation) ———————————————————— */
 html[data-v0='1'] {
-  /* —— Identité (par défaut : crème, espresso, or) —— */
-  --id-bg: #f5f0e6;
-  --id-surface: #fbf7f0;
-  --id-surface-sunken: #efe7da;
-  --id-ink: #3c2a21;
-  --id-primary: #3c2a21;
-  --id-on-primary: #f5f0e6;
-  --id-accent: #b08a45;
-  --id-accent-soft: rgba(176, 138, 69, 0.16);
-  --id-accent-ink: #7a5a1f;
+  --id-bg: #f6f3ed; /* Papier */
+  --id-surface: #ffffff; /* Blanc — cartes et navigation */
+  --id-surface-sunken: #ece7dc;
+  --id-ink: #192234; /* Encre */
+  --id-primary: #152642; /* Marine */
+  --id-on-primary: #ffffff;
+  --id-accent: #e8d4ad; /* Sable — accent ponctuel sur marine */
+  --id-accent-soft: #e2e8f2;
+  --id-accent-ink: #526074; /* Ardoise */
 
-  /* Encres dérivées */
   --ink: var(--id-ink);
-  --ink-muted: rgba(60, 42, 33, 0.78);
-  --ink-faint: rgba(60, 42, 33, 0.68);
-  --line: rgba(60, 42, 33, 0.14);
-  --line-strong: rgba(60, 42, 33, 0.28);
+  --ink-muted: #526074; /* Ardoise 5,77:1 sur papier */
+  --ink-faint: #526074;
+  --line: rgba(25, 34, 52, 0.14);
+  --line-strong: #76859a; /* bordure champ : #8290A3 de la DA → 2,93:1, corrigé à 3,39:1 */
 
-  /* —— Fonctionnel —— */
-  --fn-success: #2f6b45;
-  --fn-success-soft: rgba(47, 107, 69, 0.12);
-  --fn-warning: #8a5a00;
-  --fn-warning-strong: #d79a1a;
-  --fn-warning-soft: rgba(215, 154, 26, 0.16);
-  --fn-error: #b42318;
-  --fn-error-soft: rgba(180, 35, 24, 0.08);
-  --fn-record: #d92d20;
-  --fn-record-soft: rgba(217, 45, 32, 0.12);
-  --fn-info: #3c2a21;
-  --fn-info-soft: rgba(60, 42, 33, 0.06);
+  --fn-success: #215741;
+  --fn-success-soft: #e4f1e8;
+  --fn-warning: #754900;
+  --fn-warning-strong: #c28a1e;
+  --fn-warning-soft: #fff0cb;
+  --fn-error: #942d40;
+  --fn-error-soft: #fbe7ec;
+  --fn-record: #942d40;
+  --fn-record-soft: #fbe7ec;
+  --fn-info: #152642;
+  --fn-info-soft: #e2e8f2;
+
+  /* Mise en forme */
+  --font-title: Manrope, system-ui, sans-serif;
+  --fw-title: 700;
+  --ls-title: -0.02em;
+  --section-transform: none;
+  --section-size: 1.125rem; /* 18 / 24 */
+  --section-weight: 700;
+  --section-color: var(--ink);
+  --section-spacing: 0;
+
+  --hero-bg: #152642;
+  --hero-ink: #ffffff;
+  --hero-label: rgba(255, 255, 255, 0.86);
+  --hero-btn-bg: #ffffff;
+  --hero-btn-ink: #152642;
+  --hero-visual: linear-gradient(135deg, #1e3459 0%, #152642 100%);
+  --hero-visual-ink: rgba(232, 212, 173, 0.55);
+  --welcome-top: #1e3459;
+  --welcome-bottom: #0d1a30;
+
+  --block-bg: #152642;
+  --block-ink: #ffffff;
+  --block-label: #e8d4ad;
+  --block-rule: transparent;
+
+  --rec-idle-bg: #152642;
+  --rec-idle-ink: #ffffff;
+  --rec-on-bg: #fbe7ec;
+  --rec-on-ink: #942d40;
+  --rec-on-border: #942d40;
+
+  --card-bg: #ffffff;
+  --card-border: rgba(25, 34, 52, 0.14);
+  --card-shadow: none;
+  --field-bg: #ffffff;
+  --field-border: #76859a;
+  --dock-bg: #ffffff;
+  --dock-active-bg: #e2e8f2;
+  --dock-active-ink: #152642;
+
+  --thumb-1: #e2e8f2;
+  --thumb-2: #efe2c8;
+  --thumb-3: #e6e4e0;
+  --thumb-ink: #526074;
+  --thumb-display: grid;
 
   /* —— Typographie —— */
   --font-sans: Manrope, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
-  --fs-display: clamp(1.6rem, 5vw, 2rem);
-  --fs-title: 1.25rem;
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif; /* mot-symbole ARIA uniquement */
+  --fs-home: clamp(2rem, 8vw, 2.25rem); /* 36 / 42 */
+  --fs-display: clamp(1.75rem, 7vw, 2rem); /* 32 / 38 */
+  --fs-title: 1.5rem; /* 24 / 30 */
   --fs-subtitle: 1.05rem;
-  --fs-body: 1rem;
+  --fs-body: 1rem; /* 16 / 24 */
   --fs-small: 0.9rem;
-  --fs-caption: 0.78rem;
+  --fs-caption: 0.8125rem; /* 13 / 18 */
   --fw-regular: 500;
   --fw-medium: 600;
   --fw-bold: 700;
   --fw-heavy: 800;
-  --lh-tight: 1.2;
+  --lh-tight: 1.18;
   --lh-body: 1.5;
 
-  /* —— Espacements (base 4 px) —— */
+  /* —— Espacements (échelle 4, 8, 12, 16, 20, 24, 32, 48) —— */
   --sp-1: 4px;
   --sp-2: 8px;
   --sp-3: 12px;
@@ -68,7 +117,8 @@ html[data-v0='1'] {
   --sp-6: 24px;
   --sp-8: 32px;
   --sp-10: 40px;
-  --page-x: 16px;
+  --sp-12: 48px;
+  --page-x: 20px;
   --page-max: 560px;
 
   /* —— Dimensions —— */
@@ -83,17 +133,17 @@ html[data-v0='1'] {
   /* —— Rayons, bordures, ombres —— */
   --r-sm: 10px;
   --r-md: 14px;
-  --r-lg: 18px;
+  --r-lg: 16px;
   --r-xl: 22px;
   --r-pill: 999px;
   --bw: 1px;
   --bw-strong: 1.5px;
-  --shadow-1: 0 1px 2px rgba(60, 42, 33, 0.06), 0 6px 18px rgba(60, 42, 33, 0.05);
-  --shadow-2: 0 10px 28px rgba(60, 42, 33, 0.12);
-  --focus-ring: 0 0 0 3px rgba(176, 138, 69, 0.55);
+  --shadow-1: none;
+  --shadow-2: 0 10px 28px rgba(21, 38, 66, 0.12);
+  --focus-ring: 0 0 0 2px var(--id-bg), 0 0 0 4px #2f5fbf;
 
   /* —— Navigation —— */
-  --dock-h: calc(72px + env(safe-area-inset-bottom));
+  --dock-h: calc(70px + env(safe-area-inset-bottom));
   --dock-gap: 16px;
 
   /* —— Mouvement —— */
@@ -101,24 +151,246 @@ html[data-v0='1'] {
   --dur: 160ms;
 }
 
-/* —— Variante identitaire marine (aperçu, en attente de validation) ——
- * Activée uniquement par ?brand=marine ou l’aperçu du Profil (stocké sur l’appareil).
- * Seules les couleurs identitaires changent ; la palette fonctionnelle reste identique.
- */
-html[data-v0='1'][data-brand='marine'] {
-  --id-bg: #f4f1ea;
-  --id-surface: #fbfaf6;
-  --id-surface-sunken: #e8e6df;
-  --id-ink: #152642;
-  --id-primary: #152642;
-  --id-on-primary: #f4f1ea;
+@media (max-width: 359px) {
+  html[data-v0='1'] { --page-x: 16px; }
+}
+
+/* ———————————————————— DA 2 · Bleu électrique ———————————————————— */
+html[data-v0='1'][data-brand='electrique'] {
+  --id-bg: #ffffff; /* Blanc — fond principal */
+  --id-surface: #f4f6f9; /* Gris clair — cartes et consignes */
+  --id-surface-sunken: #eceff4;
+  --id-ink: #25272b; /* Anthracite */
+  --id-primary: #2448ea; /* Bleu électrique */
+  --id-on-primary: #ffffff;
+  --id-accent: #2448ea;
+  --id-accent-soft: #dceeff; /* Bleu ciel — sélections */
+  --id-accent-ink: #2448ea;
+
+  --ink-muted: #606772; /* Gris de lecture */
+  --ink-faint: #606772;
+  --line: #e3e6ec;
+  --line-strong: #8c93a0; /* ajouté : champs gris sans bordure = 1,08:1 */
+
+  /* La DA 2 ne définit ni vert ni jaune : palette fonctionnelle V0.4 conservée. */
+  --fn-success: #2f6b45;
+  --fn-success-soft: rgba(47, 107, 69, 0.12);
+  --fn-warning: #8a5a00;
+  --fn-warning-strong: #d79a1a;
+  --fn-warning-soft: rgba(215, 154, 26, 0.16);
+  --fn-error: #ab2239;
+  --fn-error-soft: rgba(171, 34, 57, 0.08);
+  --fn-record: #ab2239; /* Rouge — prise en cours */
+  --fn-record-soft: rgba(171, 34, 57, 0.1);
+  --fn-info: #25272b;
+  --fn-info-soft: #f4f6f9;
+
+  --font-title: Manrope, system-ui, sans-serif;
+  --fw-title: 500;
+  --section-weight: 600;
+
+  --hero-bg: #f4f6f9;
+  --hero-ink: #25272b;
+  --hero-label: #2448ea;
+  --hero-btn-bg: #2448ea;
+  --hero-btn-ink: #ffffff;
+  --hero-visual: linear-gradient(135deg, #dceeff 0%, #c9dcf7 100%);
+  --hero-visual-ink: rgba(36, 72, 234, 0.45);
+  --welcome-top: #2b2e34;
+  --welcome-bottom: #16181b;
+
+  --block-bg: #f4f6f9;
+  --block-ink: #25272b;
+  --block-label: #2448ea;
+  --block-rule: #2448ea;
+
+  --rec-idle-bg: #2448ea;
+  --rec-idle-ink: #ffffff;
+  --rec-on-bg: #ab2239;
+  --rec-on-ink: #ffffff;
+  --rec-on-border: #ab2239;
+
+  --card-bg: #f4f6f9;
+  --card-border: transparent;
+  --card-shadow: none;
+  --field-bg: #f4f6f9;
+  --field-border: #8c93a0;
+  --dock-bg: #ffffff;
+  --dock-active-bg: #dceeff;
+  --dock-active-ink: #25272b;
+
+  --thumb-display: none; /* la DA 2 n’a pas de vignette en liste */
+  --staff-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='112' viewBox='0 0 220 112'%3E%3Cg fill='none' stroke='%232448ea' stroke-opacity='.28' stroke-width='2'%3E%3Cpath d='M0 40c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 56c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 72c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3C/g%3E%3C/svg%3E");
+  --focus-ring: 0 0 0 2px #ffffff, 0 0 0 4px #2448ea;
+}
+
+/* ———————————————————— V0.4 actuelle · Crème & espresso ———————————————————— */
+html[data-v0='1'][data-brand='espresso'] {
+  --id-bg: #f5f0e6;
+  --id-surface: #fbf7f0;
+  --id-surface-sunken: #efe7da;
+  --id-ink: #3c2a21;
+  --id-primary: #3c2a21;
+  --id-on-primary: #f5f0e6;
   --id-accent: #b08a45;
-  --id-accent-soft: rgba(176, 138, 69, 0.18);
-  --id-accent-ink: #6f5219;
-  --ink-muted: rgba(21, 38, 66, 0.78);
-  --ink-faint: rgba(21, 38, 66, 0.66);
-  --line: rgba(21, 38, 66, 0.14);
-  --line-strong: rgba(21, 38, 66, 0.3);
-  --fn-info: #152642;
-  --fn-info-soft: rgba(21, 38, 66, 0.06);
+  --id-accent-soft: rgba(176, 138, 69, 0.16);
+  --id-accent-ink: #7a5a1f;
+
+  --ink-muted: rgba(60, 42, 33, 0.78);
+  --ink-faint: rgba(60, 42, 33, 0.68);
+  --line: rgba(60, 42, 33, 0.14);
+  --line-strong: rgba(60, 42, 33, 0.28);
+
+  --fn-success: #2f6b45;
+  --fn-success-soft: rgba(47, 107, 69, 0.12);
+  --fn-warning: #8a5a00;
+  --fn-warning-strong: #d79a1a;
+  --fn-warning-soft: rgba(215, 154, 26, 0.16);
+  --fn-error: #b42318;
+  --fn-error-soft: rgba(180, 35, 24, 0.08);
+  --fn-record: #d92d20;
+  --fn-record-soft: rgba(217, 45, 32, 0.12);
+  --fn-info: #3c2a21;
+  --fn-info-soft: rgba(60, 42, 33, 0.06);
+
+  --font-title: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --fw-title: 560;
+  --ls-title: -0.015em;
+  --section-transform: uppercase;
+  --section-size: 0.78rem;
+  --section-weight: 800;
+  --section-color: var(--ink-faint);
+  --section-spacing: 0.06em;
+
+  --hero-bg: #3c2a21;
+  --hero-ink: #f7f1e8;
+  --hero-label: rgba(247, 241, 232, 0.9);
+  --hero-btn-bg: #f7f1e8;
+  --hero-btn-ink: #3c2a21;
+  --hero-visual: linear-gradient(160deg, #5a4334 0%, #3c2a21 100%);
+  --hero-visual-ink: rgba(247, 241, 232, 0.3);
+  --welcome-top: #4a362b;
+  --welcome-bottom: #2a1d17;
+
+  --block-bg: #fbf7f0;
+  --block-ink: #3c2a21;
+  --block-label: rgba(60, 42, 33, 0.68);
+  --block-rule: transparent;
+
+  --rec-idle-bg: #d92d20;
+  --rec-idle-ink: #ffffff;
+  --rec-on-bg: #d92d20;
+  --rec-on-ink: #ffffff;
+  --rec-on-border: #d92d20;
+
+  --card-bg: #fbf7f0;
+  --card-border: rgba(60, 42, 33, 0.14);
+  --card-shadow: 0 1px 2px rgba(60, 42, 33, 0.06), 0 6px 18px rgba(60, 42, 33, 0.05);
+  --field-bg: #fbf7f0;
+  --field-border: rgba(60, 42, 33, 0.28);
+  --dock-bg: #fbf7f0;
+  --dock-active-bg: rgba(60, 42, 33, 0.06);
+  --dock-active-ink: #3c2a21;
+
+  --thumb-1: rgba(176, 138, 69, 0.16);
+  --thumb-2: rgba(176, 138, 69, 0.16);
+  --thumb-3: rgba(176, 138, 69, 0.16);
+  --thumb-ink: #7a5a1f;
+  --thumb-display: grid;
+
+  --r-lg: 18px;
+  --shadow-1: 0 1px 2px rgba(60, 42, 33, 0.06), 0 6px 18px rgba(60, 42, 33, 0.05);
+  --shadow-2: 0 10px 28px rgba(60, 42, 33, 0.12);
+  --focus-ring: 0 0 0 3px rgba(176, 138, 69, 0.55);
+  --page-x: 16px;
+  --dock-h: calc(72px + env(safe-area-inset-bottom));
+}
+
+/* ———————————————————— DA 4 · Ivoire & marine (proposition du 23/11/2026) ————————————————————
+ * Ivoire : fond principal · Gris clair : surfaces secondaires (et marges latérales sur ordinateur)
+ * Bleu ciel : accents et sélections · Marine : cartes principales et consignes
+ * Anthracite : textes, navigation, éléments structurants · Rouge : enregistrement UNIQUEMENT.
+ * Le rouge étant réservé à l’enregistrement, l’erreur et la suppression passent en anthracite
+ * (contour + icône d’alerte + libellé), sans couleur rouge.
+ */
+html[data-v0='1'][data-brand='ivoire'] {
+  --id-bg: #f7f3ea; /* Ivoire */
+  --id-surface: #eceef1; /* Gris clair */
+  --id-surface-sunken: #e2e5ea;
+  --id-ink: #1c1e22; /* Anthracite */
+  --id-primary: #152642; /* Marine */
+  --id-on-primary: #ffffff;
+  --id-accent: #cfe3f5; /* Bleu ciel */
+  --id-accent-soft: #cfe3f5;
+  --id-accent-ink: #1c1e22;
+
+  --ink-muted: #4f5560; /* 6,77:1 sur ivoire */
+  --ink-faint: #4f5560;
+  --line: rgba(28, 30, 34, 0.14);
+  --line-strong: #7d8592; /* 3,36:1 sur ivoire */
+
+  /* Vert / jaune non définis par la palette : états fonctionnels V0.4 conservés (avec libellés). */
+  --fn-success: #2f6b45;
+  --fn-success-soft: rgba(47, 107, 69, 0.12);
+  --fn-warning: #8a5a00;
+  --fn-warning-strong: #d79a1a;
+  --fn-warning-soft: rgba(215, 154, 26, 0.16);
+  --fn-error: #1c1e22; /* pas de rouge hors enregistrement */
+  --fn-error-soft: #eceef1;
+  --fn-record: #c62828; /* Rouge — enregistrement uniquement */
+  --fn-record-soft: rgba(198, 40, 40, 0.1);
+  --fn-info: #1c1e22;
+  --fn-info-soft: #eceef1;
+
+  --font-title: Manrope, system-ui, sans-serif;
+  --fw-title: 700;
+  --ls-title: -0.02em;
+  --section-transform: none;
+  --section-size: 1.125rem;
+  --section-weight: 700;
+  --section-color: var(--ink);
+  --section-spacing: 0;
+
+  --hero-bg: #152642;
+  --hero-ink: #ffffff;
+  --hero-label: #cfe3f5;
+  --hero-btn-bg: #cfe3f5;
+  --hero-btn-ink: #1c1e22;
+  --hero-visual: linear-gradient(135deg, #22365c 0%, #152642 100%);
+  --welcome-top: #22365c;
+  --welcome-bottom: #1c1e22;
+  --staff-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='112' viewBox='0 0 220 112'%3E%3Cg fill='none' stroke='%23cfe3f5' stroke-opacity='.4' stroke-width='2'%3E%3Cpath d='M0 40c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 56c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 72c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3C/g%3E%3C/svg%3E");
+
+  --block-bg: #152642;
+  --block-ink: #ffffff;
+  --block-label: #cfe3f5;
+  --block-rule: transparent;
+
+  --rec-idle-bg: #152642; /* au repos : marine ; rouge seulement pendant l’enregistrement */
+  --rec-idle-ink: #ffffff;
+  --rec-on-bg: #c62828;
+  --rec-on-ink: #ffffff;
+  --rec-on-border: #c62828;
+
+  --card-bg: #eceef1;
+  --card-border: rgba(28, 30, 34, 0.12); /* gris clair / ivoire = 1,05:1 : bordure indispensable */
+  --card-shadow: none;
+  --field-bg: #ffffff;
+  --field-border: #7d8592;
+  --dock-bg: #f7f3ea;
+  --dock-active-bg: #cfe3f5;
+  --dock-active-ink: #1c1e22;
+
+  --thumb-1: #cfe3f5;
+  --thumb-2: #e6dfcf;
+  --thumb-3: #dde1e7;
+  --thumb-ink: #152642;
+  --thumb-display: grid;
+
+  --r-lg: 16px;
+  --shadow-1: none;
+  --shadow-2: 0 10px 28px rgba(21, 38, 66, 0.12);
+  --focus-ring: 0 0 0 2px #f7f3ea, 0 0 0 4px #152642;
+  --page-x: 20px;
+  --dock-h: calc(70px + env(safe-area-inset-bottom));
 }

@@ -49,7 +49,10 @@ import { Badge, fmt, MetronomePanel, PieceThumb, RecordPanel, Section, SourceTag
 type Tab = 'home' | 'library' | 'follow' | 'profile'
 type Tool = 'none' | 'metronome' | 'resources' | 'notes'
 
-const BRAND_KEY = 'aria.v0.brandPreview'
+/** Thèmes comparables sur la branche de prévisualisation de la direction visuelle. */
+type Theme = 'marine' | 'electrique' | 'espresso' | 'ivoire'
+const THEME_KEY = 'aria.v0.theme'
+const isTheme = (v: string | null): v is Theme => v === 'marine' || v === 'electrique' || v === 'espresso' || v === 'ivoire'
 
 const instLabel = (id: InstrumentId) => INSTRUMENTS.find((i) => i.id === id)?.label || id
 const levelLabel = (id: LevelId) => LEVELS.find((l) => l.id === id)?.label || id
@@ -127,16 +130,18 @@ export function AriaApp() {
   const [profileHint, setProfileHint] = useState('')
   const [tool, setTool] = useState<Tool>('none')
   const [showPlan, setShowPlan] = useState(false)
-  const [brand, setBrand] = useState<'default' | 'marine'>(() => {
+  const [brand, setBrand] = useState<Theme>(() => {
     try {
-      const fromUrl = new URLSearchParams(window.location.search).get('brand')
-      if (fromUrl === 'marine' || fromUrl === 'default') {
-        localStorage.setItem(BRAND_KEY, fromUrl)
+      const params = new URLSearchParams(window.location.search)
+      const fromUrl = params.get('theme') || params.get('brand')
+      if (isTheme(fromUrl)) {
+        localStorage.setItem(THEME_KEY, fromUrl)
         return fromUrl
       }
-      return localStorage.getItem(BRAND_KEY) === 'marine' ? 'marine' : 'default'
+      const stored = localStorage.getItem(THEME_KEY)
+      return isTheme(stored) ? stored : 'marine'
     } catch {
-      return 'default'
+      return 'marine'
     }
   })
   const recorder = useMediaRecorder()
@@ -148,10 +153,9 @@ export function AriaApp() {
   const numbers = useMemo(() => takeNumbers(allTakes), [allTakes])
 
   useEffect(() => {
-    if (brand === 'marine') document.documentElement.dataset.brand = 'marine'
-    else delete document.documentElement.dataset.brand
+    document.documentElement.dataset.brand = brand
     try {
-      localStorage.setItem(BRAND_KEY, brand)
+      localStorage.setItem(THEME_KEY, brand)
     } catch {
       /* ignore */
     }
@@ -942,70 +946,66 @@ export function AriaApp() {
               {(firstName || 'A').slice(0, 1).toUpperCase()}
             </button>
           </div>
-          <h1 className="ds-h1">
-            {firstName ? (
-              <>
-                Bonjour {firstName},
-                <br />
-                envie de jouer ?
-              </>
-            ) : (
-              <>Envie de jouer ?</>
-            )}
-          </h1>
+          {/* « Bonjour, » seulement si le prénom est connu (correction Sprint 03). */}
+          {firstName ? <p className="ds-greeting">Bonjour {firstName},</p> : null}
+          <h1 className="ds-h1 ds-h1--home">Envie de jouer ?</h1>
           {inProgressPiece ? (
-            <button
-              className="v0-resume"
-              type="button"
-              onClick={() => resumePracticeFor(inProgressPiece.id)}
-            >
-              <small>
-                Reprendre ma séance
-                {inProgressPiece.program
-                  ? ` · étape ${Math.min(inProgressPiece.program.stepIndex + 1, inProgressPiece.program.steps.length)}/${inProgressPiece.program.steps.length} · ${inProgressPiece.program.minutes} min`
-                  : ''}
-              </small>
-              <b>{inProgressPiece.title}</b>
-              <span className="v0-resume-play" aria-hidden>
-                <Icon name="play" size={22} />
+            <button className="v0-resume" type="button" onClick={() => resumePracticeFor(inProgressPiece.id)}>
+              <span className="v0-resume-visual" aria-hidden />
+              <span className="v0-resume-body">
+                <small>
+                  Reprendre ma séance
+                  {inProgressPiece.program
+                    ? ` · étape ${Math.min(inProgressPiece.program.stepIndex + 1, inProgressPiece.program.steps.length)}/${inProgressPiece.program.steps.length} · ${inProgressPiece.program.minutes} min`
+                    : ''}
+                </small>
+                <b>{inProgressPiece.title}</b>
+                <span className="v0-resume-cta">
+                  <Icon name="play" size={18} />
+                  <span>Reprendre</span>
+                  <span />
+                </span>
               </span>
             </button>
           ) : lastCompletedPiece ? (
             <div className="ds-stack">
-              <button
-                className="v0-resume"
-                type="button"
-                onClick={() => openPiece(lastCompletedPiece.id)}
-              >
-                <small>Dernière séance terminée</small>
-                <b>{lastCompletedPiece.title}</b>
+              <button className="v0-resume" type="button" onClick={() => startPracticeFor(lastCompletedPiece.id)}>
+                <span className="v0-resume-visual" aria-hidden />
+                <span className="v0-resume-body">
+                  <small>Prochaine séance</small>
+                  <b>{lastCompletedPiece.title}</b>
+                  <span className="v0-resume-cta">
+                    <Icon name="play" size={18} />
+                    <span>Nouvelle séance</span>
+                    <span />
+                  </span>
+                </span>
               </button>
               {lastCompletedLog?.nextStep ? (
                 <div className="ds-card ds-card--accent">
-                  <span className="ds-overline">Prochaine séance</span>
+                  <span className="ds-overline">Conseil pour la prochaine séance</span>
                   <p className="ds-body">{lastCompletedLog.nextStep}</p>
                 </div>
               ) : null}
-              <div className="ds-actions ds-actions--split">
-                <button className="ds-btn ds-btn--primary" type="button" onClick={() => startPracticeFor(lastCompletedPiece.id)}>
-                  Nouvelle séance
-                </button>
-                <button className="ds-btn ds-btn--secondary" type="button" onClick={() => openPiece(lastCompletedPiece.id)}>
-                  Voir le bilan
-                </button>
-              </div>
+              <button className="ds-btn ds-btn--secondary" type="button" onClick={() => openPiece(lastCompletedPiece.id)}>
+                Voir le bilan
+              </button>
             </div>
           ) : (
-            <button
-              className="v0-resume"
-              type="button"
-              onClick={() => goTab('library')}
-            >
-              <small>Commencer</small>
-              <b>Ajouter ou choisir un morceau</b>
+            <button className="v0-resume" type="button" onClick={() => goTab('library')}>
+              <span className="v0-resume-visual" aria-hidden />
+              <span className="v0-resume-body">
+                <small>Commencer</small>
+                <b>Ajouter ou choisir un morceau</b>
+                <span className="v0-resume-cta">
+                  <Icon name="library" size={18} />
+                  <span>Ouvrir la bibliothèque</span>
+                  <span />
+                </span>
+              </span>
             </button>
           )}
-          <Section title="Accès rapides">
+          <Section title="Mes accès rapides">
             <div className="v0-quick">
               <button type="button" onClick={startPracticeFromHome}>
                 <Icon name="play" />
@@ -1028,7 +1028,7 @@ export function AriaApp() {
                   const p = getPiece(log.pieceId)
                   return (
                     <button key={log.id} className="ds-row-card" type="button" onClick={() => openPiece(log.pieceId)}>
-                      <PieceThumb instrument={p?.instrument} />
+                      <PieceThumb instrument={p?.instrument} seed={p?.id || log.pieceId} />
                       <span className="ds-row-card-text">
                         <b>{p?.title || 'Morceau'}</b>
                         <span>
@@ -1057,7 +1057,7 @@ export function AriaApp() {
       {screen === 'library' ? (
         <section className="v0-main">
           <h1 className="ds-h1">Bibliothèque</h1>
-          <label className="ds-sr" htmlFor="lib-search">
+          <label className="ds-label" htmlFor="lib-search">
             Rechercher un morceau
           </label>
           <input
@@ -1082,7 +1082,7 @@ export function AriaApp() {
           <div className="ds-stack ds-mt">
             {filtered.map((p) => (
               <button key={p.id} className="ds-row-card" type="button" onClick={() => openPiece(p.id)}>
-                <PieceThumb instrument={p.instrument} />
+                <PieceThumb instrument={p.instrument} seed={p.id} />
                 <span className="ds-row-card-text">
                   <b>
                     {p.title} {p.demo ? <Badge tone="accent">Démo</Badge> : null}
@@ -1440,7 +1440,18 @@ export function AriaApp() {
             const last = idx >= total - 1
             return (
               <>
-                <TopBar onBack={() => setScreen('piece')} title={piece.title} />
+                <TopBar onBack={() => setScreen('piece')} />
+                <h1 className="ds-h1">Ma séance</h1>
+                <p className="ds-lead">
+                  {piece.title}
+                  {program.objective ? ` · ${program.objective}` : ''}
+                </p>
+                <div className="ds-row ds-row--between">
+                  <Badge tone="accent">
+                    Étape {idx + 1} sur {total}
+                  </Badge>
+                  {step.minutes ? <Badge tone="neutral" icon="timer">{step.minutes} min</Badge> : null}
+                </div>
                 <div className="ds-steps" aria-label={`Étape ${idx + 1} sur ${total}`}>
                   {program.steps.map((s, i) => (
                     <button
@@ -1452,60 +1463,68 @@ export function AriaApp() {
                     />
                   ))}
                 </div>
-                <div className="ds-row ds-row--between">
-                  <span className="ds-overline">
-                    Étape {idx + 1} sur {total}
-                    {program.objective ? ` · ${program.objective}` : ''}
-                  </span>
-                  {step.minutes ? <Badge tone="neutral" icon="timer">{step.minutes} min</Badge> : null}
-                </div>
 
-                <article className="ds-stepcard" data-testid="step-card">
-                  <h1 className="ds-h2">{step.title}</h1>
+                <article className="ds-stepblock" data-testid="step-card">
+                  <h2 className="ds-h2">{step.title}</h2>
                   <div className="ds-stepcard-block">
-                    <span className="ds-overline">Consigne</span>
+                    <span className="ds-stepblock-label">Consigne</span>
                     <p className="ds-body-lg">{step.what}</p>
                   </div>
                   <div className="ds-stepcard-block">
-                    <span className="ds-overline">Comment</span>
+                    <span className="ds-stepblock-label">Comment</span>
                     <p className="ds-body">{step.how}</p>
                   </div>
                   <div className="ds-criterion">
                     <Icon name="target" size={20} />
                     <div>
-                      <span className="ds-overline">Critère de réussite</span>
+                      <span className="ds-stepblock-label">Critère de réussite</span>
                       <p className="ds-body">{step.success}</p>
                     </div>
                   </div>
-                  <details className="ds-why">
-                    <summary>Pourquoi cette étape ?</summary>
-                    <p className="ds-body">{step.why}</p>
-                  </details>
-                  {step.minutes ? <StepTimer minutes={step.minutes} resetKey={step.id} /> : null}
-                  <div className="ds-selfcheck" role="group" aria-label="As-tu atteint le critère ?">
-                    <span className="ds-caption">As-tu atteint le critère ? (ton avis)</span>
-                    <div className="ds-row">
-                      <button
-                        type="button"
-                        aria-pressed={step.check === 'ok'}
-                        className={`ds-btn ds-btn--sm ds-btn--success-outline${step.check === 'ok' ? ' is-on' : ''}`}
-                        onClick={() => setStepCheck(step.id, 'ok')}
-                      >
-                        <Icon name="check" size={18} />
-                        Oui, réussi
-                      </button>
-                      <button
-                        type="button"
-                        aria-pressed={step.check === 'retry'}
-                        className={`ds-btn ds-btn--sm ds-btn--warning-outline${step.check === 'retry' ? ' is-on' : ''}`}
-                        onClick={() => setStepCheck(step.id, 'retry')}
-                      >
-                        <Icon name="retry" size={18} />
-                        Pas encore
-                      </button>
-                    </div>
-                  </div>
                 </article>
+
+                <RecordPanel recorder={recorder} onToggle={toggleRecording} hint={takeHint} context={step.title} />
+
+                {sessionTakes.length ? (
+                  <Section title={`Prises de la séance (${sessionTakes.length})`}>
+                    <div className="ds-stack">
+                      {sessionTakes.map((t) => (
+                        <TakePlayer key={t.id} take={t} label={takeLabel(t)} detail={takeDetail(t)} onDelete={removeTake} />
+                      ))}
+                    </div>
+                  </Section>
+                ) : null}
+
+                <div className="ds-stepcard-tools">
+                    <details className="ds-why">
+                      <summary>Pourquoi cette étape ?</summary>
+                      <p className="ds-body">{step.why}</p>
+                    </details>
+                    {step.minutes ? <StepTimer minutes={step.minutes} resetKey={step.id} /> : null}
+                    <div className="ds-selfcheck" role="group" aria-label="As-tu atteint le critère ?">
+                      <span className="ds-caption">As-tu atteint le critère ? (ton avis)</span>
+                      <div className="ds-row">
+                        <button
+                          type="button"
+                          aria-pressed={step.check === 'ok'}
+                          className={`ds-btn ds-btn--sm ds-btn--success-outline${step.check === 'ok' ? ' is-on' : ''}`}
+                          onClick={() => setStepCheck(step.id, 'ok')}
+                        >
+                          <Icon name="check" size={18} />
+                          Oui, réussi
+                        </button>
+                        <button
+                          type="button"
+                          aria-pressed={step.check === 'retry'}
+                          className={`ds-btn ds-btn--sm ds-btn--warning-outline${step.check === 'retry' ? ' is-on' : ''}`}
+                          onClick={() => setStepCheck(step.id, 'retry')}
+                        >
+                          <Icon name="retry" size={18} />
+                          Pas encore
+                        </button>
+                      </div>
+                    </div>
+                </div>
 
                 <div className="ds-toolbar" role="group" aria-label="Outils">
                   <button type="button" aria-pressed={tool === 'metronome'} className={tool === 'metronome' ? 'is-on' : ''} onClick={() => setTool(tool === 'metronome' ? 'none' : 'metronome')}>
@@ -1525,17 +1544,6 @@ export function AriaApp() {
                 {tool === 'resources' ? resourcesPanel : null}
                 {tool === 'notes' ? notesPanel : null}
 
-                <RecordPanel recorder={recorder} onToggle={toggleRecording} hint={takeHint} context={step.title} />
-
-                {sessionTakes.length ? (
-                  <Section title={`Prises de la séance (${sessionTakes.length})`}>
-                    <div className="ds-stack">
-                      {sessionTakes.map((t) => (
-                        <TakePlayer key={t.id} take={t} label={takeLabel(t)} detail={takeDetail(t)} onDelete={removeTake} />
-                      ))}
-                    </div>
-                  </Section>
-                ) : null}
 
                 <div className="ds-actions ds-actions--split">
                   <button className="ds-btn ds-btn--secondary" type="button" disabled={idx === 0} onClick={() => setStepIndex(idx - 1)}>
@@ -1975,18 +1983,31 @@ export function AriaApp() {
               Enregistrer le profil
             </button>
           </div>
-          <Section title="Apparence (aperçu)">
+          <Section title="Direction visuelle (aperçu)">
             <div className="ds-card ds-stack-sm">
               <p className="ds-body">
-                Variante identitaire marine <span className="ds-swatch" aria-hidden /> en cours d’évaluation. Elle n’est appliquée que sur cet appareil.
+                Compare les propositions dans l’application réelle. Le choix n’est enregistré que sur cet appareil ; tes données ne changent pas.
               </p>
-              <div className="ds-seg" role="group" aria-label="Variante identitaire">
-                <button type="button" aria-pressed={brand === 'default'} className={brand === 'default' ? 'is-on' : ''} onClick={() => setBrand('default')}>
-                  Crème & espresso
-                </button>
-                <button type="button" aria-pressed={brand === 'marine'} className={brand === 'marine' ? 'is-on' : ''} onClick={() => setBrand('marine')}>
-                  Marine (aperçu)
-                </button>
+              <div className="ds-stack-sm" role="group" aria-label="Direction visuelle">
+                {(
+                  [
+                    ['marine', 'Marine (DA 1)', 'Marine, papier, Manrope — référence de travail'],
+                    ['electrique', 'Bleu électrique (DA 2)', 'Blanc, gris clair, bleu électrique, anthracite'],
+                    ['espresso', 'Crème & espresso (V0.4)', 'Version actuelle publiée en prévisualisation'],
+                    ['ivoire', 'Ivoire & marine (DA 4)', 'Ivoire, gris clair, bleu ciel, marine, anthracite ; rouge réservé à l’enregistrement'],
+                  ] as const
+                ).map(([id, label, hint]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    aria-pressed={brand === id}
+                    className={`ds-option${brand === id ? ' is-on' : ''}`}
+                    onClick={() => setBrand(id)}
+                  >
+                    <b>{label}</b>
+                    <span>{hint}</span>
+                  </button>
+                ))}
               </div>
             </div>
           </Section>
@@ -2015,7 +2036,9 @@ export function AriaApp() {
             ] as const
           ).map(([id, icon, label]) => (
             <button key={id} type="button" className={tab === id ? 'on' : ''} aria-current={tab === id ? 'page' : undefined} onClick={() => goTab(id)}>
-              <Icon name={icon} size={22} />
+              <span className="v0-dock-icon">
+                <Icon name={icon} size={22} />
+              </span>
               <span>{label}</span>
             </button>
           ))}
