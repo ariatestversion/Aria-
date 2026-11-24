@@ -11,10 +11,19 @@ export function fmt(sec: number) {
 
 /* —— Vignette de morceau (composant neutre, sans image externe) —— */
 
-export function PieceThumb({ instrument }: { instrument?: InstrumentId }) {
+/** Vignette neutre : vagues abstraites teintées (DA 1) ou icône d’instrument (V0.4). Aucune image externe. */
+export function PieceThumb({ instrument, seed = '' }: { instrument?: InstrumentId; seed?: string }) {
+  const tint = (([...seed].reduce((a, c) => a + c.charCodeAt(0), 0) % 3) + 1).toString()
   return (
-    <span className="ds-thumb ds-thumb--icon" aria-hidden>
-      <Icon name={INSTRUMENT_ICON[instrument || 'other']} size={26} />
+    <span className="ds-thumb ds-thumb--icon" data-tint={tint} aria-hidden>
+      <svg className="ds-thumb-waves" width="30" height="24" viewBox="0 0 30 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+        <path d="M2 7c4-3 8-3 12 0s8 3 12 0" />
+        <path d="M2 12c4-3 8-3 12 0s8 3 12 0" />
+        <path d="M2 17c4-3 8-3 12 0s8 3 12 0" />
+      </svg>
+      <span className="ds-thumb-inst">
+        <Icon name={INSTRUMENT_ICON[instrument || 'other']} size={26} />
+      </span>
     </span>
   )
 }
@@ -258,32 +267,31 @@ export function RecordPanel({
   const recording = recorder.status === 'recording'
   return (
     <div className={`ds-recorder${recording ? ' is-recording' : ''}`}>
-      <div className="ds-recorder-row">
-        <div className="ds-recorder-status" aria-live="polite">
-          {recording ? (
-            <Badge tone="record" icon="record">
-              REC · enregistrement en cours
-            </Badge>
-          ) : (
-            <span className="ds-recorder-ready">
-              <Icon name="mic" size={18} />
-              Prêt à enregistrer
-            </span>
-          )}
-          {context ? <span className="ds-recorder-context">{context}</span> : null}
-          <span className="ds-recorder-clock">{fmt(recorder.seconds)}</span>
-        </div>
-        <button
-          type="button"
-          className={`ds-recbtn${recording ? ' is-on' : ''}`}
-          onClick={onToggle}
-          disabled={recorder.status === 'unsupported'}
-          aria-label={recording ? 'Arrêter et sauvegarder la prise' : 'Démarrer l’enregistrement'}
-        >
-          <Icon name={recording ? 'stop' : 'record'} size={22} />
-          <span>{recording ? 'Arrêter' : 'Enregistrer'}</span>
-        </button>
-      </div>
+      <button
+        type="button"
+        className={`ds-recbtn${recording ? ' is-on' : ''}`}
+        onClick={onToggle}
+        disabled={recorder.status === 'unsupported'}
+        aria-label={recording ? 'Arrêter et sauvegarder la prise' : 'Démarrer l’enregistrement'}
+      >
+        <span className="ds-recbtn-dot" aria-hidden />
+        <span>{recording ? `Arrêter · ${fmt(recorder.seconds)}` : 'Enregistrer une prise'}</span>
+        <span aria-hidden />
+      </button>
+      <p className={`ds-recorder-status${recording ? ' is-on' : ''}`} aria-live="polite">
+        {recording ? (
+          <>
+            <span className="ds-dot" aria-hidden />
+            Enregistrement en cours · {fmt(recorder.seconds)}
+          </>
+        ) : (
+          <>
+            <Icon name="mic" size={16} />
+            Prêt à enregistrer
+            {context ? <span className="ds-recorder-context">· {context}</span> : null}
+          </>
+        )}
+      </p>
       {recorder.status === 'denied' ? (
         <div className="ds-alert ds-alert--error" role="alert">
           <Icon name="mic-off" size={18} />

@@ -1,4 +1,5 @@
 import type {
+  Followup,
   HabitId,
   InstrumentId,
   LevelId,
@@ -20,7 +21,7 @@ import { newId } from './store'
  * Les critères de réussite sont formulés pour être observés par l’utilisateur lui-même.
  */
 
-export const RULES_VERSION = 'sprint04-v1'
+export const RULES_VERSION = 'sprint05-v1'
 
 type Family = 'keys' | 'fretted' | 'voice' | 'drums' | 'other'
 type Focus = 'rhythm' | 'accuracy' | 'tempo' | 'memory' | 'expression'
@@ -414,6 +415,86 @@ export type ProgramInput = {
   passage: string
   resource: ResourceMode
   difficulties: string
+  /** Sprint 05 — dernière séance terminée sur ce morceau, pour enchaîner le travail. */
+  previous?: PreviousSession | null
+}
+
+/**
+ * Ce que la séance précédente laisse pour la suivante. Tout vient de l’utilisateur
+ * (observations, auto-évaluations) ou du programme précédent ; rien n’est déduit du son.
+ */
+export type PreviousSession = {
+  date: string
+  objective: string
+  improve: string
+  retrySteps: string[]
+  okSteps: string[]
+  /** Tempo de travail de la séance précédente (programme), s’il y en avait un. */
+  bpm?: number
+  /** Exercice annoncé par le bilan, repris tel quel (absent : rien à reprendre). */
+  followup?: Followup | null
+}
+
+/** Extrait la séance précédente d’un journal terminé et du programme qui l’a produit. */
+export function previousSessionFrom(
+  log:
+    | {
+        createdAt: string
+        objective: string
+        observationImprove: string
+        stepChecks?: { title: string; check: StepCheck }[]
+        followup?: Followup | null
+      }
+    | null
+    | undefined,
+  program: WorkProgram | null | undefined,
+  context?: { instrument: InstrumentId; level: LevelId },
+): PreviousSession | null {
+  if (!log) return null
+  const checks = log.stepChecks || []
+  const bpms = (program?.steps || []).map((s) => s.bpm).filter((b): b is number => typeof b === 'number')
+  // Séances terminées avant ce correctif : on recalcule la reprise avec la même règle que le bilan.
+  const followup =
+    log.followup !== undefined
+      ? log.followup
+      : planFollowup({
+          improve: log.observationImprove || '',
+          objective: log.objective || program?.objective || '',
+          instrument: context?.instrument || program?.instrument || 'other',
+          level: context?.level || program?.level || 'beginner',
+          steps: program?.steps?.length
+            ? program.steps.map((s) => ({ ...s, check: checks.find((c) => c.title === s.title)?.check }))
+            : checks.map((c) => ({ title: c.title, check: c.check })),
+        })
+  return {
+    followup,
+    date: log.createdAt,
+    objective: log.objective || program?.objective || '',
+    improve: (log.observationImprove || '').trim(),
+    retrySteps: checks.filter((c) => c.check === 'retry').map((c) => c.title),
+    okSteps: checks.filter((c) => c.check === 'ok').map((c) => c.title),
+    bpm: bpms.length ? Math.max(...bpms) : undefined,
+  }
+}
+
+/**
+ * Tempo de départ en tenant compte de la séance précédente (règle explicite, mêmes valeurs
+ * que les conseils du bilan) : −8 BPM si une étape est à reprendre, +4 BPM si toutes les
+ * étapes évaluées sont réussies, sinon le même tempo.
+ */
+export function continuedBpm(base: number, previous: PreviousSession | null | undefined): number {
+  if (!previous?.bpm) return base
+  if (previous.retrySteps.length) return Math.max(40, previous.bpm - 8)
+  if (previous.okSteps.length) return Math.min(200, previous.bpm + 4)
+  return previous.bpm
+}
+
+function shortDate(iso: string) {
+  try {
+    return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
+  } catch {
+    return ''
+  }
 }
 
 export function buildProgram(input: ProgramInput): WorkProgram {
@@ -424,11 +505,15 @@ export function buildProgram(input: ProgramInput): WorkProgram {
   const secondaryRaw = goals.slice(1).map(focusOf).find((f) => f && f !== primary) || focusOf(input.difficulties)
   const secondary: Focus | null = secondaryRaw && secondaryRaw !== primary ? secondaryRaw : null
   const family = familyOf(input.instrument)
+  // La continuité ne s’applique que si l’on poursuit le même objectif principal.
+  const previous = input.previous && input.previous.objective === objective ? input.previous : null
+  const timed = primary === 'rhythm' || primary === 'tempo'
+  const bpm = timed ? continuedBpm(BPM[input.level], previous) : BPM[input.level]
   const ctx: Ctx = {
     family,
     instrument: input.instrument,
     level: input.level,
-    bpm: BPM[input.level],
+    bpm,
     cell: CELL[input.level],
     passage: input.passage.trim() || 'le passage choisi',
     resource: input.resource,
@@ -444,18 +529,47 @@ export function buildProgram(input: ProgramInput): WorkProgram {
   drafts.push({ kind: 'apply', draft: applyStep(primary, ctx), weight: 0.25 })
   drafts.push({ kind: 'record', draft: recordStep(ctx), weight: 0.2 })
 
+  // Reprise : l’exercice annoncé par le bilan précédent, à l’identique, juste après l’échauffement.
+  // S’il figure déjà dans la séance (même exercice), il est remplacé au lieu d’être répété.
+  const fu = previous?.followup || null
+  if (fu) {
+    const reprise = {
+      kind: 'focus' as StepKind,
+      weight: 0.2,
+      draft: {
+        title: `Reprise · ${fu.title}`,
+        what: `${fu.reason} ${fu.what}`,
+        how: fu.how,
+        why: 'Commencer par ce qui restait à corriger évite de répéter la même erreur une séance de plus.',
+        success: fu.success,
+        bpm: fu.bpm,
+      },
+    }
+    const dup = drafts.findIndex((d) => d.draft.title === fu.title)
+    if (dup === 0) {
+      drafts[0] = { ...reprise, kind: drafts[0].kind, weight: Math.max(drafts[0].weight, reprise.weight) }
+    } else {
+      if (dup > 0) {
+        const [removed] = drafts.splice(dup, 1)
+        reprise.weight = Math.max(removed.weight, reprise.weight)
+      }
+      drafts.splice(1, 0, reprise)
+    }
+  }
+
   const split = allocateMinutes(
     minutes,
     drafts.map((d) => d.weight),
   )
   const difficulty = input.difficulties.trim()
+  const primaryIdx = drafts.findIndex((d) => d.kind === 'focus' && !d.draft.title.startsWith('Reprise ·'))
   const steps: WorkProgramStep[] = drafts.map((d, i) => ({
     id: newId('step'),
     kind: d.kind,
     minutes: split[i],
     ...d.draft,
     what:
-      d.kind === 'focus' && i === 1 && difficulty
+      i === primaryIdx && difficulty
         ? `${d.draft.what} Garde en tête la difficulté que tu as notée : « ${difficulty} ».`
         : d.draft.what,
   }))
@@ -463,6 +577,16 @@ export function buildProgram(input: ProgramInput): WorkProgram {
   const notes: string[] = []
   if (family === 'other') {
     notes.push('Instrument « Autre » : ARIA applique des règles générales, non spécifiques à ton instrument.')
+  }
+  if (previous) {
+    const parts: string[] = []
+    if (fu) parts.push(`la reprise de « ${fu.title} » annoncée dans ton bilan`)
+    if (timed && previous.bpm && bpm !== previous.bpm) {
+      parts.push(bpm > previous.bpm ? `un tempo de départ monté à ${bpm} BPM (${previous.bpm} la dernière fois)` : `un tempo de départ redescendu à ${bpm} BPM (${previous.bpm} la dernière fois)`)
+    }
+    if (parts.length) notes.push(`Suite de ta séance du ${shortDate(previous.date)} : ${parts.join(' et ')}. Règle ARIA appliquée à tes observations.`)
+  } else if (input.previous && input.previous.objective && input.previous.objective !== objective) {
+    notes.push(`Nouvel objectif (« ${objective} » au lieu de « ${input.previous.objective} ») : la séance repart des réglages de base.`)
   }
   if (input.resource === 'score' && !input.piece.resources.some((r) => r.kind === 'pdf')) {
     notes.push('Aucune partition importée pour ce morceau : tu peux en ajouter une depuis sa fiche.')
@@ -483,6 +607,7 @@ export function buildProgram(input: ProgramInput): WorkProgram {
     passage: input.passage.trim(),
     resource: input.resource,
     notes,
+    continuedFrom: previous ? previous.date : undefined,
   }
 }
 
@@ -513,6 +638,76 @@ export function correctiveExercise(input: {
   }
 }
 
+/**
+ * Exercice de reprise : ce que le bilan annonce ET ce que la séance suivante fait, à l’identique.
+ * Il est calculé une fois au bilan, enregistré avec la séance terminée, puis repris tel quel.
+ */
+
+type StepLike = { title: string; check?: StepCheck; what?: string; how?: string; success?: string; bpm?: number; kind?: StepKind }
+
+/**
+ * Règle unique de reprise :
+ * 1. une étape jugée « Pas encore » → on reprend CETTE étape, 8 BPM plus lentement si elle a un tempo ;
+ * 2. sinon, un point noté « à travailler » → l’exercice de l’axe correspondant, 8 BPM sous le tempo de travail ;
+ * 3. sinon → pas de reprise.
+ */
+export function planFollowup(input: {
+  improve: string
+  objective: string
+  instrument: InstrumentId
+  level: LevelId
+  steps: StepLike[]
+}): Followup | null {
+  const improve = input.improve.trim()
+  const retried = input.steps.find((s) => s.check === 'retry')
+  const bpms = input.steps.map((s) => s.bpm).filter((b): b is number => typeof b === 'number')
+  const workBpm = bpms.length ? Math.max(...bpms) : BPM[input.level]
+  if (retried && retried.what && retried.success) {
+    const bpm = retried.bpm ? Math.max(40, retried.bpm - 8) : undefined
+    const swap = (t: string) => (retried.bpm && bpm ? t.split(`${retried.bpm} BPM`).join(`${bpm} BPM`) : t)
+    return {
+      title: retried.title,
+      what: swap(retried.what),
+      how: retried.how ? swap(retried.how) : '',
+      success: retried.success,
+      bpm,
+      minutes: 5,
+      position: retried.kind === 'warmup' ? 'first' : 'after-warmup',
+      reason: improve
+        ? `Tu avais jugé « ${retried.title} » à reprendre et noté : « ${improve} ».`
+        : `Tu avais jugé « ${retried.title} » à reprendre.`,
+      origin: 'retry',
+    }
+  }
+  if (retried) {
+    // Étape d’un ancien programme sans contenu détaillé : on garde la règle par axe.
+  } else if (!improve) {
+    return null
+  }
+  const focus = focusOf(improve) || (retried ? focusOf(retried.title) : null) || focusOf(input.objective) || 'expression'
+  const timed = focus === 'rhythm' || focus === 'tempo'
+  const ctx: Ctx = {
+    family: familyOf(input.instrument),
+    instrument: input.instrument,
+    level: input.level,
+    bpm: Math.max(40, workBpm - 8),
+    cell: CELL.beginner,
+    passage: 'le passage',
+    resource: 'ear',
+  }
+  const draft = focusStep(focus, ctx)
+  return {
+    title: draft.title,
+    what: draft.what,
+    how: draft.how,
+    success: draft.success,
+    bpm: timed ? ctx.bpm : undefined,
+    minutes: 5,
+    reason: improve ? `Tu avais noté : « ${improve} ».` : `Tu avais jugé « ${retried!.title} » à reprendre.`,
+    origin: improve ? 'improve' : 'retry',
+  }
+}
+
 export type ReviewSource = 'user' | 'self-check' | 'rules' | 'facts'
 
 export type ReviewItem = { text: string; source: ReviewSource; empty?: boolean }
@@ -520,7 +715,9 @@ export type ReviewItem = { text: string; source: ReviewSource; empty?: boolean }
 export type Review = {
   works: ReviewItem
   improve: ReviewItem
-  corrective: ReviewItem & { title: string; success: string; minutes: number }
+  corrective: ReviewItem & { title: string; success: string; minutes: number; bpm?: number }
+  /** Exercice repris tel quel en tête de la séance suivante (null : rien à reprendre). */
+  followup: Followup | null
   next: ReviewItem
   facts: ReviewItem
   analysis: string
@@ -533,7 +730,7 @@ export function buildReview(input: {
   programObjective: string
   instrument: InstrumentId
   level?: LevelId
-  steps?: { title: string; check?: StepCheck }[]
+  steps?: StepLike[]
   takes?: { seconds: number }[]
   /** Une prise de ce morceau existe déjà (cette séance ou une précédente). */
   hasReferenceTake?: boolean
@@ -558,13 +755,7 @@ export function buildReview(input: {
       ? { text: `À reprendre selon toi : ${retrySteps.join(', ')}.`, source: 'self-check' }
       : { text: 'Non renseigné — note ce que tu veux corriger en priorité.', source: 'user', empty: true }
 
-  const corr = correctiveExercise({
-    improve,
-    objective,
-    instrument: input.instrument,
-    level,
-    retrySteps,
-  })
+  const followup = planFollowup({ improve, objective, instrument: input.instrument, level, steps })
 
   // Sans prise de référence, on propose d’en enregistrer une première ; la comparaison n’est
   // suggérée que lorsqu’une prise existe déjà pour ce morceau.
@@ -574,7 +765,6 @@ export function buildReview(input: {
     : 'enregistre une première prise de 30 secondes : elle servira de référence pour les prochaines comparaisons'
   // Le conseil suit l’axe de l’objectif : monter le tempo n’a de sens que pour le rythme ou le tempo.
   const focus = focusOf(objective) || 'expression'
-  const slower = focus === 'rhythm' || focus === 'tempo' ? '8 BPM plus lentement' : 'plus lentement'
   const continueAdvice: Record<Focus, string> = {
     rhythm: 'monte le tempo de 4 BPM, ou élargis au passage suivant si tout était stable',
     tempo: 'monte le tempo de 4 BPM, ou élargis au passage suivant si tout était stable',
@@ -582,22 +772,38 @@ export function buildReview(input: {
     memory: 'rejoue le passage sans regarder ton support, puis ajoute la cellule suivante si tout tient de mémoire',
     expression: 'travaille les enchaînements entre les phrases sans coupure, puis élargis au passage suivant si tout reste fluide',
   }
-  const next: ReviewItem = retrySteps.length
+  // Le texte annonce exactement l’exercice qui ouvrira la séance suivante (même titre, même tempo).
+  const next: ReviewItem = followup
     ? {
-        text: `Prochaine tentative : reprends « ${retrySteps[0]} » ${slower}, puis ${takeStep}.`,
+        text: `Prochaine séance : ${followup.position === 'first' ? 'ARIA commence par' : 'après l’échauffement, ARIA reprend'} « ${followup.title} »${followup.bpm ? ` à ${followup.bpm} BPM (8 BPM plus lentement)` : ''} pendant ${followup.minutes} min, puis ${takeStep}.`,
         source: 'rules',
       }
-    : improve
-      ? {
-          text: `Prochaine séance : commence par l’exercice correctif (5 min), puis ${takeStep}.`,
-          source: 'rules',
-        }
-      : {
-          text: hasReference
-            ? `Prochaine séance : garde l’objectif « ${objective} » et ${continueAdvice[focus]}.`
-            : `Prochaine séance : garde l’objectif « ${objective} » et enregistre une première prise de 30 secondes : elle servira de référence pour les prochaines comparaisons.`,
-          source: 'rules',
-        }
+    : {
+        text: hasReference
+          ? (focus === 'rhythm' || focus === 'tempo') && !okSteps.length
+            ? `Prochaine séance : garde l’objectif « ${objective} » au même tempo. Indique « Oui, réussi » sur les étapes réussies : ARIA montera alors le tempo de 4 BPM la séance suivante.`
+            : `Prochaine séance : garde l’objectif « ${objective} » et ${continueAdvice[focus]}.`
+          : `Prochaine séance : garde l’objectif « ${objective} » et enregistre une première prise de 30 secondes : elle servira de référence pour les prochaines comparaisons.`,
+        source: 'rules',
+      }
+
+  const corrective: Review['corrective'] = followup
+    ? {
+        title: followup.title,
+        text: `${followup.what} ${followup.how}`.trim(),
+        success: followup.success,
+        minutes: followup.minutes,
+        bpm: followup.bpm,
+        source: 'rules',
+      }
+    : {
+        title: 'Pas d’exercice correctif',
+        text: 'Tu n’as rien noté à travailler et aucune étape n’est marquée « Pas encore ». Si quelque chose reste fragile, note-le ci-dessus ou marque l’étape : ARIA la reprendra en tête de la prochaine séance.',
+        success: '—',
+        minutes: 0,
+        source: 'rules',
+        empty: true,
+      }
 
   const takes = input.takes || []
   const total = takes.reduce((a, t) => a + (t.seconds || 0), 0)
@@ -616,7 +822,8 @@ export function buildReview(input: {
   return {
     works: worksItem,
     improve: improveItem,
-    corrective: { ...corr, source: 'rules', text: corr.text },
+    corrective,
+    followup,
     next,
     facts,
     analysis:
