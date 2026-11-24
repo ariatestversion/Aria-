@@ -1,10 +1,10 @@
 {
-  "version": "ARIA — MVP Alpha V0.4",
-  "commit": "91441b163ee40e8829755cc780673e0e592f931f",
-  "short": "91441b1",
-  "netlifyDeployId": "6b0078bb87479237251ba188",
-  "netlifyPreview": "https://6b0078bb87479237251ba188--ariafirstversion.netlify.app",
-  "branch": "claude/sprint04-experience-musicale",
-  "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813)",
-  "verification": "version.json du déploiement = 91441b1 ; bundles JS/CSS identiques (SHA-256) au build local ; e2e 68/68 sur l'URL (micro simulé) ; médias retirés non servis"
+  "version": "ARIA — Sprint 05 (en cours, non clôturé)",
+  "commit": "dc4687eb46309ad2b9430556513a5a4c3d2055df",
+  "short": "dc4687e",
+  "netlifyDeployId": "6b05b526b48a153cdd8083a9",
+  "netlifyPreview": "https://6b05b526b48a153cdd8083a9--ariafirstversion.netlify.app",
+  "branch": "claude/sprint05-pratique",
+  "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813) — vérifié le 24/11 : locked true, version.json d86e813",
+  "verification": "Déploiement ready, published_at null (non publié). version.json envoyé = dc4687e. Lecture de /version.json sur l'URL de prévisualisation impossible depuis la session (hôte non autorisé) : à vérifier en ouvrant l'URL. e2e 94/94 en local sur le même commit."
 }
