@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Piece, SessionLog } from './model'
-import { allocateMinutes, buildProgram, buildReview, continuedBpm, defaultResource, focusOf, passageLabel, prepGoalsFor, previousSessionFrom, resourceAvailable } from './pedagogy'
+import { allocateMinutes, buildProgram, buildReview, continuedBpm, planFollowup, defaultResource, focusOf, passageLabel, prepGoalsFor, previousSessionFrom, resourceAvailable } from './pedagogy'
 import { canCompleteSession, dedupeSessionLogs } from './store'
 
 const piece = (patch: Partial<Piece> = {}): Piece => ({
@@ -140,7 +140,9 @@ describe('bilan', () => {
     expect(r.improve.source).toBe('self-check')
     expect(r.corrective.source).toBe('rules')
     expect(r.next.source).toBe('rules')
-    expect(r.next.text).toMatch(/« B »/)
+    // Étapes sans contenu détaillé : la reprise suit l’axe de l’objectif, en citant l’étape jugée à reprendre.
+    expect(r.followup?.reason).toMatch(/« B »/)
+    expect(r.next.text).toContain(`« ${r.followup?.title} »`)
     expect(r.facts.text).toBe('2 prises enregistrées · 20 s au total.')
   })
 
@@ -334,5 +336,77 @@ describe('Sprint 05 — le conseil du bilan correspond à la séance suivante', 
   it('avec des étapes réussies, +4 BPM comme dans le programme suivant', () => {
     const r = buildReview({ works: '', improve: '', programObjective: 'Rythme', instrument: 'guitar', steps: [{ title: 'A', check: 'ok' }], hasReferenceTake: true })
     expect(r.next.text).toMatch(/monte le tempo de 4 BPM/)
+  })
+})
+
+describe('Recette QA 24/11 — scénario Work : Blackbird, guitare, 15 min, rythme, intro, sans partition', () => {
+  const blackbird = piece({ title: 'Blackbird', instrument: 'guitar' })
+  const input = {
+    piece: blackbird,
+    instrument: 'guitar' as const,
+    level: 'beginner' as const,
+    minutes: 15,
+    goals: ['Rythme'],
+    passage: 'Intro',
+    resource: 'ear' as const,
+    difficulties: '',
+  }
+  const first = buildProgram(input)
+  // « Main droite seule, cordes étouffées » marquée « Pas encore », séance terminée sans prise.
+  const steps = first.steps.map((s, i) => (i === 0 ? { ...s, check: 'retry' as const } : s))
+  const review = buildReview({ works: '', improve: '', programObjective: 'Rythme', instrument: 'guitar', level: 'beginner', steps, takes: [], hasReferenceTake: false })
+  const log = {
+    createdAt: '2026-11-24T18:00:00.000Z',
+    objective: 'Rythme',
+    observationImprove: '',
+    stepChecks: [{ title: first.steps[0].title, check: 'retry' as const }],
+    followup: review.followup,
+  }
+  const second = buildProgram({ ...input, previous: previousSessionFrom(log, first) })
+  const base = (t: string) => t.replace(/^Reprise · /, '')
+
+  it('le bilan reprend l’étape marquée « Pas encore », 8 BPM plus lentement', () => {
+    expect(first.steps[0].title).toBe('Main droite seule, cordes étouffées')
+    expect(review.followup?.title).toBe('Main droite seule, cordes étouffées')
+    expect(review.followup?.bpm).toBe(52)
+    expect(review.corrective.title).toBe('Main droite seule, cordes étouffées')
+    expect(review.corrective.text).toContain('52 BPM')
+    expect(review.next.text).toContain('« Main droite seule, cordes étouffées » à 52 BPM')
+    // L’étape reprise est l’échauffement : la séance suivante commence par elle, et le bilan le dit.
+    expect(review.next.text).toMatch(/^Prochaine séance : ARIA commence par/)
+  })
+
+  it('la séance suivante reprend exactement cet exercice (titre, consigne, critère, tempo)', () => {
+    const reprise = second.steps.find((s) => s.title.startsWith('Reprise ·'))!
+    expect(reprise.title).toBe('Reprise · Main droite seule, cordes étouffées')
+    expect(reprise.what).toContain(review.followup!.what)
+    expect(reprise.success).toBe(review.followup!.success)
+    expect(reprise.bpm).toBe(review.followup!.bpm)
+    expect(second.steps[0].title).toBe(reprise.title)
+  })
+
+  it('aucun exercice n’est répété dans la séance suivante', () => {
+    const titles = second.steps.map((s) => base(s.title))
+    expect(new Set(titles).size).toBe(titles.length)
+    expect(titles.filter((t) => /Motif rythmique/.test(t)).length).toBe(1)
+    expect(second.steps.reduce((a, s) => a + (s.minutes || 0), 0)).toBe(15)
+  })
+
+  it('point noté « à travailler » sur le même axe : l’étape est remplacée, pas dupliquée', () => {
+    const r = buildReview({ works: '', improve: 'le rythme décroche', programObjective: 'Rythme', instrument: 'guitar', level: 'beginner', steps: first.steps, hasReferenceTake: true })
+    expect(r.followup?.title).toBe('Motif rythmique sur un seul accord')
+    const p = buildProgram({ ...input, previous: previousSessionFrom({ ...log, stepChecks: [], observationImprove: 'le rythme décroche', followup: r.followup }, first) })
+    const titles = p.steps.map((s) => base(s.title))
+    expect(new Set(titles).size).toBe(titles.length)
+    expect(p.steps[1].title).toBe('Reprise · Motif rythmique sur un seul accord')
+    expect(r.next.text).toContain('après l’échauffement, ARIA reprend « Motif rythmique sur un seul accord » à 52 BPM')
+    expect(p.steps[1].bpm).toBe(52)
+  })
+
+  it('rien à reprendre : pas d’exercice correctif annoncé ni de reprise', () => {
+    const r = buildReview({ works: 'ok', improve: '', programObjective: 'Rythme', instrument: 'guitar', steps: first.steps.map((s) => ({ ...s, check: 'ok' as const })), hasReferenceTake: true })
+    expect(r.followup).toBeNull()
+    expect(r.corrective.empty).toBe(true)
+    expect(planFollowup({ improve: '', objective: 'Rythme', instrument: 'guitar', level: 'beginner', steps: [] })).toBeNull()
   })
 })

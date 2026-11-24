@@ -170,8 +170,11 @@ export function canCompleteSession(input: {
   takeIds: string[]
   observationWorks: string
   observationImprove: string
+  /** Étapes auto-évaluées (« Oui, réussi » / « Pas encore ») : une donnée réelle de l’utilisateur. */
+  stepChecks?: number
 }) {
   if ((input.takeIds || []).length > 0) return true
+  if ((input.stepChecks || 0) > 0) return true
   if ((input.observationWorks || '').trim().length >= 2) return true
   if ((input.observationImprove || '').trim().length >= 2) return true
   return false

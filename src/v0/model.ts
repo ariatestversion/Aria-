@@ -37,6 +37,22 @@ export type PieceResource = {
 /** Support utilisé pour travailler le morceau (avec ou sans partition). */
 export type ResourceMode = 'score' | 'tabs' | 'chords' | 'audio' | 'ear'
 
+export type Followup = {
+  /** Titre de l’exercice (sans le préfixe « Reprise · »). */
+  title: string
+  what: string
+  how: string
+  success: string
+  bpm?: number
+  minutes: number
+  /** Pourquoi on le reprend, en citant l’utilisateur. */
+  reason: string
+  /** 'retry' = étape jugée « Pas encore » ; 'improve' = point noté dans le bilan. */
+  origin: 'retry' | 'improve'
+  /** 'first' : l’exercice remplace l’échauffement (étape 1) ; sinon il vient juste après. */
+  position?: 'first' | 'after-warmup'
+}
+
 export type StepKind = 'warmup' | 'focus' | 'apply' | 'record' | 'free'
 
 /** Auto-évaluation de l’utilisateur sur le critère de réussite d’une étape. */
@@ -79,6 +95,8 @@ export type WorkProgram = {
   notes?: string[]
   /** Sprint 05 — date de la séance terminée dont celle-ci prend la suite. */
   continuedFrom?: string
+  /** Sprint 05 — étape de la séance en cours : travail ou bilan commencé. */
+  phase?: 'session' | 'review'
 }
 
 export type Piece = {
@@ -138,6 +156,8 @@ export type SessionLog = {
    * met à jour le même journal au lieu d’en créer un second.
    */
   sessionStartedAt?: string
+  /** Sprint 05 — exercice de reprise annoncé par le bilan, repris tel quel à la séance suivante. */
+  followup?: Followup | null
 }
 
 export type AppScreen =

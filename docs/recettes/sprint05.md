@@ -8,10 +8,18 @@ Prévisualisation : https://6b05b526b48a153cdd8083a9--ariafirstversion.netlify.a
 | Suite | Résultat |
 | --- | --- |
 | `npm run build` | OK |
-| `npm test` (unitaires) | 30/30 |
-| `node scripts/e2e-sprint04.mjs` (390×844, plus contrôles à 320×640) | 94/94 en local |
+| `npm test` (unitaires) | 35/35 |
+| `node scripts/e2e-sprint04.mjs` (390×844, plus contrôles à 320×640) | 115/115 en local |
 
 Les interruptions sont **simulées** : événement `ended` sur la piste du micro (comme un appel entrant) et `visibilityState = hidden` (comme un changement d’application). Leur comportement sur un vrai téléphone reste à vérifier.
+
+## 1 bis. Non-régression des retours QA du 24/11
+
+| Retour | Scénario automatisé | Résultat |
+| --- | --- | --- |
+| P0 · Cohérence pédagogique (Work) | Blackbird · guitare · 15 min · rythme · intro · sans partition ; étape 1 « Pas encore » ; terminer sans prise ; préparer la séance suivante | Bilan et séance suivante : même exercice « Main droite seule, cordes étouffées », même tempo 52 BPM, en étape 1 ; aucun exercice répété — e2e + unitaires ✔ |
+| P0 · Reprise du bilan (Claude) | Observation saisie pendant le bilan, rechargement ; puis Accueil → « Reprendre mon bilan » | Retour direct au bilan, observation conservée ; rechargement en séance → séance — e2e ✔ |
+| P1 · Navigation | Onglet actif en préparation, séance, bilan, après rechargement, Suivi, Accueil | Bibliothèque pendant tout le travail sur un morceau ; Suivi / Accueil sur leurs écrans — e2e ✔ |
 
 ## 2. Critères d’acceptation du sprint
 

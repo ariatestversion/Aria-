@@ -6,6 +6,21 @@ Branche : `claude/sprint05-pratique`, créée depuis `main` (`6b1652a`, V0.4) av
 Netlify : **prévisualisation uniquement**. La production reste verrouillée sur le Sprint 02.  
 **Statut : non clôturé.** Clôture après la recette QA et les tests sur mobile réel.
 
+### Correctifs de recette QA (24/11, audits Work et Claude)
+
+- **P0 · Cohérence pédagogique** (scénario Work : Blackbird, guitare, 15 min, rythme, intro, sans partition ; « Main droite seule, cordes étouffées » marquée « Pas encore », séance terminée sans prise).
+  - Avant : le bilan disait « reprends « Main droite seule… » », mais l’exercice correctif affiché et la reprise de la séance suivante étaient « Motif rythmique sur un seul accord », qui figurait alors **deux fois** dans la séance.
+  - Maintenant, une règle unique, calculée au bilan et enregistrée avec la séance terminée, est reprise telle quelle :
+    1. une étape jugée « Pas encore » → cette même étape, 8 BPM plus lentement si elle a un tempo ;
+    2. sinon, un point noté « à travailler » → l’exercice de l’axe correspondant, 8 BPM sous le tempo de travail ;
+    3. sinon, pas d’exercice correctif (le bilan le dit).
+  - Le bilan affiche exactement cet exercice (titre, consigne, critère, tempo) et annonce sa place dans la séance suivante (« ARIA commence par… » ou « après l’échauffement… »).
+  - La séance suivante ne contient jamais deux fois le même exercice : s’il y figure déjà, il est remplacé par sa reprise.
+  - Une séance peut être terminée sans prise si au moins une étape a été auto-évaluée.
+- **P0 · Reprise du bilan** : recharger la page pendant le bilan ramène directement au bilan, observations conservées (et non à l’étape 1). Depuis l’accueil ou la fiche du morceau, le bouton devient « Reprendre mon bilan » / « Reprendre le bilan ». Recharger pendant la séance ramène à la séance.
+- **P1 · Navigation** : l’onglet actif découle de l’écran affiché, plus du chemin suivi. Fiche morceau, préparation, séance, enregistrement et bilan → Bibliothèque ; Accueil, Suivi, Profil → leur onglet.
+- Tests : unitaires 35/35 (5 nouveaux sur le scénario Work) ; e2e 115/115 (21 nouveaux contrôles de non-régression QA).
+
 ### Continuité entre séances
 - La préparation rappelle **la dernière séance terminée** du morceau : date, objectif, tempo, ce que tu avais noté à travailler, les étapes que tu avais jugées à reprendre ou réussies.
 - Si l’objectif principal ne change pas, la nouvelle séance **part de la précédente** (règles explicites, appliquées à tes observations) :

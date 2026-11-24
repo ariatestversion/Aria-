@@ -52,6 +52,15 @@ type Tool = 'none' | 'metronome' | 'resources' | 'notes'
 /** Thèmes comparables sur la branche de prévisualisation de la direction visuelle. */
 type Theme = 'marine' | 'electrique' | 'espresso' | 'ivoire'
 const THEME_KEY = 'aria.v0.theme'
+const WHERE_KEY = 'aria.v0.where'
+
+/** Une séance est en cours si son programme est plus récent que la dernière séance terminée. */
+function pieceInProgressFor(email: string, p: Piece | null) {
+  if (!p?.program || !email) return false
+  const done = listCompletedSessionLogs(email, p.id)[0]
+  if (!done) return true
+  return (p.program.startedAt || p.program.updatedAt || p.updatedAt) > done.createdAt
+}
 const isTheme = (v: string | null): v is Theme => v === 'marine' || v === 'electrique' || v === 'espresso' || v === 'ivoire'
 
 const instLabel = (id: InstrumentId) => INSTRUMENTS.find((i) => i.id === id)?.label || id
@@ -213,6 +222,19 @@ export function AriaApp() {
         if (musical?.onboardingDone) {
           setScreen('home')
           setTab('home')
+          // Rechargement de la page pendant une séance ou un bilan : on revient exactement au même endroit.
+          try {
+            const where = JSON.parse(sessionStorage.getItem(WHERE_KEY) || 'null') as { pieceId: string; screen: string } | null
+            const target = where ? getPiece(where.pieceId) : null
+            if (target?.program?.steps?.length && target.email === mail && pieceInProgressFor(mail, target)) {
+              setPieceId(target.id)
+              refreshTakes(mail, target.id)
+              if (where!.screen === 'review') openReview(target, mail)
+              else setScreen('session')
+            }
+          } catch {
+            /* ignore */
+          }
         } else {
           setOnboardStep(1)
           setScreen('onboarding')
@@ -243,6 +265,24 @@ export function AriaApp() {
     window.scrollTo?.(0, 0)
   }, [screen])
 
+  // Où en est la séance en cours : persisté dans le programme (reprise depuis l’accueil, même après
+  // fermeture) et, pour le rechargement de la page, dans la session du navigateur.
+  useEffect(() => {
+    // Pendant le chargement, l’écran initial ne doit pas effacer la position à restaurer.
+    if (boot) return
+    const working = (screen === 'session' || screen === 'review') && piece?.program && email && pieceInProgressFor(email, piece)
+    try {
+      if (working) sessionStorage.setItem(WHERE_KEY, JSON.stringify({ pieceId: piece!.id, screen }))
+      else if (screen !== 'record') sessionStorage.removeItem(WHERE_KEY)
+    } catch {
+      /* ignore */
+    }
+    if (working && piece!.program!.phase !== screen) {
+      savePiece({ ...piece!, program: { ...piece!.program!, phase: screen as 'session' | 'review' } })
+      refreshPieces()
+    }
+  }, [screen, pieceId, boot])
+
   const goTab = (next: Tab) => {
     setTab(next)
     setShowAddPiece(false)
@@ -271,7 +311,7 @@ export function AriaApp() {
     if (!log) return null
     const program =
       target.program && (target.program.startedAt || target.program.updatedAt) === log.sessionStartedAt ? target.program : null
-    return previousSessionFrom(log, program)
+    return previousSessionFrom(log, program, { instrument: target.instrument, level: target.program?.level || level })
   }
 
   const sessionStart = (p: Piece | null) => p?.program?.startedAt || p?.program?.updatedAt || ''
@@ -288,7 +328,9 @@ export function AriaApp() {
     setPieceId(id)
     refreshTakes(email, id)
     if (target.program?.steps?.length) {
-      setScreen('session')
+      // Bilan commencé : on y revient directement, observations comprises.
+      if (target.program.phase === 'review') openReview(target)
+      else setScreen('session')
       return
     }
     hydratePrep(target)
@@ -332,12 +374,7 @@ export function AriaApp() {
     pieces.find((p) => !p.demo) ||
     null
 
-  const isPieceInProgress = (p: Piece | null) => {
-    if (!p?.program || !email) return false
-    const done = listCompletedSessionLogs(email, p.id)[0]
-    if (!done) return true
-    return (p.program.startedAt || p.program.updatedAt || p.updatedAt) > done.createdAt
-  }
+  const isPieceInProgress = (p: Piece | null) => (email ? pieceInProgressFor(email, p) : false)
 
   const inProgressPiece =
     pieces.find((p) => isPieceInProgress(p) && !p.demo) || pieces.find((p) => isPieceInProgress(p)) || null
@@ -675,13 +712,13 @@ export function AriaApp() {
     refreshTakes()
   }
 
-  function openReview() {
-    if (!piece) return
-    const pieceTakes = listTakes(email, piece.id)
+  function openReview(target: Piece | null = piece, mail = email) {
+    if (!target) return
+    const pieceTakes = listTakes(mail, target.id)
     setCompareA(pieceTakes[1]?.id || '')
     setCompareB(pieceTakes[0]?.id || '')
     // Reprise d’un brouillon : ses observations reviennent dans le bilan.
-    const draft = findSessionLog(email, piece.id, sessionStart(piece))
+    const draft = findSessionLog(mail, target.id, sessionStart(target))
     if (draft?.status === 'draft') {
       if (!worksObs.trim()) setWorksObs(draft.observationWorks || '')
       if (!improveObs.trim()) setImproveObs(draft.observationImprove || '')
@@ -707,8 +744,8 @@ export function AriaApp() {
   function persistSession(status: 'draft' | 'completed') {
     if (!piece || !email || !review) return false
     const takeIds = sessionTakes.map((t) => t.id)
-    if (status === 'completed' && !canCompleteSession({ takeIds, observationWorks: worksObs, observationImprove: improveObs })) {
-      setSaveHint('Pour terminer la séance, enregistre au moins une prise ou note une observation.')
+    if (status === 'completed' && !canCompleteSession({ takeIds, observationWorks: worksObs, observationImprove: improveObs, stepChecks: (piece.program?.steps || []).filter((s) => s.check).length })) {
+      setSaveHint('Pour terminer la séance, enregistre au moins une prise, note une observation ou évalue une étape.')
       return false
     }
     const sessionKey = sessionStart(piece)
@@ -735,7 +772,8 @@ export function AriaApp() {
       takeIds,
       source: 'user',
       status,
-      corrective: status === 'completed' ? `${review.corrective.title} — ${review.corrective.text}` : undefined,
+      corrective: status === 'completed' && review.followup ? `${review.corrective.title} — ${review.corrective.text}` : undefined,
+      followup: status === 'completed' ? review.followup : undefined,
       stepChecks,
       comparison: comparison.trim() || undefined,
     }
@@ -795,6 +833,12 @@ export function AriaApp() {
       </div>
     )
   }
+
+  // L’onglet actif découle de l’écran affiché, jamais du chemin suivi pour y arriver :
+  // fiche morceau, préparation, séance, enregistrement et bilan appartiennent à la Bibliothèque.
+  const activeTab: Tab =
+    screen === 'home' || screen === 'follow' || screen === 'profile' ? screen : 'library'
+  void tab
 
   const docked = ['home', 'library', 'follow', 'profile', 'piece', 'prepare', 'session', 'record', 'review'].includes(screen)
 
@@ -1028,8 +1072,8 @@ export function AriaApp() {
               <span className="v0-resume-visual" aria-hidden />
               <span className="v0-resume-body">
                 <small>
-                  Reprendre ma séance
-                  {inProgressPiece.program
+                  {inProgressPiece.program?.phase === 'review' ? 'Reprendre mon bilan' : 'Reprendre ma séance'}
+                  {inProgressPiece.program && inProgressPiece.program.phase !== 'review'
                     ? ` · étape ${Math.min(inProgressPiece.program.stepIndex + 1, inProgressPiece.program.steps.length)}/${inProgressPiece.program.steps.length} · ${inProgressPiece.program.minutes} min`
                     : ''}
                 </small>
@@ -1266,7 +1310,7 @@ export function AriaApp() {
           <div className="ds-actions ds-actions--split">
             <button className="ds-btn ds-btn--primary" type="button" onClick={() => (isPieceInProgress(piece) ? resumePracticeFor(piece.id) : startPrepare())}>
               <Icon name="play" size={18} />
-              {isPieceInProgress(piece) ? 'Reprendre la séance' : 'Préparer une séance'}
+              {isPieceInProgress(piece) ? (piece.program?.phase === 'review' ? 'Reprendre le bilan' : 'Reprendre la séance') : 'Préparer une séance'}
             </button>
             <button
               className="ds-btn ds-btn--secondary"
@@ -1679,7 +1723,7 @@ export function AriaApp() {
                     Précédente
                   </button>
                   {last ? (
-                    <button className="ds-btn ds-btn--primary" type="button" onClick={openReview}>
+                    <button className="ds-btn ds-btn--primary" type="button" onClick={() => openReview()}>
                       Faire le bilan
                       <Icon name="next" size={18} />
                     </button>
@@ -1691,7 +1735,7 @@ export function AriaApp() {
                   )}
                 </div>
                 {!last ? (
-                  <button className="ds-btn ds-btn--quiet ds-btn--fit ds-center" type="button" onClick={openReview}>
+                  <button className="ds-btn ds-btn--quiet ds-btn--fit ds-center" type="button" onClick={() => openReview()}>
                     Terminer maintenant et faire le bilan
                   </button>
                 ) : null}
@@ -1751,7 +1795,7 @@ export function AriaApp() {
           </Section>
           {piece.program && isPieceInProgress(piece) ? (
             <div className="ds-actions">
-              <button className="ds-btn ds-btn--secondary" type="button" onClick={openReview}>
+              <button className="ds-btn ds-btn--secondary" type="button" onClick={() => openReview()}>
                 Faire le bilan de la séance
               </button>
             </div>
@@ -1897,18 +1941,25 @@ export function AriaApp() {
             <article className="ds-feed ds-feed--rules" data-testid="corrective">
               <header>
                 <Badge tone="neutral" icon="spark">
-                  Exercice correctif · {review.corrective.minutes} min
+                  {review.corrective.empty
+                    ? 'Exercice correctif'
+                    : `Exercice correctif · ${review.corrective.minutes} min${review.corrective.bpm ? ` · ${review.corrective.bpm} BPM` : ''}`}
                 </Badge>
                 <SourceTag source="rules" />
               </header>
               <b className="ds-body">{review.corrective.title}</b>
               <p className="ds-body">{review.corrective.text}</p>
-              <p className="ds-criterion ds-criterion--inline">
-                <Icon name="target" size={18} />
-                <span>
-                  <b>Critère :</b> {review.corrective.success}
-                </span>
-              </p>
+              {review.corrective.empty ? null : (
+                <>
+                  <p className="ds-criterion ds-criterion--inline">
+                    <Icon name="target" size={18} />
+                    <span>
+                      <b>Critère :</b> {review.corrective.success}
+                    </span>
+                  </p>
+                  <p className="ds-hint">Repris tel quel en tête de ta prochaine séance sur ce morceau.</p>
+                </>
+              )}
             </article>
 
             <article className="ds-feed ds-feed--rules">
@@ -2152,7 +2203,7 @@ export function AriaApp() {
               ['profile', 'profile', 'Profil'],
             ] as const
           ).map(([id, icon, label]) => (
-            <button key={id} type="button" className={tab === id ? 'on' : ''} aria-current={tab === id ? 'page' : undefined} onClick={() => goTab(id)}>
+            <button key={id} type="button" className={activeTab === id ? 'on' : ''} aria-current={activeTab === id ? 'page' : undefined} onClick={() => goTab(id)}>
               <span className="v0-dock-icon">
                 <Icon name={icon} size={22} />
               </span>
