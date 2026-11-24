@@ -410,3 +410,84 @@ describe('Recette QA 24/11 — scénario Work : Blackbird, guitare, 15 min, ryth
     expect(planFollowup({ improve: '', objective: 'Rythme', instrument: 'guitar', level: 'beginner', steps: [] })).toBeNull()
   })
 })
+
+describe('Sprint 06 — invariants sur tous les instruments, niveaux, objectifs, durées et supports', () => {
+  const INSTR = ['piano', 'guitar', 'bass', 'voice', 'drums', 'other'] as const
+  const LEVELS_ = ['beginner', 'practicing', 'advanced'] as const
+  const GOALS = ['Rythme', 'Justesse', 'Tempo', 'Mémoire', 'Fluidité et expression']
+  const DUR = [15, 20, 30, 45, 60]
+  const RES = ['score', 'tabs', 'chords', 'audio', 'ear'] as const
+  // Vocabulaire propre à une famille d’instruments, qui ne doit pas apparaître ailleurs.
+  const FOREIGN: Record<string, RegExp> = {
+    piano: /cordes?|frette|médiator|charleston|grosse caisse|chant|syllabe/i,
+    guitar: /charleston|grosse caisse|main gauche seule, puis main droite seule|syllabe/i,
+    bass: /charleston|grosse caisse|syllabe|accords? du passage, deux mesures/i,
+    voice: /cordes?|frette|médiator|charleston|grosse caisse|main par main/i,
+    drums: /cordes?|frette|médiator|syllabe|main par main|\bnotes?\b/i,
+    other: /frette|médiator|charleston|syllabe/i,
+  }
+  const failures: string[] = []
+  let programs = 0
+  for (const instrument of INSTR)
+    for (const level of LEVELS_)
+      for (const g1 of GOALS)
+        for (const g2 of [null, ...GOALS.filter((g) => g !== g1)])
+          for (const minutes of DUR)
+            for (const resource of RES) {
+              const goals = g2 ? [g1, g2] : [g1]
+              const input = { piece: piece({ instrument }), instrument, level, minutes, goals, passage: 'Intro', resource, difficulties: '' }
+              const first = buildProgram(input)
+              const variants: { label: string; prog: ReturnType<typeof buildProgram>; announced?: { title: string; minutes: number; bpm?: number } }[] = [
+                { label: 'base', prog: first },
+              ]
+              // Séance suivante après chaque « Pas encore » possible, et après un point noté.
+              for (let k = 0; k < first.steps.length; k++) {
+                const steps = first.steps.map((s, i) => (i === k ? { ...s, check: 'retry' as const } : s))
+                const r = buildReview({ works: '', improve: '', programObjective: g1, instrument, level, steps, hasReferenceTake: true })
+                const prev = previousSessionFrom(
+                  { createdAt: '2026-11-24T10:00:00.000Z', objective: g1, observationImprove: '', stepChecks: [{ title: first.steps[k].title, check: 'retry' }], followup: r.followup },
+                  first,
+                )
+                variants.push({ label: `retry#${k}`, prog: buildProgram({ ...input, previous: prev }), announced: r.followup ? { title: r.followup.title, minutes: r.followup.minutes, bpm: r.followup.bpm } : undefined })
+                if (r.followup && !r.next.text.includes(`« ${r.followup.title} »`)) failures.push(`${instrument}/${level}/${goals}/${minutes}/${resource} retry#${k}: bilan n’annonce pas l’exercice`)
+              }
+              const ri = buildReview({ works: '', improve: 'ça accroche au milieu', programObjective: g1, instrument, level, steps: first.steps, hasReferenceTake: true })
+              const prevI = previousSessionFrom({ createdAt: '2026-11-24T10:00:00.000Z', objective: g1, observationImprove: 'ça accroche au milieu', stepChecks: [], followup: ri.followup }, first)
+              variants.push({ label: 'improve', prog: buildProgram({ ...input, previous: prevI }), announced: ri.followup ? { title: ri.followup.title, minutes: ri.followup.minutes, bpm: ri.followup.bpm } : undefined })
+
+              for (const v of variants) {
+                programs += 1
+                const tag = `${instrument}/${level}/${goals.join('+')}/${minutes}/${resource}/${v.label}`
+                const steps = v.prog.steps
+                const total = steps.reduce((a, s) => a + (s.minutes || 0), 0)
+                if (total !== minutes) failures.push(`${tag}: total ${total}`)
+                if (steps.some((s) => (s.minutes || 0) < 2)) failures.push(`${tag}: étape < 2 min`)
+                const bases = steps.map((s) => s.title.replace(/^Reprise · /, ''))
+                if (new Set(bases).size !== bases.length) failures.push(`${tag}: doublon ${bases.join(' | ')}`)
+                for (const s of steps) {
+                  for (const f of ['title', 'what', 'how', 'why', 'success'] as const) {
+                    if (!s[f] || /undefined|NaN|\$\{/.test(s[f])) failures.push(`${tag}: champ ${f} vide ou invalide (${s.title})`)
+                  }
+                  if (FOREIGN[instrument].test(`${s.what} ${s.how}`)) failures.push(`${tag}: vocabulaire étranger à l’instrument (${s.title})`)
+                  if (s.bpm !== undefined && (s.bpm < 40 || s.bpm > 200)) failures.push(`${tag}: tempo hors bornes ${s.bpm}`)
+                  if (s.bpm && !new RegExp(`${s.bpm} BPM`).test(`${s.what} ${s.how}`) && /BPM/.test(s.what)) failures.push(`${tag}: tempo affiché ≠ tempo de l’étape (${s.title})`)
+                }
+                if (v.announced) {
+                  const rep = steps.find((s) => s.title === `Reprise · ${v.announced!.title}`)
+                  if (!rep) failures.push(`${tag}: reprise annoncée absente`)
+                  else {
+                    if (rep.minutes !== v.announced.minutes) failures.push(`${tag}: reprise ${rep.minutes} min ≠ ${v.announced.minutes} min annoncées`)
+                    if (rep.bpm !== v.announced.bpm) failures.push(`${tag}: reprise ${rep.bpm} BPM ≠ ${v.announced.bpm} annoncés`)
+                  }
+                }
+              }
+            }
+
+  it('couvre toutes les combinaisons', () => {
+    expect(programs).toBeGreaterThan(10000)
+  })
+  it('aucune incohérence (durée, doublon, champ vide, vocabulaire, tempo, reprise annoncée)', () => {
+    expect([...new Set(failures.map((f) => f.replace(/^[^:]+: /, '')))].slice(0, 15)).toEqual([])
+    expect(failures.length).toBe(0)
+  })
+})

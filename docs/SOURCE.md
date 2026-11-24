@@ -24,6 +24,13 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 `npm run build` génère `public/version.json` (commit, branche, date) : c’est la preuve de correspondance entre le commit GitHub et le déploiement Netlify. `SOURCE_VERSION.json` enregistre le dernier couple commit / déploiement de prévisualisation.
 
+## État Sprint 06 — Finalisation fonctionnelle V1 (en recette)
+
+- Branche `claude/sprint06-finalisation-v1`, depuis `main` (`04777e0`, Alpha V0.5).
+- Prévisualisation, commit déployé et vérification : `SOURCE_VERSION.json`.
+- Production verrouillée sur le Sprint 02 ; `main` inchangée jusqu’à validation QA.
+- Recette : `docs/recettes/sprint06.md`.
+
 ## État Sprint 05 — Alpha V0.5 (clôture technique, 24/11/2026)
 
 - **Clôturé et figé** : `claude/sprint05-pratique` fusionnée dans `main` (merge `--no-ff`, historique conservé). Branche conservée.

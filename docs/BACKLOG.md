@@ -4,9 +4,19 @@
 
 | # | Sujet | Constat | Priorité proposée |
 | --- | --- | --- | --- |
-| S06-1 | Écart mineur de durée de la reprise | Le bilan annonce l’exercice de reprise « pendant 5 min », mais dans la séance suivante sa durée vient de la répartition du temps disponible : par exemple **3 min** sur une séance de 15 min (scénario Work). Le total de la séance reste exact. Aligner la durée annoncée et la durée réelle (annoncer la durée calculée, ou réserver la durée annoncée). | Mineure |
+| S06-1 | **Fait au Sprint 06.** Écart mineur de durée de la reprise | Le bilan annonce l’exercice de reprise « pendant 5 min », mais dans la séance suivante sa durée vient de la répartition du temps disponible : par exemple **3 min** sur une séance de 15 min (scénario Work). Le total de la séance reste exact. Aligner la durée annoncée et la durée réelle (annoncer la durée calculée, ou réserver la durée annoncée). | Mineure |
 | S06-2 | Tests sur appareils physiques | Safari iPhone (ouvert directement) et Chrome Android : grille `docs/recettes/sprint05.md`, section 3. Prérequis de toute publication. | Haute |
 | S06-3 | Rapports QA détaillés | Joindre les rapports Work et Claude QA du 24/11 au dépôt pour traçabilité (seuls les verdicts sont consignés). | Basse |
+
+## Pour arbitrage Produit (constats du Sprint 06)
+
+| # | Sujet | Constat |
+| --- | --- | --- |
+| P-1 | Synchronisation des données | Aucune : morceaux, prises et séances restent sur l’appareil. Le compte cloud sert uniquement à se connecter. |
+| P-2 | Découverte → compte | Les données du mode découverte ne sont pas reprises à la création d’un compte. |
+| P-3 | Suppression d’un morceau | Absente de l’interface. |
+| P-4 | Écran de connexion | Ancien habillage (hors DA 4), « vous » et « tu » mélangés : à confier à la direction artistique. |
+| P-5 | Connexion Google | Affichée mais « pas encore disponible ». |
 
 # Archive — après la clôture du 23/11/2026
 
@@ -31,7 +41,7 @@ Consigné sans correction le 23/11. Mise à jour Sprint 05 : C1 traité ; les au
 | C5 | Vert / jaune | Valider leur maintien dans la DA 4, ou définir des teintes d’état propres à la palette. | Moyenne |
 | C6 | Photographie | La carte de reprise est prévue avec photo. Fournir le lien Unsplash exact et le photographe, ou commander des visuels aux droits établis. Sinon, garder les vagues. | Moyenne |
 | C7 | Nom et logo | Mot-symbole « ARIA » provisoire, en attente de validation. | Moyenne |
-| C8 | Médias restants | Retirer les 2 SVG « Ode to Joy » et la note associée : inutilisés, provenance non établie, toujours publiés. | Moyenne |
+| C8 | **Fait au Sprint 06.** Médias restants | Retirer les 2 SVG « Ode to Joy » et la note associée : inutilisés, provenance non établie, toujours publiés. | Moyenne |
 | C9 | Repère de version | Afficher la version (commit, date) dans le Profil, pour distinguer les prévisualisations. | Basse |
 | C10 | Poids du bundle | Environ 530 kB : l’ancien prototype `src/App.tsx` et `src/lib/presets.ts` sont encore compilés. À alléger. | Basse |
 | C11 | Branche inutile | Supprimer `claude/sprint04-access-check` sur GitHub (action manuelle : la session Claude ne peut pas supprimer de branche). | Basse |

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Icon, INSTRUMENT_ICON, type IconName } from '../design/Icon'
-import type { InstrumentId, Take } from './model'
+import type { InstrumentId, PieceResource, Take } from './model'
 import { getBlob } from './store'
 import { useMetronome } from './metronome'
 
@@ -404,5 +404,85 @@ export function StepTimer({ minutes, resetKey }: { minutes: number; resetKey: st
         {left === 0 ? 'Relancer' : running ? 'Pause' : 'Démarrer le minuteur'}
       </button>
     </div>
+  )
+}
+
+/* —— Ressources d’un morceau (Sprint 06) —— */
+
+const RESOURCE_KIND_LABEL: Record<PieceResource['kind'], string> = {
+  pdf: 'Partition PDF',
+  chords: 'Grille d’accords',
+  tabs: 'Tablature',
+  audio: 'Référence audio',
+  video: 'Référence vidéo',
+  note: 'Note',
+}
+
+function isLink(text: string) {
+  return /^https?:\/\/\S+$/i.test(text.trim())
+}
+
+export function ResourceList({ resources }: { resources: PieceResource[] }) {
+  // Les partitions importées sont préparées à l’avance : le lien s’ouvre directement au toucher,
+  // ce que Safari exige pour un nouvel onglet.
+  const [urls, setUrls] = useState<Record<string, string | null>>({})
+  const pdfIds = resources.filter((r) => r.kind === 'pdf').map((r) => r.id).join(',')
+  useEffect(() => {
+    let alive = true
+    const made: string[] = []
+    void Promise.all(
+      resources
+        .filter((r) => r.kind === 'pdf')
+        .map(async (r) => {
+          const blob = await getBlob(r.id)
+          const url = blob ? URL.createObjectURL(blob) : null
+          if (url) made.push(url)
+          return [r.id, url] as const
+        }),
+    ).then((entries) => {
+      if (alive) setUrls(Object.fromEntries(entries))
+    })
+    return () => {
+      alive = false
+      made.forEach((u) => URL.revokeObjectURL(u))
+    }
+  }, [pdfIds])
+  return (
+    <>
+      <ul className="ds-reslist" data-testid="resources">
+        {resources.map((r) => {
+          const content = (r.text || r.label || '').trim()
+          return (
+            <li key={r.id}>
+              <b>{RESOURCE_KIND_LABEL[r.kind] || r.kind}</b>
+              {r.kind === 'pdf' ? (
+                urls[r.id] ? (
+                  <a className="ds-btn ds-btn--sm ds-btn--secondary ds-btn--fit" href={urls[r.id]!} target="_blank" rel="noopener">
+                    <Icon name="score" size={18} />
+                    Ouvrir « {r.label} »
+                  </a>
+                ) : urls[r.id] === null ? (
+                  <p className="ds-alert ds-alert--error" role="alert">
+                    <Icon name="alert" size={18} />
+                    <span>« {r.label} » n’est plus disponible sur cet appareil.</span>
+                  </p>
+                ) : (
+                  <span>Chargement de « {r.label} »…</span>
+                )
+              ) : isLink(content) ? (
+                <a href={content} target="_blank" rel="noopener noreferrer">
+                  {content}
+                </a>
+              ) : (
+                <span>
+                  {content}
+                  {r.demo ? ' · démonstration' : ''}
+                </span>
+              )}
+            </li>
+          )
+        })}
+      </ul>
+    </>
   )
 }
