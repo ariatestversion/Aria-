@@ -4,7 +4,7 @@ import { Icon, INSTRUMENT_ICON } from '../design/Icon'
 import { useMediaRecorder } from '../lib/recorder'
 import { isGuestEmail, probeAuthMode, restoreSession, signOutV0, type AuthMode } from './auth'
 import type { UserProfile } from '../types'
-import { buildProgram, buildReview, defaultResource, passageLabel, prepGoalsFor, resourceAvailable } from './pedagogy'
+import { buildProgram, buildReview, defaultResource, passageLabel, prepGoalsFor, previousSessionFrom, resourceAvailable } from './pedagogy'
 import {
   DEMO_GENRES,
   DURATIONS,
@@ -115,6 +115,7 @@ export function AriaApp() {
   const [prepPassage, setPrepPassage] = useState('')
   const [prepResource, setPrepResource] = useState<ResourceMode>('ear')
   const [prepDifficulties, setPrepDifficulties] = useState('')
+  const [prepUsePrevious, setPrepUsePrevious] = useState(true)
   const [worksObs, setWorksObs] = useState('')
   const [improveObs, setImproveObs] = useState('')
   const [comparison, setComparison] = useState('')
@@ -130,21 +131,25 @@ export function AriaApp() {
   const [profileHint, setProfileHint] = useState('')
   const [tool, setTool] = useState<Tool>('none')
   const [showPlan, setShowPlan] = useState(false)
-  const [brand, setBrand] = useState<Theme>(() => {
+  // Sprint 05 — DA 4 « Ivoire & marine » appliquée par défaut. Les autres thèmes restent
+  // consultables pour comparaison avec ?theme=… dans l’adresse, sans être mémorisés.
+  const [brand] = useState<Theme>(() => {
     try {
       const params = new URLSearchParams(window.location.search)
       const fromUrl = params.get('theme') || params.get('brand')
-      if (isTheme(fromUrl)) {
-        localStorage.setItem(THEME_KEY, fromUrl)
-        return fromUrl
-      }
-      const stored = localStorage.getItem(THEME_KEY)
-      return isTheme(stored) ? stored : 'marine'
+      const chosen = isTheme(fromUrl) ? fromUrl : 'ivoire'
+      document.documentElement.dataset.brand = chosen
+      return chosen
     } catch {
-      return 'marine'
+      return 'ivoire'
     }
   })
-  const recorder = useMediaRecorder()
+  const recorder = useMediaRecorder({
+    onInterrupted: (blob, seconds) => {
+      void saveTakeBlob(blob, seconds, 'interrupted')
+    },
+  })
+  const persistAsked = useRef(false)
   const savingRef = useRef(false)
 
   const piece = pieceId ? getPiece(pieceId) : null
@@ -155,7 +160,7 @@ export function AriaApp() {
   useEffect(() => {
     document.documentElement.dataset.brand = brand
     try {
-      localStorage.setItem(THEME_KEY, brand)
+      localStorage.removeItem(THEME_KEY)
     } catch {
       /* ignore */
     }
@@ -256,6 +261,17 @@ export function AriaApp() {
     const previous = target.program?.resource
     setPrepResource(previous && resourceAvailable(target, previous) ? previous : defaultResource(target, musical?.habits || habits))
     setPrepDifficulties('')
+    setPrepUsePrevious(true)
+  }
+
+  /** Dernière séance terminée du morceau, avec le programme qui l’a produite (si c’est bien le même). */
+  function previousFor(target: Piece | null) {
+    if (!target || !email) return null
+    const log = listCompletedSessionLogs(email, target.id)[0]
+    if (!log) return null
+    const program =
+      target.program && (target.program.startedAt || target.program.updatedAt) === log.sessionStartedAt ? target.program : null
+    return previousSessionFrom(log, program)
   }
 
   const sessionStart = (p: Piece | null) => p?.program?.startedAt || p?.program?.updatedAt || ''
@@ -501,6 +517,8 @@ export function AriaApp() {
     setScreen('prepare')
   }
 
+  const prepPrevious = useMemo(() => (screen === 'prepare' ? previousFor(piece) : null), [piece?.id, piece?.program?.startedAt, screen, email])
+
   const prepPreview = useMemo(() => {
     if (!piece || screen !== 'prepare') return null
     return buildProgram({
@@ -512,8 +530,9 @@ export function AriaApp() {
       passage: prepPassage,
       resource: prepResource,
       difficulties: prepDifficulties,
+      previous: prepUsePrevious ? prepPrevious : null,
     })
-  }, [piece?.id, screen, prepInstrument, prepLevel, prepMinutes, prepGoals, prepPassage, prepResource, prepDifficulties])
+  }, [piece?.id, screen, prepInstrument, prepLevel, prepMinutes, prepGoals, prepPassage, prepResource, prepDifficulties, prepUsePrevious, prepPrevious])
 
   function confirmProgram() {
     if (!piece || !email || !prepGoals.length) return
@@ -526,6 +545,7 @@ export function AriaApp() {
       passage: prepPassage,
       resource: prepResource,
       difficulties: prepDifficulties,
+      previous: prepUsePrevious ? previousFor(piece) : null,
     })
     const now = new Date().toISOString()
     const next: Piece = {
@@ -563,21 +583,44 @@ export function AriaApp() {
     updatePieceFields({ program: { ...piece.program, steps } })
   }
 
-  async function stopAndSaveTake() {
+  async function stopAndSaveTake(cause: 'user' | 'hidden' = 'user') {
     if (savingRef.current) return
-    const current = pieceId ? getPiece(pieceId) : null
-    if (!current || !email) return
     savingRef.current = true
     try {
       setTakeHint('')
       const seconds = recorder.seconds
       const blob = await recorder.stop()
+      await saveTakeBlob(blob, seconds, cause)
+    } finally {
+      savingRef.current = false
+    }
+  }
+
+  /** Sauvegarde une prise capturée (arrêt demandé ou interruption par le système). */
+  async function saveTakeBlob(blob: Blob | null, seconds: number, cause: 'user' | 'interrupted' | 'hidden') {
+    const current = pieceId ? getPiece(pieceId) : null
+    if (!current || !email) return
+    {
       if (!blob || blob.size < 100) {
-        setTakeHint('Aucune prise utilisable n’a été capturée. Réessaie l’enregistrement.')
+        setTakeHint(
+          cause === 'interrupted'
+            ? 'L’enregistrement a été interrompu par l’appareil (appel, écran verrouillé, micro coupé) avant d’avoir capté du son. Relance la prise.'
+            : 'Aucune prise utilisable n’a été capturée. Réessaie l’enregistrement.',
+        )
         return
       }
       const takeId = newId('take')
-      await putBlob(takeId, blob)
+      try {
+        await putBlob(takeId, blob)
+      } catch {
+        setTakeHint('La prise n’a pas pu être sauvegardée sur cet appareil (espace de stockage plein ou navigation privée ?). Libère de l’espace puis réessaie.')
+        return
+      }
+      if (!persistAsked.current) {
+        persistAsked.current = true
+        // Demande au navigateur de ne pas effacer les prises en cas de manque d’espace.
+        void navigator.storage?.persist?.().catch(() => false)
+      }
       const step = current.program?.steps[Math.min(current.program.stepIndex, current.program.steps.length - 1)]
       const take: Take = {
         id: takeId,
@@ -594,11 +637,29 @@ export function AriaApp() {
       savePiece({ ...current, lastWorkedAt: new Date().toISOString(), updatedAt: new Date().toISOString() })
       refreshPieces()
       refreshTakes(email, current.id)
-      setTakeHint(`Prise sauvegardée sur cet appareil (${fmt(take.seconds)}).`)
-    } finally {
-      savingRef.current = false
+      setTakeHint(
+        cause === 'interrupted'
+          ? `Enregistrement interrompu par l’appareil (appel, écran verrouillé ou micro coupé). La partie captée est sauvegardée (${fmt(take.seconds)}).`
+          : cause === 'hidden'
+            ? `L’application est passée en arrière-plan : la prise a été arrêtée et sauvegardée (${fmt(take.seconds)}).`
+            : `Prise sauvegardée sur cet appareil (${fmt(take.seconds)}).`,
+      )
     }
   }
+
+  // Application mise en arrière-plan pendant une prise (changement d’app, écran verrouillé) :
+  // la prise est arrêtée et sauvegardée tout de suite, avant que le système ne coupe le micro.
+  useEffect(() => {
+    const onHide = () => {
+      if (document.visibilityState === 'hidden' && recorder.status === 'recording') void stopAndSaveTake('hidden')
+    }
+    document.addEventListener('visibilitychange', onHide)
+    window.addEventListener('pagehide', onHide)
+    return () => {
+      document.removeEventListener('visibilitychange', onHide)
+      window.removeEventListener('pagehide', onHide)
+    }
+  })
 
   function toggleRecording() {
     setTakeHint('')
@@ -686,6 +747,19 @@ export function AriaApp() {
     setSaveHint('')
     return true
   }
+
+  // Sprint 05 — les observations du bilan sont gardées en brouillon pendant la saisie :
+  // fermer l’application ne les perd plus. Une séance déjà terminée n’est jamais repassée en brouillon.
+  useEffect(() => {
+    if (screen !== 'review' || !piece || !email) return
+    if (!worksObs.trim() && !improveObs.trim() && !comparison.trim()) return
+    const id = window.setTimeout(() => {
+      const existing = findSessionLog(email, piece.id, sessionStart(piece))
+      if (existing?.status === 'completed') return
+      persistSession('draft')
+    }, 600)
+    return () => window.clearTimeout(id)
+  }, [worksObs, improveObs, comparison, screen])
 
   function saveReview() {
     if (!persistSession('completed')) return
@@ -1321,6 +1395,40 @@ export function AriaApp() {
           <h1 className="ds-h1">{piece.title}</h1>
           <p className="ds-lead">Ta séance est construite à partir de ces réglages. Ils viennent de ton profil : ajuste-les pour aujourd’hui.</p>
 
+          {prepPrevious ? (
+            <Section title="Ta dernière séance">
+              <div className="ds-card ds-stack-sm" data-testid="prep-previous">
+                <span className="ds-caption">
+                  {new Date(prepPrevious.date).toLocaleDateString('fr-FR', { dateStyle: 'medium' })}
+                  {prepPrevious.objective ? ` · ${prepPrevious.objective}` : ''}
+                  {prepPrevious.bpm ? ` · ${prepPrevious.bpm} BPM` : ''}
+                </span>
+                {prepPrevious.improve ? (
+                  <p className="ds-body">
+                    <b>À travailler (ta note) :</b> {prepPrevious.improve}
+                  </p>
+                ) : null}
+                {prepPrevious.retrySteps.length ? (
+                  <p className="ds-body">
+                    <b>À reprendre (ton avis) :</b> {prepPrevious.retrySteps.join(', ')}
+                  </p>
+                ) : null}
+                {prepPrevious.okSteps.length && !prepPrevious.retrySteps.length ? (
+                  <p className="ds-body">
+                    <b>Réussi (ton avis) :</b> {prepPrevious.okSteps.join(', ')}
+                  </p>
+                ) : null}
+                {!prepPrevious.improve && !prepPrevious.retrySteps.length && !prepPrevious.okSteps.length ? (
+                  <p className="ds-hint">Aucune observation ni auto-évaluation notée lors de cette séance.</p>
+                ) : null}
+                <label className="ds-check">
+                  <input type="checkbox" checked={prepUsePrevious} onChange={(e) => setPrepUsePrevious(e.target.checked)} />
+                  <span>Construire la séance à partir de la dernière</span>
+                </label>
+              </div>
+            </Section>
+          ) : null}
+
           <Section title="Instrument">
             <div className="ds-chips">
               {INSTRUMENTS.filter((i) => instruments.includes(i.id) || i.id === piece.instrument || i.id === prepInstrument).map((i) => (
@@ -1413,7 +1521,7 @@ export function AriaApp() {
                 étape si elle ne te sert pas.
               </p>
               {prepPreview.notes?.map((n) => (
-                <p key={n} className="ds-alert ds-alert--warning">
+                <p key={n} className={`ds-alert ${/^(Suite de ta séance|Nouvel objectif)/.test(n) ? 'ds-alert--info' : 'ds-alert--warning'}`}>
                   <Icon name="info" size={18} />
                   <span>{n}</span>
                 </p>
@@ -1464,6 +1572,26 @@ export function AriaApp() {
                   ))}
                 </div>
 
+                {program.passage || step.bpm ? (
+                  <div className="ds-cues" data-testid="step-cues">
+                    {program.passage ? (
+                      <Badge tone="neutral" icon="score">
+                        Passage : {program.passage}
+                      </Badge>
+                    ) : null}
+                    {step.bpm ? (
+                      <button
+                        type="button"
+                        className="ds-btn ds-btn--sm ds-btn--secondary"
+                        aria-pressed={tool === 'metronome'}
+                        onClick={() => setTool(tool === 'metronome' ? 'none' : 'metronome')}
+                      >
+                        <Icon name="metronome" size={18} />
+                        Métronome · {step.bpm} BPM
+                      </button>
+                    ) : null}
+                  </div>
+                ) : null}
                 <article className="ds-stepblock" data-testid="step-card">
                   <h2 className="ds-h2">{step.title}</h2>
                   <div className="ds-stepcard-block">
@@ -1540,7 +1668,7 @@ export function AriaApp() {
                     Notes
                   </button>
                 </div>
-                {tool === 'metronome' ? <MetronomePanel initialBpm={step.bpm || 60} /> : null}
+                {tool === 'metronome' ? <MetronomePanel key={step.id} initialBpm={step.bpm || 60} /> : null}
                 {tool === 'resources' ? resourcesPanel : null}
                 {tool === 'notes' ? notesPanel : null}
 
@@ -1645,6 +1773,23 @@ export function AriaApp() {
             <SourceTag source="rules" />
             <span className="ds-source ds-source--none">Analyse automatique : aucune</span>
           </div>
+
+          {(() => {
+            const prev = listCompletedSessionLogs(email, piece.id).find((l) => l.sessionStartedAt !== sessionStart(piece))
+            if (!prev || (!prev.observationImprove && !prev.nextStep)) return null
+            return (
+              <div className="ds-card ds-stack-sm" data-testid="review-previous">
+                <span className="ds-overline">Séance précédente · {new Date(prev.createdAt).toLocaleDateString('fr-FR', { dateStyle: 'medium' })}</span>
+                {prev.observationImprove ? (
+                  <p className="ds-body">
+                    Tu voulais travailler : « {prev.observationImprove} ». Réécoute ta prise : est-ce mieux aujourd’hui ?
+                  </p>
+                ) : (
+                  <p className="ds-body">{prev.nextStep}</p>
+                )}
+              </div>
+            )
+          })()}
 
           <Section title="Réécouter et comparer">
             {(() => {
@@ -1983,34 +2128,6 @@ export function AriaApp() {
               Enregistrer le profil
             </button>
           </div>
-          <Section title="Direction visuelle (aperçu)">
-            <div className="ds-card ds-stack-sm">
-              <p className="ds-body">
-                Compare les propositions dans l’application réelle. Le choix n’est enregistré que sur cet appareil ; tes données ne changent pas.
-              </p>
-              <div className="ds-stack-sm" role="group" aria-label="Direction visuelle">
-                {(
-                  [
-                    ['marine', 'Marine (DA 1)', 'Marine, papier, Manrope — référence de travail'],
-                    ['electrique', 'Bleu électrique (DA 2)', 'Blanc, gris clair, bleu électrique, anthracite'],
-                    ['espresso', 'Crème & espresso (V0.4)', 'Version actuelle publiée en prévisualisation'],
-                    ['ivoire', 'Ivoire & marine (DA 4)', 'Ivoire, gris clair, bleu ciel, marine, anthracite ; rouge réservé à l’enregistrement'],
-                  ] as const
-                ).map(([id, label, hint]) => (
-                  <button
-                    key={id}
-                    type="button"
-                    aria-pressed={brand === id}
-                    className={`ds-option${brand === id ? ' is-on' : ''}`}
-                    onClick={() => setBrand(id)}
-                  >
-                    <b>{label}</b>
-                    <span>{hint}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </Section>
           <Section title="Compte">
             <div className="ds-stack">
               {guest ? <p className="ds-hint">Mode découverte. Connecte-toi pour créer un compte.</p> : null}

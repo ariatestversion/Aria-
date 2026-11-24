@@ -1,5 +1,47 @@
 # Changelog — ARIA
 
+## [Sprint 05] — Expérience de pratique & préparation Alpha (en cours, 2026-11-24)
+
+Branche : `claude/sprint05-pratique`, créée depuis `main` (`6b1652a`, V0.4) avec fusion de `claude/da-preview` (DA 4). Historique conservé.  
+Netlify : **prévisualisation uniquement**. La production reste verrouillée sur le Sprint 02.  
+**Statut : non clôturé.** Clôture après la recette QA et les tests sur mobile réel.
+
+### Continuité entre séances
+- La préparation rappelle **la dernière séance terminée** du morceau : date, objectif, tempo, ce que tu avais noté à travailler, les étapes que tu avais jugées à reprendre ou réussies.
+- Si l’objectif principal ne change pas, la nouvelle séance **part de la précédente** (règles explicites, appliquées à tes observations) :
+  - une étape **« Reprise · … »** juste après l’échauffement, qui cite ta note et reprend l’exercice correctif ;
+  - pour le rythme et le tempo, le tempo de départ suit la règle du bilan : **−8 BPM** si une étape était à reprendre, **+4 BPM** si les étapes évaluées étaient réussies, sinon le même tempo ;
+  - une note explique ce qui change et pourquoi.
+- Option **« Construire la séance à partir de la dernière »**, cochée par défaut, désactivable.
+- Nouvel objectif principal : la séance repart des réglages de base, avec une note qui le dit.
+- Bilan : rappel de ce que tu voulais travailler la fois précédente, pour réécouter et comparer.
+- Le conseil « Prochaine séance » du bilan correspond désormais exactement à ce que fera la séance suivante (plus de « monte le tempo » sans étape notée réussie).
+
+### Consignes directement applicables
+- Au-dessus de la consigne : le **passage travaillé** et un bouton **« Métronome · N BPM »** au tempo de l’étape.
+- Le métronome se règle sur le tempo de chaque nouvelle étape (il gardait auparavant celui de la première étape ouverte).
+
+### Enregistrement et conservation des prises
+- **Interruption par l’appareil** (appel, micro coupé, autre application) : la partie captée est sauvegardée, avec un message explicite. L’interface ne reste plus bloquée sur « Enregistrement en cours ».
+- **Application mise en arrière-plan** pendant une prise : la prise est arrêtée et sauvegardée immédiatement.
+- **Écran maintenu allumé** pendant une prise (Wake Lock, si le navigateur le permet).
+- **Erreur de stockage** (espace plein, navigation privée) : message explicite au lieu d’un échec silencieux.
+- Après la première prise, ARIA demande au navigateur de **ne pas effacer les données** en cas de manque d’espace (`navigator.storage.persist()`), sans garantie selon le navigateur.
+- **Bilan sauvegardé pendant la saisie** : les observations sont gardées en brouillon au fil de la frappe. Fermer l’application ne les perd plus.
+
+### Direction artistique
+- **DA 4 « Ivoire & marine » appliquée par défaut**, sans nouvelle exploration graphique.
+- Le sélecteur de directions visuelles est retiré du Profil. Les autres thèmes restent consultables pour comparaison avec `?theme=marine|electrique|espresso`, sans être mémorisés.
+- Nouveaux composants aux couleurs des tokens : case à cocher avec libellé (cible ≥ 44 px), repères de consigne.
+
+### Tests
+- Unitaires : **30/30** (7 nouveaux : continuité, tempo, cohérence bilan / séance suivante).
+- e2e (Chromium, micro simulé, 390×844 et 320×640) : **94/94**, dont 28 contrôles ajoutés ou réécrits au Sprint 05 (les contrôles du sélecteur de thèmes sont remplacés).
+- **Aucun test sur appareil physique** pour cette version.
+
+### Non traité (voir `docs/BACKLOG.md`)
+- Les recommandations détaillées de la QA Work n’ont pas été transmises : aucune correction ne leur est attribuée.
+
 ## [ARIA — MVP Alpha V0.4 · Sprint 04] — Expérience musicale & Design System (2026-11-20)
 
 Branche : `claude/sprint04-experience-musicale` (depuis `main` = `23ea182`, source Cursor `104645c`)  

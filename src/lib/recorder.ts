@@ -21,7 +21,21 @@ function pickMimeType(): string | undefined {
   return PREFERRED_MIME_TYPES.find((t) => MediaRecorder.isTypeSupported(t))
 }
 
-export function useMediaRecorder() {
+type WakeLockLike = { release: () => Promise<void> }
+
+export type RecorderOptions = {
+  /**
+   * Appelé quand l’enregistrement s’arrête sans qu’on l’ait demandé (appel entrant, écran
+   * verrouillé, micro retiré…). Reçoit ce qui a été capté, pour que rien ne soit perdu.
+   */
+  onInterrupted?: (blob: Blob | null, seconds: number) => void
+}
+
+export function useMediaRecorder(options: RecorderOptions = {}) {
+  const interruptedRef = useRef(options.onInterrupted)
+  interruptedRef.current = options.onInterrupted
+  const secondsRef = useRef(0)
+  const wakeLock = useRef<WakeLockLike | null>(null)
   const [status, setStatus] = useState<RecorderStatus>('idle')
   const [seconds, setSeconds] = useState(0)
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
@@ -40,9 +54,19 @@ export function useMediaRecorder() {
     }
   }
 
+  const releaseWakeLock = () => {
+    const lock = wakeLock.current
+    wakeLock.current = null
+    void lock?.release().catch(() => undefined)
+  }
+
   const stopStream = () => {
-    streamRef.current?.getTracks().forEach((t) => t.stop())
+    streamRef.current?.getTracks().forEach((t) => {
+      t.onended = null
+      t.stop()
+    })
     streamRef.current = null
+    releaseWakeLock()
   }
 
   const start = useCallback(async () => {
@@ -88,6 +112,20 @@ export function useMediaRecorder() {
       })
       streamRef.current = stream
       chunks.current = []
+      // Micro coupé par le système (appel, autre application, casque débranché) : on arrête
+      // proprement pour récupérer ce qui a été capté.
+      stream.getAudioTracks().forEach((track) => {
+        track.onended = () => {
+          const rec = mediaRecorder.current
+          if (rec && rec.state !== 'inactive') {
+            try {
+              rec.stop()
+            } catch {
+              /* ignore */
+            }
+          }
+        }
+      })
 
       const mimeType = pickMimeType()
       mimeTypeRef.current = mimeType
@@ -129,17 +167,44 @@ export function useMediaRecorder() {
           })
         }
         stopStream()
-        stopResolver.current?.(blob)
-        stopResolver.current = null
         mediaRecorder.current = null
+        const resolver = stopResolver.current
+        stopResolver.current = null
+        if (resolver) {
+          resolver(blob)
+          return
+        }
+        // Arrêt non demandé : l’interface ne doit pas rester sur « enregistrement en cours ».
+        clearTimer()
+        setStatus((prev) => (prev === 'error' ? 'error' : 'idle'))
+        interruptedRef.current?.(blob, secondsRef.current)
       }
 
       // Larger timeslice = fewer joins = less crackle than 250ms chunks
       recorder.start(1000)
       setSeconds(0)
+      secondsRef.current = 0
       setStatus('recording')
       clearTimer()
-      timer.current = window.setInterval(() => setSeconds((s) => s + 1), 1000)
+      timer.current = window.setInterval(() => {
+        secondsRef.current += 1
+        setSeconds(secondsRef.current)
+      }, 1000)
+      // Empêche la mise en veille de l’écran pendant la prise (si le navigateur le permet).
+      try {
+        const nav = navigator as Navigator & { wakeLock?: { request: (type: 'screen') => Promise<WakeLockLike> } }
+        if (nav.wakeLock) {
+          void nav.wakeLock
+            .request('screen')
+            .then((lock) => {
+              if (streamRef.current) wakeLock.current = lock
+              else void lock.release().catch(() => undefined)
+            })
+            .catch(() => undefined)
+        }
+      } catch {
+        /* ignore */
+      }
       return true
     } catch (err) {
       stopStream()

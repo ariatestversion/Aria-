@@ -24,6 +24,13 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 `npm run build` génère `public/version.json` (commit, branche, date) : c’est la preuve de correspondance entre le commit GitHub et le déploiement Netlify. `SOURCE_VERSION.json` enregistre le dernier couple commit / déploiement de prévisualisation.
 
+## État Sprint 05 — Expérience de pratique (en cours)
+
+- Branche `claude/sprint05-pratique`, depuis `main` (`6b1652a`) avec fusion de `claude/da-preview` (DA 4, historique conservé).
+- Prévisualisation Netlify, commit déployé et vérification : `SOURCE_VERSION.json`.
+- Production toujours verrouillée sur le Sprint 02. `main` inchangée.
+- Recette : `docs/recettes/sprint05.md`. Non clôturé avant la recette QA et les tests mobiles réels.
+
 ## État Sprint 04 — ARIA MVP Alpha V0.4 (clôture)
 
 - **Clôturé et figé** : branche fusionnée dans `main` (merge commit `5fead7f`, historique conservé).

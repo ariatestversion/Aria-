@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Recette automatisée Sprint 04 — navigateur Chromium (Playwright), viewport mobile 390×844.
+ * Recette automatisée Sprint 04 + Sprint 05 — navigateur Chromium (Playwright), viewport mobile 390×844.
  *
  * Micro SIMULÉ par Chromium (--use-fake-device-for-media-stream) : ce n’est PAS un test sur
  * appareil physique. Le son enregistré est un signal de test généré par le navigateur.
@@ -18,7 +18,7 @@ const { chromium } = require('playwright')
 
 const BASE = process.argv[2] || 'http://localhost:43123/'
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
-const SHOT_DIR = join(ROOT, process.env.SHOT_DIR || 'docs/screenshots/sprint04')
+const SHOT_DIR = join(ROOT, process.env.SHOT_DIR || 'docs/screenshots/sprint05')
 const SHOTS = process.env.SHOTS === '1'
 if (SHOTS) mkdirSync(SHOT_DIR, { recursive: true })
 
@@ -50,6 +50,8 @@ async function layoutAudit(page, label) {
       const style = getComputedStyle(el)
       if (!box.width || !box.height || style.visibility === 'hidden' || el.closest('[hidden]')) continue
       if (el.type === 'file' || el.classList.contains('ds-steps-seg')) continue
+      // Case à cocher dans un libellé : c’est le libellé entier (≥ 44 px) qui reçoit le toucher.
+      if (el.type === 'checkbox' && el.closest('label') && el.closest('label').getBoundingClientRect().height >= 43.5) continue
       if (box.height < 43.5 || (box.width < 43.5 && el.tagName !== 'INPUT')) {
         small.push(`${el.tagName.toLowerCase()}「${(el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 28)}」${Math.round(box.width)}×${Math.round(box.height)}`)
       }
@@ -170,7 +172,9 @@ async function main() {
   check('Séance : consigne + critère de réussite affichés', /Consigne/i.test(cardText) && /Critère de réussite/i.test(cardText))
   check('Séance : durée d’étape affichée', await page.getByText(/^\d+ min$/).first().isVisible())
   check('Séance : bouton d’enregistrement présent pendant le travail', await page.getByRole('button', { name: 'Démarrer l’enregistrement' }).isVisible())
-  await page.getByRole('button', { name: 'Métronome' }).click()
+  check('S05 · Séance : tempo de l’étape affiché avec accès direct au métronome', await page.getByRole('button', { name: /^Métronome · \d+ BPM$/ }).isVisible())
+  check('S05 · DA 4 Ivoire & marine appliquée par défaut', (await page.evaluate(() => document.documentElement.dataset.brand)) === 'ivoire')
+  await page.getByRole('button', { name: 'Métronome', exact: true }).click()
   await page.getByTestId('metronome').getByRole('button', { name: 'Démarrer' }).click()
   await page.waitForTimeout(1200)
   await shot(page, '05-seance-etape1')
@@ -235,8 +239,26 @@ async function main() {
   await page.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
   await page.getByRole('button', { name: /Ma chanson/ }).click()
   await page.getByRole('button', { name: 'Préparer une séance' }).click()
+  // Sprint 05 — continuité : la séance suivante part de la précédente.
+  const prev = page.getByTestId('prep-previous')
+  check('S05 · Préparation : dernière séance rappelée (observation de l’utilisateur)', (await prev.isVisible()) && /Le rythme décroche au changement d’accord/.test(await prev.innerText()))
+  const plan2 = await page.getByTestId('prep-plan').locator('li').allInnerTexts()
+  check('S05 · Préparation : étape de reprise de ce qui restait à corriger', plan2.some((t) => /Reprise ·/.test(t)), plan2.join(' | '))
+  check('S05 · Préparation : la suite est expliquée (règle appliquée à tes observations)', await page.getByText(/Suite de ta séance du/).isVisible())
+  const plan2Total = plan2.reduce((a, t) => a + Number((t.match(/(\d+) min/) || [0, 0])[1]), 0)
+  check('S05 · Préparation : la séance de suite tient dans le temps choisi', plan2Total === 15, `${plan2Total} min`)
+  await shot(page, '15-preparation-suite')
+  await layoutAudit(page, 'Préparation (suite)')
+  await page.getByLabel('Construire la séance à partir de la dernière').uncheck()
+  const plan2Off = await page.getByTestId('prep-plan').locator('li').allInnerTexts()
+  check('S05 · Préparation : la continuité peut être désactivée', !plan2Off.some((t) => /Reprise ·/.test(t)))
+  await page.getByLabel('Construire la séance à partir de la dernière').check()
   await page.getByRole('button', { name: 'Commencer la séance' }).click()
+  await page.getByRole('button', { name: 'Étape suivante' }).click()
+  check('S05 · Séance de suite : étape 2 = reprise citant l’observation', /Reprise ·/.test(await page.getByTestId('step-card').innerText()) && /Le rythme décroche/.test(await page.getByTestId('step-card').innerText()))
   await page.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).click()
+  check('S05 · Bilan : rappel de ce que l’utilisateur voulait travailler la fois précédente', await page.getByTestId('review-previous').isVisible())
+  await shot(page, '16-bilan-rappel')
   await page.getByRole('button', { name: 'Terminer la séance' }).click()
   check('Séance vide refusée comme « terminée »', await page.getByText(/Pour terminer la séance/).isVisible())
   const draftNote = 'Brouillon : la main droite tient le motif.'
@@ -252,6 +274,17 @@ async function main() {
   check('NR · Bilan sans prise : propose une première prise de référence', /première prise/.test(nextNoRef), nextNoRef.split('\n').pop())
   check('NR · Bilan sans prise : pas d’invitation à comparer', !/compare|précédente/i.test(nextNoRef))
   await shot(page, '13-bilan-sans-prise')
+  // Sprint 05 — observation saisie puis application fermée sans « Garder en brouillon ».
+  const autoNote = 'Note tapée puis application fermée.'
+  await page.getByLabel('Ce qui mérite d’être travaillé').fill(autoNote)
+  await page.waitForTimeout(1000)
+  await page.reload()
+  await page.getByText('Envie de jouer ?').waitFor()
+  await page.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
+  await page.getByRole('button', { name: /Autre morceau/ }).click()
+  await page.getByRole('button', { name: 'Reprendre la séance' }).click()
+  await page.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).click()
+  check('S05 · Bilan : observation conservée après fermeture sans sauvegarde manuelle', (await page.getByLabel('Ce qui mérite d’être travaillé').inputValue()) === autoNote)
   await page.getByRole('button', { name: 'Garder en brouillon' }).click()
   await page.getByRole('navigation').getByRole('button', { name: 'Suivi' }).click()
   check('Brouillons listés à part (2)', await page.getByRole('heading', { name: 'Brouillons (2)' }).isVisible())
@@ -283,21 +316,25 @@ async function main() {
   await page.getByRole('navigation').getByRole('button', { name: 'Profil' }).click()
   await shot(page, '10-profil')
   await layoutAudit(page, 'Profil')
-  // Direction visuelle : trois thèmes comparables, Marine (DA 1) par défaut sur cette branche.
+  // Direction visuelle : DA 4 par défaut ; plus de sélecteur dans le Profil. Les autres thèmes
+  // restent consultables avec ?theme=… (comparaison), sans être mémorisés.
   const theme = () => page.evaluate(() => document.documentElement.dataset.brand)
-  check('Direction visuelle : Marine (DA 1) par défaut', (await theme()) === 'marine')
-  for (const [label, id] of [
-    ['Bleu électrique (DA 2)', 'electrique'],
-    ['Crème & espresso (V0.4)', 'espresso'],
-    ['Ivoire & marine (DA 4)', 'ivoire'],
-    ['Marine (DA 1)', 'marine'],
-  ]) {
-    await page.getByRole('navigation').getByRole('button', { name: 'Profil' }).click()
-    await page.getByRole('button', { name: new RegExp(`^${label.replace(/[()]/g, '\\$&')}`) }).click()
-    check(`Direction visuelle : thème ${label} appliqué`, (await theme()) === id)
-    await page.getByRole('navigation').getByRole('button', { name: 'Accueil' }).click()
-    await layoutAudit(page, `Accueil · ${label}`)
+  check('S05 · Profil : plus de sélecteur de direction visuelle', (await page.getByText('Direction visuelle (aperçu)').count()) === 0)
+  for (const id of ['marine', 'electrique', 'espresso']) {
+    await page.goto(`${BASE}?theme=${id}`)
+    await page.getByText('Envie de jouer ?').waitFor()
+    check(`Comparaison : thème ${id} accessible par l’adresse`, (await theme()) === id)
   }
+  await page.goto(BASE)
+  await page.getByText('Envie de jouer ?').waitFor()
+  check('S05 · Thème de comparaison non mémorisé : retour à la DA 4', (await theme()) === 'ivoire')
+  await page.setViewportSize({ width: 320, height: 640 })
+  await layoutAudit(page, 'Accueil · 320 px')
+  await page.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
+  await page.getByRole('button', { name: /Ma chanson/ }).click()
+  await page.getByRole('button', { name: 'Préparer une séance' }).click()
+  await layoutAudit(page, 'Préparation · 320 px')
+  await page.setViewportSize(VIEWPORT)
   check('Aucune erreur JavaScript', errors.length === 0, errors.join(' | '))
   check('Médias : aucune ressource en échec (404)', missing.length === 0, missing.join(' | '))
   check('Médias : aucune requête vers les médias retirés (presets, instruments, audio, images)', mediaRequests.length === 0, mediaRequests.join(' | '))
@@ -315,9 +352,15 @@ async function main() {
   await c2.grantPermissions(['microphone'])
   await c2.addInitScript(() => {
     window.__denyMic = true
+    window.__streams = []
     const real = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices)
     navigator.mediaDevices.getUserMedia = (constraints) =>
-      window.__denyMic ? Promise.reject(new DOMException('Permission denied', 'NotAllowedError')) : real(constraints)
+      window.__denyMic
+        ? Promise.reject(new DOMException('Permission denied', 'NotAllowedError'))
+        : real(constraints).then((s) => {
+            window.__streams.push(s)
+            return s
+          })
   })
   const p2 = await c2.newPage()
   await onboardGuitar(p2)
@@ -343,7 +386,34 @@ async function main() {
   await p2.waitForTimeout(1500)
   await p2.getByRole('button', { name: 'Arrêter et sauvegarder la prise' }).click()
   await p2.getByText(/Prise sauvegardée sur cet appareil/).waitFor()
+
+  // Sprint 05 — interruption par le système (SIMULÉE : événement « ended » sur la piste du micro,
+  // comme lors d’un appel entrant ou d’un micro coupé) : la partie captée doit être sauvegardée.
+  await p2.getByRole('button', { name: 'Démarrer l’enregistrement' }).click()
+  await p2.getByText(/Enregistrement en cours ·/).waitFor()
+  await p2.waitForTimeout(1600)
+  await p2.evaluate(() => window.__streams.at(-1).getAudioTracks()[0].dispatchEvent(new Event('ended')))
+  const interrupted = p2.getByText(/Enregistrement interrompu par l’appareil/)
+  await interrupted.waitFor({ timeout: 5000 }).catch(() => undefined)
+  check('S05 · Interruption du micro : prise sauvegardée et message explicite', await interrupted.isVisible())
+  check('S05 · Interruption du micro : l’interface ne reste pas bloquée sur « en cours »', await p2.getByRole('button', { name: 'Démarrer l’enregistrement' }).isVisible())
+
+  // Application passée en arrière-plan pendant une prise (SIMULÉ : visibilityState = hidden).
+  await p2.getByRole('button', { name: 'Démarrer l’enregistrement' }).click()
+  await p2.getByText(/Enregistrement en cours ·/).waitFor()
+  await p2.waitForTimeout(1600)
+  await p2.evaluate(() => {
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' })
+    document.dispatchEvent(new Event('visibilitychange'))
+  })
+  const hidden = p2.getByText(/passée en arrière-plan : la prise a été arrêtée et sauvegardée/)
+  await hidden.waitFor({ timeout: 5000 }).catch(() => undefined)
+  check('S05 · Arrière-plan pendant une prise : prise arrêtée et sauvegardée', await hidden.isVisible())
+  await p2.evaluate(() => {
+    delete document.visibilityState
+  })
   await p2.getByRole('navigation').getByRole('button', { name: 'Suivi' }).click()
+  check('S05 · Les 3 prises (normale, interrompue, arrière-plan) sont dans le Suivi', (await p2.getByTestId('follow-take').count()) === 3)
   const detail = await p2.getByTestId('follow-take').first().innerText()
   check('NR · Prise sans passage saisi : l’objectif n’est pas affiché comme passage', !/·\s*Rythme\b|·\s*Passage\b/.test(detail), detail.split('\n')[1] || '')
   await b2.close()

@@ -1,6 +1,6 @@
 # Backlog ARIA — après la clôture du 23/11/2026
 
-Consigné sans correction. Aucun de ces points n’a été traité. Ils attendent la priorisation Product du Sprint 05.
+Consigné sans correction le 23/11. Mise à jour Sprint 05 : C1 traité ; les autres points restent ouverts. Ils attendent la priorisation Product du Sprint 05.
 
 ## A. Recommandations QA de Work
 
@@ -14,7 +14,8 @@ Consigné sans correction. Aucun de ces points n’a été traité. Ils attenden
 
 | # | Sujet | Recommandation | Priorité proposée |
 | --- | --- | --- | --- |
-| C1 | DA 4 par défaut | Après validation mobile, faire de la DA 4 le thème par défaut, puis décider s’il faut garder le sélecteur de thèmes (outil de comparaison) ou le retirer. | Haute |
+| C1 | DA 4 par défaut | **Fait au Sprint 05** : DA 4 par défaut, sélecteur retiré du Profil (thèmes de comparaison par `?theme=`). Reste à valider sur mobile. | — |
+| C1-old | DA 4 par défaut (texte initial) | Après validation mobile, faire de la DA 4 le thème par défaut, puis décider s’il faut garder le sélecteur de thèmes (outil de comparaison) ou le retirer. | Haute |
 | C2 | Interprétations DA 4 | Confirmer la navigation (icônes anthracite sur ivoire, ou barre anthracite) et les marges gris clair sur ordinateur. | Haute |
 | C3 | Rouge réservé | Vérifier en test utilisateur que les erreurs en anthracite (sans rouge) restent perçues comme des erreurs. | Moyenne |
 | C4 | Gris clair sur ivoire | Contraste 1,05:1 compensé par des bordures. Vérifier sur écrans réels, en extérieur et en luminosité basse. | Moyenne |

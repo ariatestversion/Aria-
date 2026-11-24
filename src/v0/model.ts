@@ -77,6 +77,8 @@ export type WorkProgram = {
   resource?: ResourceMode
   /** Limites honnêtes des règles appliquées (ex. instrument peu couvert). */
   notes?: string[]
+  /** Sprint 05 — date de la séance terminée dont celle-ci prend la suite. */
+  continuedFrom?: string
 }
 
 export type Piece = {

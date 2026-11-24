@@ -681,3 +681,29 @@ html[data-v0='1'][data-brand='ivoire'] .ds-take-delete { color: var(--ink) !impo
 }
 html[data-v0='1'][data-brand='ivoire'] .v0-inst.on { background: var(--id-accent); border-color: var(--id-ink); color: var(--id-ink); }
 html[data-v0='1'][data-brand='ivoire'] .v0-inst.on .v0-inst-icon { color: var(--id-ink); }
+
+/* Case à cocher avec libellé (Sprint 05) — cible tactile ≥ 44 px */
+.ds-check {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 44px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+.ds-check input {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  accent-color: var(--id-primary);
+}
+
+/* Repères de la consigne : passage, tempo (Sprint 05) */
+.ds-cues {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}
