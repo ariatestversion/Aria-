@@ -5,7 +5,7 @@
 | Rôle | Dépôt / service |
 | --- | --- |
 | **Dépôt de référence** | GitHub `ariatestversion/Aria-` (id 1428103245). L’ancienne adresse `ariaversionnouvelle/Aria-` redirige vers ce même dépôt. |
-| **Branche stable** | `main` |
+| **Branche stable** | `main` (Alpha V0.5 depuis le 24/11/2026) |
 | **Branches de sprint** | `claude/sprint04-experience-musicale`, … (une branche dédiée par sprint) |
 | **Netlify** | Projet existant `ariafirstversion` (id `3ae885ef-950d-4291-bbf7-60bfd310e6aa`) |
 | **Développement** | Claude Code depuis le Sprint 04, en remplacement de Cursor |
@@ -24,12 +24,15 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 `npm run build` génère `public/version.json` (commit, branche, date) : c’est la preuve de correspondance entre le commit GitHub et le déploiement Netlify. `SOURCE_VERSION.json` enregistre le dernier couple commit / déploiement de prévisualisation.
 
-## État Sprint 05 — Expérience de pratique (en cours)
+## État Sprint 05 — Alpha V0.5 (clôture technique, 24/11/2026)
 
-- Branche `claude/sprint05-pratique`, depuis `main` (`6b1652a`) avec fusion de `claude/da-preview` (DA 4, historique conservé).
-- Prévisualisation Netlify, commit déployé et vérification : `SOURCE_VERSION.json`.
-- Production toujours verrouillée sur le Sprint 02. `main` inchangée.
-- Recette : `docs/recettes/sprint05.md`. Non clôturé avant la recette QA et les tests mobiles réels.
+- **Clôturé et figé** : `claude/sprint05-pratique` fusionnée dans `main` (merge `--no-ff`, historique conservé). Branche conservée.
+- **Commit applicatif figé : `d79b2d2`.** Le code applicatif de `main` lui est identique ; les commits suivants ne changent que la documentation.
+- **Prévisualisation définitive** : https://6b05bcb61ae60f91656e77ef--ariafirstversion.netlify.app (`6b05bcb61ae60f91656e77ef`, non publiée, conservée).
+- **Tag proposé** `v0.5.0-alpha` : à créer depuis GitHub (push de tag refusé à la session).
+- **Production** : verrouillée sur le Sprint 02 (`6aff204b…`, `d86e813`). Aucune modification du lien public sans autorisation explicite.
+- Recette : `docs/recettes/sprint05.md` ; bilan : `docs/BILAN_SPRINT05.md` ; reports : `docs/BACKLOG.md` (Sprint 06).
+- **Sprint 06** : branche dédiée depuis `main` après cette fusion, avec sa propre prévisualisation Netlify.
 
 ## État Sprint 04 — ARIA MVP Alpha V0.4 (clôture)
 

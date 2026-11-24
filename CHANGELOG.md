@@ -1,10 +1,18 @@
 # Changelog — ARIA
 
-## [Sprint 05] — Expérience de pratique & préparation Alpha (en cours, 2026-11-24)
+## [ARIA — Alpha V0.5 · Sprint 05] — Expérience de pratique & préparation Alpha (2026-11-24)
+
+**Clôture technique (2026-11-24)** :
+- retours favorables de Work et de Claude QA sur la version corrigée `d79b2d2` ;
+- unitaires 35/35, e2e 115/115 ;
+- fusion dans `main` (merge `--no-ff`, historique conservé) ; tag proposé `v0.5.0-alpha` (à créer depuis GitHub) ;
+- prévisualisation définitive conservée : https://6b05bcb61ae60f91656e77ef--ariafirstversion.netlify.app ;
+- production inchangée (Sprint 02, verrouillée) ;
+- réserves : tests sur appareils physiques à faire ; écart mineur de durée de la reprise reporté au Sprint 06 (`docs/BACKLOG.md`, S06-1).
 
 Branche : `claude/sprint05-pratique`, créée depuis `main` (`6b1652a`, V0.4) avec fusion de `claude/da-preview` (DA 4). Historique conservé.  
 Netlify : **prévisualisation uniquement**. La production reste verrouillée sur le Sprint 02.  
-**Statut : non clôturé.** Clôture après la recette QA et les tests sur mobile réel.
+**Statut : clôturé techniquement le 24/11** (voir ci-dessus).
 
 ### Correctifs de recette QA (24/11, audits Work et Claude)
 

@@ -1,4 +1,14 @@
-# Backlog ARIA — après la clôture du 23/11/2026
+# Backlog ARIA
+
+## Sprint 06 — reports de la clôture du Sprint 05 (24/11/2026)
+
+| # | Sujet | Constat | Priorité proposée |
+| --- | --- | --- | --- |
+| S06-1 | Écart mineur de durée de la reprise | Le bilan annonce l’exercice de reprise « pendant 5 min », mais dans la séance suivante sa durée vient de la répartition du temps disponible : par exemple **3 min** sur une séance de 15 min (scénario Work). Le total de la séance reste exact. Aligner la durée annoncée et la durée réelle (annoncer la durée calculée, ou réserver la durée annoncée). | Mineure |
+| S06-2 | Tests sur appareils physiques | Safari iPhone (ouvert directement) et Chrome Android : grille `docs/recettes/sprint05.md`, section 3. Prérequis de toute publication. | Haute |
+| S06-3 | Rapports QA détaillés | Joindre les rapports Work et Claude QA du 24/11 au dépôt pour traçabilité (seuls les verdicts sont consignés). | Basse |
+
+# Archive — après la clôture du 23/11/2026
 
 Consigné sans correction le 23/11. Mise à jour Sprint 05 : C1 traité ; les autres points restent ouverts. Ils attendent la priorisation Product du Sprint 05.
 

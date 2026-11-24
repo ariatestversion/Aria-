@@ -1,11 +1,11 @@
 {
-  "version": "ARIA — Sprint 05 · correctifs de recette QA (non clôturé)",
+  "version": "ARIA — Alpha V0.5 (Sprint 05, clôture technique du 24/11/2026)",
   "commit": "d79b2d264152bd2cd63ee560ca372b8740701f12",
   "netlifyDeployId": "6b05bcb61ae60f91656e77ef",
   "netlifyPreview": "https://6b05bcb61ae60f91656e77ef--ariafirstversion.netlify.app",
   "branch": "claude/sprint05-pratique",
-  "previousPreview": "6b05b526b48a153cdd8083a9 (dc4687e, avant correctifs QA)",
   "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813) — vérifié le 24/11 : locked true, version.json d86e813",
-  "verification": "Déploiement ready, published_at null (non publié). version.json envoyé = d79b2d2. Lecture de /version.json sur l'URL de prévisualisation impossible depuis la session (hôte non autorisé) : à vérifier en ouvrant l'URL. Unitaires 35/35, e2e 115/115 en local sur le même commit.",
-  "short": "d79b2d2"
+  "verification": "Déploiement ready, published_at null (non publié). version.json envoyé = d79b2d2. Unitaires 35/35, e2e 115/115 sur le même commit. QA Work et Claude QA favorables. Tests sur appareils physiques non réalisés (réserve).",
+  "short": "d79b2d2",
+  "status": "Figée et fusionnée dans main ; prévisualisation définitive conservée ; production inchangée."
 }

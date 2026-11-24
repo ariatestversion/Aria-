@@ -1,7 +1,14 @@
 # Registre de recette — Sprint 05 · Expérience de pratique & préparation Alpha
 
 Prévisualisation : https://6b05bcb61ae60f91656e77ef--ariafirstversion.netlify.app · branche `claude/sprint05-pratique` · commit applicatif `d79b2d2` (correctifs QA). Précédente : `6b05b526…` (`dc4687e`).
-**Sprint non clôturé** : la clôture attend la recette QA et les tests sur mobile réel.
+**Clôture technique le 24/11/2026** après les retours favorables de Work et de Claude QA sur `d79b2d2`. Réserve : les tests sur appareils physiques restent à faire (section 3) avant toute publication. Bilan : `docs/BILAN_SPRINT05.md`.
+
+## 0. Verdicts QA
+
+| Audit | Version | Verdict |
+| --- | --- | --- |
+| Work (indépendant) | `d79b2d2` | Favorable |
+| Claude QA | `d79b2d2` | Favorable |
 
 ## 1. Tests automatisés (Claude · Chromium · micro simulé)
 
