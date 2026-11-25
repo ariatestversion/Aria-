@@ -1,13 +1,13 @@
 {
-  "version": "ARIA — Sprint 07 · prévisualisation 2 (lots B et C ; en attente de recette indépendante)",
-  "commit": "8a109c309baeceaaea7ced7a67157e8040a65c5e",
-  "short": "8a109c3",
-  "netlifyDeployId": "6b06e4629842048fae789a15",
-  "netlifyPreview": "https://6b06e4629842048fae789a15--ariafirstversion.netlify.app",
-  "netlifyPreviewClair": "https://6b06e4629842048fae789a15--ariafirstversion.netlify.app/?seance=clair",
-  "previous": "Prévisualisation 1 (lot B) : 6b06c8dd206fa1088b916525, 397d6d5",
+  "version": "ARIA — Sprint 07 · prévisualisation 3 pour la QA indépendante (lots B, C et D ; non clôturé)",
+  "commit": "a7d16906eb2069e3f0b8eff095c620529d97867f",
+  "short": "a7d1690",
+  "netlifyDeployId": "6b06e995ea0d5e04915ab8ef",
+  "netlifyPreview": "https://6b06e995ea0d5e04915ab8ef--ariafirstversion.netlify.app",
+  "netlifyPreviewClair": "https://6b06e995ea0d5e04915ab8ef--ariafirstversion.netlify.app/?seance=clair",
+  "previous": "Prévisualisation 2 (lots B et C) : 6b06e4629842048fae789a15, 8a109c3 ; prévisualisation 1 (lot B) : 6b06c8dd206fa1088b916525, 397d6d5",
   "branch": "claude/sprint07-integration",
   "reference": "Alpha V0.6 : 67aa241, prévisualisation 6b05c4864a41ea883858ac80 (conservée)",
   "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813) — vérifié le 25/11 : locked true, version.json d86e813",
-  "verification": "Déploiement ready, published_at null (non publié). version.json envoyé = 8a109c3. Unitaires 44/44, e2e 180/180 en local sur le même commit (micro simulé). Aucun test sur appareil physique."
+  "verification": "Déploiement ready, published_at null (non publié). version.json envoyé = a7d1690. Unitaires 44/44, e2e 229/229 en local sur le même commit (micro simulé). Aucun test sur appareil physique."
 }

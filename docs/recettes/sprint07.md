@@ -45,6 +45,8 @@ Aucun test sur appareil physique n’a été réalisé.
 
 ## Lot D — prévisualisation 3, pour la QA indépendante (25/11)
 
+https://6b06e995ea0d5e04915ab8ef--ariafirstversion.netlify.app (séance marine) · témoin clair : `?seance=clair` · commit `a7d1690` · non publiée. **C’est la version à recetter.**
+
 Résultats automatisés : unitaires **44/44**, e2e **229/229** (Chromium, micro simulé).
 
 - Contrôles ajoutés (T08 / S7-10, partie automatisable) : paysage 844×390, tablette 768×1024, ordinateur 1280×800, texte agrandi 200 % ; accueil et séance marine ; mise en page, contraste, cibles, contenu coupé ou hors écran.
