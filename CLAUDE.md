@@ -23,3 +23,10 @@
 
 - Document de référence : « ARIA — Liens de référence », https://claude.ai/artifact/RiTaMWPZDgCLgzUM7abiTG (document Claude du compte de la porteuse du projet).
 - Après chaque déploiement Netlify, création ou avancée de branche, tag ou changement de production : mettre à jour ce document (tableaux Netlify et GitHub, commit, statut). Ne jamais en créer un second.
+
+## Mises à jour documentaires (règle du 25/11/2026)
+
+- Ne jamais mettre à la corbeille ni supprimer un document de référence pour le mettre à jour.
+- Conserver les identifiants Google Drive, les liens, les droits d’accès et l’historique : modifier les documents existants **en place** (Google Docs : remplacement de texte, insertion de lignes de tableau, modification de cellules ; document Claude : opérations de bloc ou de ligne).
+- Ne pas créer de nouveau fichier portant le même nom pour remplacer un document existant.
+- Si une modification en place n’est pas techniquement possible, le signaler et proposer une solution non destructive (ajout d’une section datée, document complémentaire lié depuis l’original).
