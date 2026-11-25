@@ -1,11 +1,13 @@
 {
-  "version": "ARIA — Sprint 07 · prévisualisation 1 (lot B, en cours)",
-  "commit": "397d6d5e5000dc6a47dc9d8dd000838ad3e3761c",
-  "short": "397d6d5",
-  "netlifyDeployId": "6b06c8dd206fa1088b916525",
-  "netlifyPreview": "https://6b06c8dd206fa1088b916525--ariafirstversion.netlify.app",
+  "version": "ARIA — Sprint 07 · prévisualisation 2 (lots B et C ; en attente de recette indépendante)",
+  "commit": "8a109c309baeceaaea7ced7a67157e8040a65c5e",
+  "short": "8a109c3",
+  "netlifyDeployId": "6b06e4629842048fae789a15",
+  "netlifyPreview": "https://6b06e4629842048fae789a15--ariafirstversion.netlify.app",
+  "netlifyPreviewClair": "https://6b06e4629842048fae789a15--ariafirstversion.netlify.app/?seance=clair",
+  "previous": "Prévisualisation 1 (lot B) : 6b06c8dd206fa1088b916525, 397d6d5",
   "branch": "claude/sprint07-integration",
   "reference": "Alpha V0.6 : 67aa241, prévisualisation 6b05c4864a41ea883858ac80 (conservée)",
   "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813) — vérifié le 25/11 : locked true, version.json d86e813",
-  "verification": "Déploiement ready, published_at null (non publié). version.json envoyé = 397d6d5. Unitaires 44/44, e2e 168/168 en local sur le même commit (micro simulé). Aucun test sur appareil physique."
+  "verification": "Déploiement ready, published_at null (non publié). version.json envoyé = 8a109c3. Unitaires 44/44, e2e 180/180 en local sur le même commit (micro simulé). Aucun test sur appareil physique."
 }

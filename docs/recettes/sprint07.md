@@ -23,6 +23,8 @@ Aucun test sur appareil physique n’a été réalisé.
 
 ## Lot C — prévisualisation 2 (25/11)
 
+https://6b06e4629842048fae789a15--ariafirstversion.netlify.app (séance marine) · témoin clair : ajouter `?seance=clair` · commit `8a109c3` · non publiée.
+
 Résultats automatisés : unitaires **44/44**, e2e **180/180** (Chromium, micro simulé).
 
 | Test Phase 5 | Partie automatisée (Chromium) | Résultat | Reste à faire (humain / appareil réel) |
