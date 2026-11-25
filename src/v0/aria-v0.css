@@ -354,3 +354,23 @@ html[data-v0='1'][data-brand='marine'] .v0-dock button.on .v0-dock-icon { backgr
   .v0-welcome-bg,
   .v0-welcome-copy { animation: none !important; }
 }
+
+/* Sprint 07 · S7-05 — message de navigation indisponible, au-dessus de la barre */
+.v0-navlock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: var(--dock-h);
+  z-index: 41;
+  margin: 0;
+  padding: var(--sp-3) var(--page-x);
+  background: var(--id-surface-sunken);
+  color: var(--ink);
+  border-top: var(--bw) solid var(--line);
+  font-weight: 600;
+  font-size: var(--fs-small);
+  text-align: center;
+}
+.v0-dock button[aria-disabled='true'] { opacity: 0.45; cursor: not-allowed; }
+/* Pendant une prise, le message de navigation occupe une ligne de plus au-dessus de la barre. */
+.v0-app.is-capturing:not(.nodock) { padding-bottom: calc(var(--dock-h) + var(--dock-gap) + 80px); }

@@ -718,3 +718,11 @@ html[data-v0='1'][data-brand='ivoire'] .v0-inst.on .v0-inst-icon { color: var(--
   overflow-wrap: anywhere;
   word-break: break-word;
 }
+
+/* Sprint 07 · S7-05 — commandes temporairement indisponibles (pendant une prise) */
+.ds-btn[aria-disabled='true'],
+.ds-iconbtn[aria-disabled='true'],
+.ds-steps-seg[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

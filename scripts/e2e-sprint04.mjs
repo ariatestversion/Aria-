@@ -197,8 +197,8 @@ async function main() {
   await page.getByText('Ce qui fonctionne').first().waitFor()
   check('Bilan : comparaison A/B de deux prises', (await page.getByTestId('compare').locator('.ds-take').count()) === 2)
   check('Bilan : 4 rubriques', (await page.locator('.ds-feed').count()) === 4)
-  check('Bilan : analyse automatique déclarée absente', await page.getByText(/Analyse automatique : aucune/).first().isVisible())
-  check('Bilan : sources distinguées (observation / règle)', (await page.getByText('Règle pédagogique ARIA').count()) >= 2 && (await page.getByText('Ton observation').count()) >= 1)
+  check('Bilan : analyse automatique déclarée absente', await page.getByText(/Analyse automatique de la prise : aucune/).first().isVisible())
+  check('Bilan : sources distinguées (observation / règle)', (await page.getByText('Conseil pédagogique ARIA').count()) >= 2 && (await page.getByText('Ta propre observation').count()) >= 1)
   await page.getByLabel('Ce qui fonctionne').fill('La main droite reste régulière sur un seul accord.')
   await page.getByLabel('Ce qui mérite d’être travaillé').fill('Le rythme décroche au changement d’accord.')
   await page.getByLabel('Ta comparaison (facultatif)').fill('La prise 2 est plus régulière.')
@@ -259,8 +259,8 @@ async function main() {
   await page.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).click()
   check('S05 · Bilan : rappel de ce que l’utilisateur voulait travailler la fois précédente', await page.getByTestId('review-previous').isVisible())
   await shot(page, '16-bilan-rappel')
-  await page.getByRole('button', { name: 'Terminer la séance' }).click()
-  check('Séance vide refusée comme « terminée »', await page.getByText(/Pour terminer la séance/).isVisible())
+  // S7-08 — bilan anticipé sans travail évalué : aucun bilan, « Terminer » n’est pas proposé.
+  check('Séance vide : pas de bilan, « Terminer la séance » non proposé', (await page.getByTestId('review-nowork').isVisible()) && (await page.getByRole('button', { name: 'Terminer la séance' }).count()) === 0)
   const draftNote = 'Brouillon : la main droite tient le motif.'
   await page.getByLabel('Ce qui fonctionne').fill(draftNote)
   await page.getByRole('button', { name: 'Garder en brouillon' }).click()
@@ -268,7 +268,13 @@ async function main() {
   // Second morceau, jamais enregistré : bilan sans prise de référence, gardé en brouillon.
   await addPiece(page, 'Autre morceau')
   await page.getByRole('button', { name: 'Préparer une séance' }).click()
+  // S7-06 — une séance est en cours sur « Ma chanson » : arbitrage avant de changer de morceau.
+  const active = await page.getByTestId('switch-active').innerText().catch(() => '')
+  check('S7-06 · Changement de morceau : la séance active est présentée (morceau, étape, prises)', /Ma chanson/.test(active) && /prise/.test(active), active.replace(/\n/g, ' / '))
+  await page.getByRole('button', { name: 'Garder le brouillon et préparer « Autre morceau »' }).click()
   await page.getByRole('button', { name: 'Commencer la séance' }).click()
+  // Une étape auto-évaluée, sans prise : le bilan doit proposer une première prise de référence.
+  await page.getByRole('button', { name: 'Oui, réussi' }).click()
   await page.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).click()
   const nextNoRef = await page.locator('.ds-feed').nth(3).innerText()
   check('NR · Bilan sans prise : propose une première prise de référence', /première prise/.test(nextNoRef), nextNoRef.split('\n').pop())
@@ -296,6 +302,8 @@ async function main() {
   await page.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
   await page.getByRole('button', { name: /Ma chanson/ }).click()
   await page.getByRole('button', { name: 'Reprendre le bilan' }).click()
+  // « Autre morceau » est la séance active : arbitrage, on la garde en brouillon.
+  await page.getByRole('button', { name: 'Garder le brouillon et reprendre « Ma chanson »' }).click()
   check('NR · Reprise du brouillon : observations restaurées', (await page.getByLabel('Ce qui fonctionne').inputValue()) === draftNote)
   await page.getByRole('button', { name: 'Terminer la séance' }).click()
   await page.getByRole('heading', { name: 'Suivi' }).waitFor()
@@ -613,6 +621,188 @@ async function main() {
   check('S06 · Conservation : la prise se réécoute après déconnexion / reconnexion', (await p4.evaluate(() => [...document.querySelectorAll('audio')].some((a) => !a.paused && a.currentTime > 0))))
   check('S06 · Aucune erreur JavaScript (comptes, instruments, ressources)', p4errors.length === 0, p4errors.join(' | '))
   await b4.close()
+
+  // 10. Sprint 07 · lot B — intégrité fonctionnelle (parties Chromium de T03, T04, T05, T06, T10).
+  // Micro SIMULÉ ; les prises vides ou illisibles sont SIMULÉES par un MediaRecorder de test.
+  const b5 = await chromium.launch({ args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream', '--autoplay-policy=no-user-gesture-required'] })
+  const c5 = await b5.newContext({ viewport: VIEWPORT, deviceScaleFactor: SHOTS ? 2 : 1, locale: 'fr-FR' })
+  await c5.grantPermissions(['microphone'])
+  await c5.addInitScript(() => {
+    const Real = window.MediaRecorder
+    class Fake {
+      constructor() {
+        this.state = 'inactive'
+        this.mimeType = 'audio/webm'
+      }
+      start() {
+        this.state = 'recording'
+      }
+      requestData() {}
+      stop() {
+        this.state = 'inactive'
+        const blob = window.__fakeRec === 'empty' ? new Blob([], { type: 'audio/webm' }) : new Blob(['pas un fichier audio'], { type: 'audio/webm' })
+        if (blob.size) this.ondataavailable?.({ data: blob })
+        this.onstop?.()
+      }
+    }
+    function Wrapped(stream, opts) {
+      return window.__fakeRec ? new Fake(stream, opts) : new Real(stream, opts)
+    }
+    Wrapped.isTypeSupported = (t) => Real.isTypeSupported(t)
+    window.MediaRecorder = Wrapped
+  })
+  const p5 = await c5.newPage()
+  const p5errors = []
+  p5.on('pageerror', (e) => p5errors.push(e.message))
+  const tab5 = (name) => p5.getByRole('navigation').getByRole('button', { name })
+  await onboardGuitar(p5)
+  await addPiece(p5, 'Gymnopédie')
+  await addPiece(p5, 'Blackbird')
+  await p5.getByRole('button', { name: 'Préparer une séance' }).click()
+  await p5.getByLabel('Passage travaillé').fill('Intro')
+  await p5.getByRole('button', { name: 'Commencer la séance' }).click()
+
+  // T03 — pendant la prise : navigation, étape suivante et bilan indisponibles, avec explication.
+  await p5.getByRole('button', { name: 'Démarrer l’enregistrement' }).click()
+  await p5.getByText(/Enregistrement en cours ·/).waitFor()
+  check('S7-05 · Prise active : message « Navigation indisponible » affiché', await p5.locator('#nav-lock').isVisible())
+  check('S7-05 · Prise active : onglets signalés indisponibles et reliés au message', (await tab5('Suivi').getAttribute('aria-disabled')) === 'true' && (await tab5('Suivi').getAttribute('aria-describedby')) === 'nav-lock')
+  // Playwright refuse de cliquer un élément aria-disabled : on force le geste de l’utilisateur.
+  await tab5('Suivi').click({ force: true })
+  await tab5('Profil').focus()
+  await p5.keyboard.press('Enter')
+  check('S7-05 · Prise active : toucher et clavier sur Suivi/Profil laissent en séance', (await p5.getByTestId('step-card').isVisible()) && (await p5.getByText(/Enregistrement en cours ·/).isVisible()))
+  check('S7-05 · Prise active : « Étape suivante » indisponible, la suite est expliquée', (await p5.getByRole('button', { name: /Étape suivante/ }).getAttribute('aria-disabled')) === 'true' && (await p5.getByText('Arrête la prise pour passer à l’étape suivante.').isVisible()))
+  check('S7-05 · Prise active : pas de bilan anticipé', (await p5.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).count()) === 0)
+  await shot(p5, '21-s7-prise-navigation-indisponible')
+  await layoutAudit(p5, 'Séance pendant une prise')
+  await p5.waitForTimeout(1200)
+  await p5.getByRole('button', { name: 'Arrêter et sauvegarder la prise' }).click()
+  await p5.getByText(/Prise sauvegardée sur cet appareil/).waitFor()
+  check('S7-05 · Après l’arrêt : navigation rétablie', (await p5.locator('#nav-lock').count()) === 0 && (await tab5('Suivi').getAttribute('aria-disabled')) === null)
+
+  // T05 — deux prises au même tempo (comparables), une troisième à un autre tempo.
+  await record(p5, 1200)
+  await p5.getByRole('button', { name: 'Métronome', exact: true }).click()
+  await p5.getByRole('button', { name: 'Accélérer de 4 BPM' }).click()
+  await p5.getByTestId('metronome').getByRole('button', { name: 'Démarrer' }).click()
+  await record(p5, 1200)
+  await p5.getByTestId('metronome').getByRole('button', { name: 'Arrêter' }).click()
+  // T04 — étape 2, minuteur lancé puis mis en pause.
+  await p5.getByRole('button', { name: 'Étape suivante' }).click()
+  await p5.getByRole('button', { name: 'Démarrer le minuteur' }).click()
+  await p5.waitForTimeout(2300)
+  await p5.getByRole('button', { name: 'Pause' }).click()
+  const clock = (await p5.locator('.ds-timer-clock').innerText()).trim()
+  await p5.getByRole('button', { name: 'Notes', exact: true }).click()
+  await p5.getByLabel('Notes personnelles').fill('Index qui accroche.')
+
+  // T04 — changement de morceau : arbitrage, reprise, puis garder et changer.
+  await tab5('Bibliothèque').click()
+  await p5.getByRole('button', { name: /Gymnopédie/ }).click()
+  await p5.getByRole('button', { name: 'Préparer une séance' }).click()
+  const act = await p5.getByTestId('switch-active').innerText()
+  check('S7-06 · Arbitrage : morceau actif, étape et nombre de prises', /Blackbird/.test(act) && /Étape 2 sur/.test(act) && /3 prises/.test(act), act.replace(/\n/g, ' / '))
+  await shot(p5, '22-s7-changement-de-morceau')
+  await p5.getByRole('button', { name: 'Reprendre « Blackbird »' }).click()
+  check('S7-06 · Reprendre : retour à l’étape 2 avec le temps restant', /Étape 2 sur/.test(await p5.getByText(/^Étape \d+ sur \d+$/).first().innerText()) && (await p5.locator('.ds-timer-clock').innerText()).trim() === clock, clock)
+  await tab5('Bibliothèque').click()
+  await p5.getByRole('button', { name: /Gymnopédie/ }).click()
+  await p5.getByRole('button', { name: 'Préparer une séance' }).click()
+  // Échec de sauvegarde forcé : rester sur place, message, puis réussite.
+  await p5.evaluate(() => {
+    const real = Storage.prototype.setItem
+    window.__restoreStorage = () => (Storage.prototype.setItem = real)
+    Storage.prototype.setItem = function (k, v) {
+      if (k === 'aria.v0.sessionLogs') throw new DOMException('quota', 'QuotaExceededError')
+      return real.call(this, k, v)
+    }
+  })
+  await p5.getByRole('button', { name: 'Garder le brouillon et préparer « Gymnopédie »' }).click()
+  check('S7-06 · Échec de sauvegarde : message, pas de changement de morceau', (await p5.getByRole('alert').filter({ hasText: 'n’a pas pu être enregistré' }).isVisible()) && (await p5.getByTestId('switch').isVisible()))
+  await p5.evaluate(() => window.__restoreStorage())
+  await p5.getByRole('button', { name: 'Garder le brouillon et préparer « Gymnopédie »' }).click()
+  await p5.getByRole('button', { name: 'Commencer la séance' }).click()
+  check('S7-06 · Nouvelle séance sur un autre morceau : aucune prise héritée', (await p5.getByText(/Prises de la séance/).count()) === 0)
+
+  // T04 — fermeture (rechargement) puis reprise de Blackbird depuis le Suivi.
+  await p5.reload()
+  await p5.getByTestId('step-card').waitFor()
+  await tab5('Suivi').click()
+  const drafts5 = await p5.getByTestId('drafts').innerText()
+  check('S7-09 · Suivi : brouillon de pratique avec étape et prises', /Blackbird/.test(drafts5) && /Brouillon de pratique/.test(drafts5) && /Étape 2 sur \d+ · 3 prises/.test(drafts5), drafts5.replace(/\n/g, ' / '))
+  // Reprise directe depuis le Suivi (maquette 4.3) : la séance de Gymnopédie reste en cours dans le Suivi.
+  await p5.getByTestId('drafts').getByRole('button', { name: /Blackbird/ }).click()
+  await p5.getByTestId('step-card').waitFor()
+  check('S7-06 · Après fermeture : étape, temps restant, note et prises retrouvés', (await p5.locator('.ds-timer-clock').innerText()).trim() === clock && /Étape 2 sur/.test(await p5.getByText(/^Étape \d+ sur \d+$/).first().innerText()) && (await p5.getByText('Prises de la séance (3)').isVisible()))
+  await p5.getByRole('button', { name: 'Notes', exact: true }).click()
+  check('S7-06 · Après fermeture : note retrouvée', (await p5.getByLabel('Notes personnelles').inputValue()) === 'Index qui accroche.')
+
+  // T05 — bilan : comparaison des seules prises éligibles, métadonnées dans l’ordre.
+  await p5.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).click()
+  const cmp = await p5.getByTestId('takes-compare').innerText().catch(() => '')
+  check('S7-07 · Bilan : comparaison des deux prises éligibles (même séance, passage, tempo)', (await p5.getByTestId('compare').locator('.ds-take').count()) === 2 && /même séance, même passage, même tempo/.test(cmp))
+  check('S7-07 · Métadonnées « passage · tempo · durée » dans l’ordre', /Intro · 60 BPM · \d\d:\d\d/.test(cmp) && /Intro · 64 BPM · \d\d:\d\d/.test(cmp))
+  check('S7-07 · Prise à un autre tempo : hors comparaison, écoute séparée expliquée', /Autres prises de cette séance · écoute séparée \(Le tempo diffère\.\)/.test(cmp))
+  await p5.getByTestId('compare').locator('.ds-take').first().getByRole('button', { name: /^Lecture/ }).click()
+  await p5.waitForTimeout(500)
+  await p5.getByTestId('compare').locator('.ds-take').nth(1).getByRole('button', { name: /^Lecture/ }).click()
+  await p5.waitForTimeout(500)
+  check('S7-07 · Une seule lecture active à la fois', (await p5.evaluate(() => [...document.querySelectorAll('audio')].filter((a) => !a.paused).length)) === 1)
+  await shot(p5, '23-s7-bilan-comparaison')
+  check('S7-08 · Bilan : trois repères de source', (await p5.getByText('Ta propre observation').count()) >= 1 && (await p5.getByText('Conseil pédagogique ARIA').count()) >= 1 && (await p5.getByText('Analyse automatique de la prise : aucune').count()) >= 1)
+  await p5.getByLabel('Ce qui fonctionne').fill('Le pouce tient.')
+  await p5.getByRole('button', { name: 'Terminer la séance' }).click()
+  await p5.getByRole('heading', { name: 'Suivi' }).waitFor()
+  const drafts6 = await p5.getByTestId('drafts').innerText().catch(() => '')
+  check('S7-09 · Terminer remplace le brouillon (plus de Blackbird en brouillon)', !/Blackbird/.test(drafts6) && (await p5.getByRole('heading', { name: 'Séances terminées (1)' }).isVisible()))
+
+  // T06 — prise vide puis prise illisible (SIMULÉES) : jamais de faux succès.
+  await tab5('Bibliothèque').click()
+  await p5.getByRole('button', { name: /Blackbird/ }).click()
+  await p5.getByRole('button', { name: 'S’enregistrer' }).click()
+  await p5.evaluate(() => (window.__fakeRec = 'empty'))
+  await p5.getByRole('button', { name: 'Démarrer l’enregistrement' }).click()
+  await p5.getByText(/Enregistrement en cours ·/).waitFor()
+  await p5.getByRole('button', { name: 'Arrêter et sauvegarder la prise' }).click()
+  await p5.getByText(/Aucun son n’a été capté/).waitFor({ timeout: 5000 }).catch(() => undefined)
+  check('S7-07 · Prise vide : rien de sauvegardé, message explicite, réessai possible', (await p5.getByText(/Aucun son n’a été capté : rien n’a été sauvegardé/).isVisible()) && (await p5.getByRole('button', { name: 'Démarrer l’enregistrement' }).isVisible()))
+  await p5.evaluate(() => (window.__fakeRec = 'garbage'))
+  await p5.getByRole('button', { name: 'Démarrer l’enregistrement' }).click()
+  await p5.getByText(/Enregistrement en cours ·/).waitFor()
+  await p5.getByRole('button', { name: 'Arrêter et sauvegarder la prise' }).click()
+  await p5.getByText(/n’est pas lisible sur cet appareil/).waitFor({ timeout: 8000 }).catch(() => undefined)
+  check('S7-07 · Prise illisible : pas de faux succès, conservée et signalée', (await p5.getByText(/n’est pas lisible sur cet appareil/).isVisible()) && (await p5.getByText(/Prise sauvegardée sur cet appareil/).count()) === 0)
+  await p5.evaluate(() => (window.__fakeRec = undefined))
+  await tab5('Suivi').click()
+  check('S7-07 · Prise illisible visible dans le Suivi (non supprimée)', /illisible/.test(await p5.getByTestId('follow-takes').innerText()))
+
+  // T10 — nouvelle séance sur le même morceau : aucune prise héritée.
+  await tab5('Bibliothèque').click()
+  await p5.getByRole('button', { name: /Blackbird/ }).click()
+  await p5.getByRole('button', { name: 'Préparer une séance' }).click()
+  // Gymnopédie est toujours en cours : arbitrage, on la garde en brouillon.
+  await p5.getByRole('button', { name: 'Garder le brouillon et préparer « Blackbird »' }).click()
+  await p5.getByRole('button', { name: 'Commencer la séance' }).click()
+  check('S7-09 · Nouvelle séance du même morceau : aucune prise héritée', (await p5.getByText(/Prises de la séance/).count()) === 0)
+  // Même morceau : une nouvelle séance met de côté la séance en cours, toujours reprenable.
+  await p5.getByRole('button', { name: 'Étape suivante' }).click()
+  await tab5('Bibliothèque').click()
+  await p5.getByRole('button', { name: /Blackbird/ }).click()
+  await p5.getByRole('button', { name: 'Préparer une nouvelle séance' }).click()
+  check('S7-06 · Même morceau : la reprise est proposée avant une nouvelle séance', await p5.getByRole('button', { name: 'Reprendre « Blackbird »' }).isVisible())
+  await p5.getByRole('button', { name: 'Garder le brouillon et préparer une nouvelle séance' }).click()
+  await p5.getByRole('button', { name: 'Commencer la séance' }).click()
+  await tab5('Suivi').click()
+  const aside = await p5.getByTestId('drafts').innerText()
+  check('S7-09 · Séance mise de côté listée dans le Suivi', /Brouillon mis de côté/.test(aside) && /Étape 2 sur/.test(aside), aside.replace(/\n/g, ' / '))
+  await p5.getByTestId('drafts').getByRole('button', { name: /Brouillon mis de côté/ }).click()
+  await p5.getByTestId('step-card').waitFor()
+  check('S7-06 · Séance mise de côté reprise à son étape', /Étape 2 sur/.test(await p5.getByText(/^Étape \d+ sur \d+$/).first().innerText()))
+  await tab5('Suivi').click()
+  check('S7-09 · Après reprise : l’autre séance du morceau est à son tour mise de côté, rien n’est perdu', /Brouillon mis de côté/.test(await p5.getByTestId('drafts').innerText()))
+  check('S7 · Aucune erreur JavaScript (lot B)', p5errors.length === 0, p5errors.join(' | '))
+  await b5.close()
 
   const failed = results.filter((r) => !r.ok)
   console.log(`\n${results.length - failed.length}/${results.length} vérifications réussies`)

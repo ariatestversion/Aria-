@@ -42,9 +42,9 @@ export function Badge({ tone, icon, children }: { tone: Tone; icon?: IconName; c
 }
 
 const SOURCE_LABEL = {
-  user: 'Ton observation',
+  user: 'Ta propre observation',
   'self-check': 'Ton auto-évaluation',
-  rules: 'Règle pédagogique ARIA',
+  rules: 'Conseil pédagogique ARIA',
   facts: 'Données de la prise',
 } as const
 
@@ -338,12 +338,23 @@ export function RecordPanel({
 
 /* —— Métronome —— */
 
-export function MetronomePanel({ initialBpm }: { initialBpm: number }) {
+export function MetronomePanel({
+  initialBpm,
+  onState,
+}: {
+  initialBpm: number
+  /** Sprint 07 — tempo réellement utilisé, pour l’enregistrer avec la prise. */
+  onState?: (state: { bpm: number; running: boolean }) => void
+}) {
   const m = useMetronome(initialBpm)
   useEffect(() => {
     m.setBpm(initialBpm)
   }, [initialBpm])
   useEffect(() => m.stop, [m.stop])
+  useEffect(() => {
+    onState?.({ bpm: m.bpm, running: m.running })
+  }, [m.bpm, m.running])
+  useEffect(() => () => onState?.({ bpm: m.bpm, running: false }), [])
   return (
     <div className="ds-metronome" data-testid="metronome">
       <div className="ds-metronome-beats" aria-hidden>
@@ -377,14 +388,29 @@ export function MetronomePanel({ initialBpm }: { initialBpm: number }) {
 
 /* —— Minuteur d’étape —— */
 
-export function StepTimer({ minutes, resetKey }: { minutes: number; resetKey: string }) {
+export function StepTimer({
+  minutes,
+  resetKey,
+  initialLeft,
+  onChange,
+}: {
+  minutes: number
+  resetKey: string
+  /** Sprint 07 — temps restant sauvegardé, restauré à la reprise de la séance. */
+  initialLeft?: number
+  onChange?: (left: number) => void
+}) {
   const total = Math.max(1, minutes) * 60
-  const [left, setLeft] = useState(total)
+  const start = typeof initialLeft === 'number' && initialLeft >= 0 && initialLeft <= total ? initialLeft : total
+  const [left, setLeft] = useState(start)
   const [running, setRunning] = useState(false)
   useEffect(() => {
-    setLeft(total)
+    setLeft(start)
     setRunning(false)
   }, [resetKey, total])
+  useEffect(() => {
+    if (left !== total || typeof initialLeft === 'number') onChange?.(left)
+  }, [left])
   useEffect(() => {
     if (!running) return
     const id = window.setInterval(() => setLeft((s) => Math.max(0, s - 1)), 1000)

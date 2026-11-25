@@ -118,7 +118,7 @@ describe('bilan', () => {
     const r = buildReview({ works: '', improve: '', programObjective: 'Rythme', instrument: 'guitar' })
     expect(r.works.empty).toBe(true)
     expect(r.improve.empty).toBe(true)
-    expect(r.analysis).toMatch(/Analyse automatique : aucune/)
+    expect(r.analysis).toMatch(/Analyse automatique de la prise : aucune/)
     const { analysis: _disclaimer, ...content } = r
     void _disclaimer
     expect(JSON.stringify(content)).not.toMatch(/score|%|\/10|erreur détectée/i)

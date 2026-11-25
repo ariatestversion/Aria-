@@ -859,7 +859,7 @@ export function buildReview(input: {
     next,
     facts,
     analysis:
-      'Analyse automatique : aucune. ARIA n’écoute pas encore le contenu de tes prises — aucune note, aucun score ni aucune erreur n’est détecté automatiquement.',
+      'Analyse automatique de la prise : aucune. ARIA n’écoute pas encore le contenu de tes prises — aucune note, aucun score ni aucune erreur n’est détecté automatiquement.',
     limits,
   }
 }

@@ -1,5 +1,36 @@
 # Changelog — ARIA
 
+## [Sprint 07] — Intégration et consolidation (en cours, 2026-11-25)
+
+Branche : `claude/sprint07-integration`, depuis `main` (`f0a61a0`, Alpha V0.6, code audité `67aa241`).
+Références : dossier Phase 5 (S7-01 à S7-10, T01 à T11), maquette 4.2, Design System Phase 3 et addendum 4.2 (dossier Drive « Sprint 07 »).
+**Statut : en cours.** Lot A et lot B livrés ; lots C et D à venir. Pas de publication en production, pas de clôture sans recette indépendante.
+
+### Lot B — intégrité fonctionnelle (prévisualisation 1)
+- **S7-05 · Navigation pendant la prise** : pendant un enregistrement, les onglets, le retour, le changement d’étape et le bilan sont **indisponibles**, avec le message « Navigation indisponible. Arrête la prise pour changer d’écran. » relié aux commandes (`aria-disabled`, `aria-describedby`). Le bilan anticipé est masqué pendant la prise. Tout redevient disponible dès l’arrêt. La sauvegarde automatique en arrière-plan est conservée.
+- **S7-06 · Protection des brouillons** :
+  - avant de changer de morceau, ou de recommencer le même, un écran présente la séance active (morceau, étape, nombre de prises) : « Reprendre » ou « Garder le brouillon et … » ;
+  - le brouillon est sauvegardé **avant** le changement ; si la sauvegarde échoue, rien ne change et un message propose de réessayer ;
+  - le **temps restant du minuteur** est sauvegardé et restauré, avec l’étape, la note et les prises ;
+  - une nouvelle séance sur le même morceau **met de côté** la séance en cours, qui reste reprenable depuis le Suivi.
+- **S7-07 · Prises** :
+  - chaque prise enregistre sa **séance** et son **tempo** (métronome en marche, sinon tempo de la consigne, sinon « inconnu ») ;
+  - métadonnées affichées « passage · tempo · durée » dans cet ordre ;
+  - la comparaison n’est proposée que pour des prises distinctes, lisibles, de la même séance, du même passage identifié et du même tempo connu ; sinon écoute séparée avec le motif ; les anciennes prises ne sont jamais déclarées comparables ;
+  - zéro prise : prise de référence proposée ; une prise : réécoute ; les prises des séances précédentes sont en écoute seule ;
+  - **prise vide** : rien n’est annoncé ni sauvegardé ; **prise illisible** : conservée et signalée, jamais comparée ; la lisibilité est vérifiée par décodage, sans durée minimale arbitraire (le seuil de 100 octets est supprimé).
+- **S7-08 · Bilan** : repères « Ta propre observation », « Conseil pédagogique ARIA », « Analyse automatique de la prise : aucune ». Bilan anticipé sans aucun travail évalué : pas de bilan ni de « Terminer », mais « Reprendre la séance » ou « Garder en brouillon ».
+- **S7-09 · Suivi et Profil** : brouillons distingués (« Brouillon de pratique » avec étape et prises, « Brouillon de bilan », « Brouillon mis de côté »), tous reprenables ; avertissement de stockage local dans le Profil.
+- Une séance est « en cours » tant qu’aucune séance terminée ne porte son identifiant (comparaison par date conservée pour les séances antérieures au Sprint 05).
+
+### Tests
+- Unitaires : **44/44** (7 nouveaux : comparabilité, métadonnées, séparation des prises).
+- e2e (Chromium, micro simulé) : **168/168**, dont 31 contrôles du lot B ; prises vides et illisibles simulées par un enregistreur de test.
+- Aucun test sur appareil physique.
+
+### Photographies
+- Non intégrées aux prévisualisations (accessibles à toute personne disposant du lien), conformément à l’arbitrage du 25/11 : visuels provisoires autorisés de l’application.
+
 ## [ARIA — Alpha V0.6 · Sprint 06] — Finalisation fonctionnelle & préparation V1 (2026-11-24)
 
 **Clôture technique (2026-11-24)** :

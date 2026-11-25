@@ -97,6 +97,8 @@ export type WorkProgram = {
   continuedFrom?: string
   /** Sprint 05 — étape de la séance en cours : travail ou bilan commencé. */
   phase?: 'session' | 'review'
+  /** Sprint 07 — minuteur de l’étape en cours (secondes restantes), restauré à la reprise. */
+  timer?: { stepId: string; left: number }
 }
 
 export type Piece = {
@@ -127,6 +129,12 @@ export type Take = {
   mime: string
   /** Étape de séance pendant laquelle la prise a été faite (Sprint 04). */
   stepTitle?: string
+  /** Sprint 07 — séance (début du programme) à laquelle la prise appartient. */
+  sessionStartedAt?: string
+  /** Sprint 07 — tempo de travail au moment de la prise (métronome ou consigne). Absent = inconnu. */
+  bpm?: number
+  /** Sprint 07 — média présent mais illisible sur cet appareil : conservé, jamais comparé. */
+  unreadable?: boolean
 }
 
 export type SessionLogStatus = 'draft' | 'completed'
@@ -158,6 +166,8 @@ export type SessionLog = {
   sessionStartedAt?: string
   /** Sprint 05 — exercice de reprise annoncé par le bilan, repris tel quel à la séance suivante. */
   followup?: Followup | null
+  /** Sprint 07 — programme d’une séance mise de côté (brouillon reprenable depuis le Suivi). */
+  programSnapshot?: WorkProgram
 }
 
 export type AppScreen =
@@ -173,6 +183,7 @@ export type AppScreen =
   | 'review'
   | 'follow'
   | 'profile'
+  | 'switch'
 
 export const INSTRUMENTS: { id: InstrumentId; label: string }[] = [
   { id: 'piano', label: 'Piano' },
