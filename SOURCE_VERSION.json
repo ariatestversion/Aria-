@@ -1,5 +1,5 @@
 {
-  "version": "ARIA — Sprint 07 · prévisualisation 4 : corrections finales QA-01 / QA-02 et réserves Product Design (non clôturé)",
+  "version": "ARIA — Sprint 07 · clôture technique sous réserves (25/11/2026) · référence applicative d5e4a7a, prévisualisation 4",
   "commit": "d5e4a7a8eed38e28ce9d4e3722136239d0e82da7",
   "short": "d5e4a7a",
   "netlifyDeployId": "6b06f9934ca1d2e7fb6e60b2",
@@ -9,5 +9,6 @@
   "branch": "claude/sprint07-integration",
   "reference": "Alpha V0.6 : 67aa241, prévisualisation 6b05c4864a41ea883858ac80 (conservée)",
   "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813) — vérifié le 25/11 : locked true",
-  "verification": "Déploiement ready, published_at null (non publié). version.json envoyé = d5e4a7a. Unitaires 44/44, e2e 240/240 en local sur le même commit (micro simulé). Aucun test sur appareil physique."
+  "verification": "Prévisualisation 4 vérifiée le 25/11 : ready, published_at null, expires_at null. Production 6aff204b… locked true. Unitaires 44/44, e2e 240/240 sur d5e4a7a (micro simulé). Aucun test sur appareil physique ni sur Safari/WebKit par l’Ingénierie.",
+  "status": "Clôture technique sous réserves (Product Management). Développements gelés. Branche non fusionnée ; réserves R09-01 à R09-04 transférées au Sprint 09. Aucune publication."
 }

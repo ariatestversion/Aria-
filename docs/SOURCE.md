@@ -24,11 +24,32 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 `npm run build` génère `public/version.json` (commit, branche, date) : c’est la preuve de correspondance entre le commit GitHub et le déploiement Netlify. `SOURCE_VERSION.json` enregistre le dernier couple commit / déploiement de prévisualisation.
 
-## État Sprint 07 — Intégration et consolidation (en cours, non clôturé)
+## État Sprint 07 — Intégration et consolidation (clôture technique sous réserves, 25/11/2026)
 
-- Branche `claude/sprint07-integration` depuis `main` (`f0a61a0`). Non fusionnée.
+- **Référence applicative validée sous réserves : `d5e4a7a`** (`d5e4a7a8eed38e28ce9d4e3722136239d0e82da7`). Développements gelés. Les commits suivants de la branche ne modifient que la documentation : le code applicatif (`src/`, `index.html`, `package.json`) est identique à `d5e4a7a`.
+- **Prévisualisation de référence** : https://6b06f9934ca1d2e7fb6e60b2--ariafirstversion.netlify.app (prévisualisation 4, `6b06f9934ca1d2e7fb6e60b2`). Vérifiée le 25/11 : `ready`, non publiée, sans date d’expiration.
+- Branche `claude/sprint07-integration` depuis `main` (`f0a61a0`). **Non fusionnée.** Vérifié le 25/11 : 0 commit de retard sur `main`, 12 commits d’avance en comptant ce commit de clôture documentaire. `main` est un ancêtre de la branche : la fusion se fera sans conflit.
+- Réserves transférées au Sprint 09 : R09-01 à R09-04 (registre des sprints & décisions produit).
 - Prévisualisations successives (toutes conservées, non publiées) : 1 (`397d6d5`), 2 (`8a109c3`), 3 (`a7d1690`), 4 (`d5e4a7a`, déploiement `6b06f9934ca1d2e7fb6e60b2`, corrections QA-01 / QA-02) ; dernier couple commit / déploiement dans `SOURCE_VERSION.json`.
-- Recette : `docs/recettes/sprint07.md`. Clôture soumise à la contre-recette QA et à la décision du Head of Product.
+- Recette : `docs/recettes/sprint07.md`. Contre-recette QA du 25/11 : QA-01 et QA-02 corrigés sur Chrome, QA-03 non reproduit.
+
+### Modalités de fusion dans `main` (à exécuter uniquement sur autorisation explicite)
+
+La fusion ne publie rien : la production Netlify est un déploiement verrouillé, indépendant de `main`.
+1. Autorisation écrite du Product Management ou du Head of Product.
+2. Mettre `main` à jour, puis contrôler que la branche contient bien `d5e4a7a` :
+   ```bash
+   git fetch origin main claude/sprint07-integration
+   git merge-base --is-ancestor d5e4a7a origin/claude/sprint07-integration
+   ```
+3. Fusionner sans réécriture d’historique (même méthode qu’aux Sprints 05 et 06) :
+   ```bash
+   git checkout main && git merge --no-ff origin/claude/sprint07-integration
+   ```
+4. Revérifier sur `main` : `npm ci && npm run build && npm test`, puis `npx vite preview --port 43123` et `node scripts/e2e-sprint04.mjs` (attendu : 44/44 et 240/240). Contrôler que `git diff d5e4a7a main -- src index.html package.json` est vide.
+5. Pousser `main` ; conserver la branche (aucune suppression, aucun force-push).
+6. Tag proposé : `v0.7.0-alpha` sur la fusion. Il est à créer depuis GitHub, comme `v0.5.0-alpha` et `v0.6.0-alpha`, qui restent à créer.
+7. Aucun déploiement de production : la publication exige une autorisation distincte et la levée des réserves R09-01 à R09-04.
 - **Lien public** : verrouillé sur le Sprint 02 (`6aff204b…`, `d86e813`), non modifié.
 
 ## État Sprint 06 — Alpha V0.6 (clôture technique, 24/11/2026)

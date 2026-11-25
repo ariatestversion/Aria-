@@ -1,5 +1,16 @@
 # Backlog ARIA
 
+## Sprint 09 — réserves transférées par la clôture technique du Sprint 07 (25/11/2026)
+
+Source : registre des sprints & décisions produit (Product Management) ; détail dans `docs/recettes/sprint07.md`. Référence testée : `d5e4a7a`, prévisualisation 4.
+
+| # | Responsable | Contenu |
+| --- | --- | --- |
+| R09-01 | QA | Audio réel, refus et interruption, comparaison et isolation des prises, réécoute et persistance après fermeture de Safari |
+| R09-02 | QA / PD | VoiceOver, focus, ergonomie de la séance marine instrument en main, texte agrandi, reprise du bilan depuis l’Accueil, visibilité du bilan final (iOS ≥ 16.2 requis par le style) |
+| R09-03 | QA | Cadence, accent, arrêt du clic, métadonnées de tempo |
+| R09-04 | QA | Android, cas d’erreur non couverts, parcours physiques résiduels T01 à T11 |
+
 ## Sprint 06 — reports de la clôture du Sprint 05 (24/11/2026)
 
 | # | Sujet | Constat | Priorité proposée |

@@ -67,3 +67,23 @@ Résultats automatisés : unitaires **44/44**, e2e **240/240** (Chromium, micro 
 | PD · « Faire le bilan » à la dernière étape | Actions placées avant les outils | Ordre vérifié ; premier écran sur ordinateur 1348×936 | Repérage sur iPhone, téléphone posé, instrument en main |
 
 Aucun test sur appareil physique n’a été réalisé.
+
+## Clôture technique sous réserves (Product Management, 25/11/2026)
+
+Référence : commit `d5e4a7a`, prévisualisation 4 (`6b06f9934ca1d2e7fb6e60b2`), conservée et non publiée.
+
+- **Contre-recette QA (Chrome cloud)** : QA-01 et QA-02 corrigés ; QA-03 non reproduit. Il s’agit d’un GO ciblé, pas d’une validation QA complète.
+- **Product Design** : GO sous réserve du test sur iPhone.
+- **Ingénierie** : contrôles automatisés 44/44 et 240/240 (Chromium, micro simulé) sur `d5e4a7a`. Aucun test sur Safari ou WebKit, ni sur appareil physique, n’a été réalisé par l’Ingénierie sur ce sprint.
+
+| Réserve Sprint 09 | Responsable | Points de ce registre concernés |
+| --- | --- | --- |
+| R09-01 | QA | T03 à T06 : micro réel, refus et interruption, comparaison et isolation des prises, réécoute et persistance après fermeture de Safari |
+| R09-02 | QA / PD | T07, T08, QA-01 (VoiceOver), reprise du bilan depuis l’Accueil, visibilité de « Faire le bilan », texte agrandi, séance marine instrument en main |
+| R09-03 | QA | T09, QA-02 : cadence, accent, arrêt du clic, métadonnées de tempo d’une prise |
+| R09-04 | QA | Android, cas d’erreur non couverts, parcours physiques résiduels T01 à T11 |
+
+Constat technique à vérifier dans R09-02 :
+- le style utilise `color-mix()` (iOS 16.2 et plus) et `100dvh` (iOS 15.4 et plus), sans solution de repli ;
+- sur un iPhone antérieur à iOS 16.2, la barre de navigation et le fond de l’écran d’accueil pourraient mal s’afficher ;
+- noter la version d’iOS de chaque appareil testé.

@@ -1,10 +1,17 @@
 # Changelog — ARIA
 
-## [Sprint 07] — Intégration et consolidation (en cours, 2026-11-25)
+## [Sprint 07] — Intégration et consolidation (clôture technique sous réserves, 2026-11-25)
 
 Branche : `claude/sprint07-integration`, depuis `main` (`f0a61a0`, Alpha V0.6, code audité `67aa241`).
 Références : dossier Phase 5 (S7-01 à S7-10, T01 à T11), maquette 4.2, Design System Phase 3 et addendum 4.2 (dossier Drive « Sprint 07 »).
-**Statut : en cours.** Lots A à D livrés ; corrections finales QA-01 / QA-02 livrées (prévisualisation 4). Pas de publication en production, pas de clôture sans recette indépendante.
+**Statut : clôture technique sous réserves (Product Management, 25/11/2026).** Référence applicative : `d5e4a7a` (`d5e4a7a8eed38e28ce9d4e3722136239d0e82da7`). Prévisualisation de référence : prévisualisation 4 (`6b06f9934ca1d2e7fb6e60b2`), conservée et non publiée. Développements gelés.
+- Contre-recette QA sur Chrome : QA-01 et QA-02 corrigés ; QA-03 non reproduit. Avis Product Design : GO sous réserve du test sur iPhone.
+- Réserves transférées au Sprint 09 (registre des sprints) :
+  - R09-01 : audio réel, prises, réécoute, persistance après fermeture de Safari ;
+  - R09-02 : VoiceOver, focus, ergonomie de la séance marine, texte agrandi, reprise du bilan, visibilité du bilan final ;
+  - R09-03 : cadence et arrêt du métronome, métadonnées de tempo ;
+  - R09-04 : Android, cas d’erreur et parcours physiques résiduels T01–T11.
+- Branche non fusionnée dans `main` : les modalités de fusion sont décrites dans `docs/SOURCE.md`. La clôture technique ne vaut ni validation QA complète ni autorisation de publication.
 
 ### Lot B — intégrité fonctionnelle (prévisualisation 1)
 - **S7-05 · Navigation pendant la prise** : pendant un enregistrement, les onglets, le retour, le changement d’étape et le bilan sont **indisponibles**, avec le message « Navigation indisponible. Arrête la prise pour changer d’écran. » relié aux commandes (`aria-disabled`, `aria-describedby`). Le bilan anticipé est masqué pendant la prise. Tout redevient disponible dès l’arrêt. La sauvegarde automatique en arrière-plan est conservée.
