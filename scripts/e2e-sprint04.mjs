@@ -56,6 +56,15 @@ async function layoutAudit(page, label) {
         small.push(`${el.tagName.toLowerCase()}「${(el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 28)}」${Math.round(box.width)}×${Math.round(box.height)}`)
       }
     }
+    // Contenu coupé ou hors écran (le défilement horizontal est masqué par l’application)
+    const clipped = []
+    for (const el of document.querySelectorAll('.v0-main button, .v0-main a[href], .v0-dock button, .ds-toolbar > *')) {
+      const b = el.getBoundingClientRect()
+      if (!b.width) continue
+      const label = (el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 20)
+      if (b.right > window.innerWidth + 1 || b.left < -1) clipped.push(`${label} (hors écran)`)
+      else if (el.scrollWidth > el.clientWidth + 2) clipped.push(`${label} (texte coupé)`)
+    }
     // Chevauchement dock / dernier élément interactif une fois en bas de page
     window.scrollTo(0, doc.scrollHeight)
     const dock = document.querySelector('.v0-dock')
@@ -71,11 +80,12 @@ async function layoutAudit(page, label) {
         .map((el) => (el.textContent || el.getAttribute('aria-label') || el.tagName).trim().slice(0, 28))
     }
     window.scrollTo(0, 0)
-    return { overflow, small, hidden }
+    return { overflow, small, hidden, clipped }
   })
   check(`${label} : pas de défilement horizontal`, r.overflow <= 0, r.overflow > 0 ? `${r.overflow}px` : '')
   check(`${label} : cibles tactiles ≥ 44 px`, r.small.length === 0, r.small.join(', '))
   check(`${label} : rien de masqué par la navigation en bas de page`, r.hidden.length === 0, r.hidden.join(', '))
+  check(`${label} : aucun contenu coupé ni hors écran`, r.clipped.length === 0, [...new Set(r.clipped)].slice(0, 6).join(', '))
 }
 
 /** Sprint 07 · S7-10 — contraste WCAG AA du texte visible (fonds semi-transparents composés). */
@@ -888,6 +898,29 @@ async function main() {
   check('S7-01 · Témoin QA : séance claire avec ?seance=clair', (await p5.evaluate(() => getComputedStyle(document.querySelector('.v0-app')).backgroundColor)) !== 'rgb(16, 29, 53)')
   await shot(p5, '26-s7-seance-claire-temoin')
   await contrastAudit(p5, 'Séance claire (témoin)')
+  // T08 / S7-10 — responsive : paysage, tablette, ordinateur, texte agrandi (200 %), séance marine et accueil.
+  // Rechargement : retour direct à la séance en cours (comportement S7-06).
+  await p5.goto(BASE)
+  await p5.getByTestId('step-card').waitFor()
+  for (const [label, vp, zoom] of [
+    ['paysage 844×390', { width: 844, height: 390 }, ''],
+    ['tablette 768×1024', { width: 768, height: 1024 }, ''],
+    ['ordinateur 1280×800', { width: 1280, height: 800 }, ''],
+    ['texte agrandi 200 % (390 px)', { width: 390, height: 844 }, '200%'],
+  ]) {
+    await p5.setViewportSize(vp)
+    await p5.evaluate((z) => (document.documentElement.style.fontSize = z), zoom)
+    await tab5('Accueil').click()
+    await layoutAudit(p5, `Accueil · ${label}`)
+    await p5.locator('.v0-resume').click()
+    await p5.getByTestId('step-card').waitFor()
+    await layoutAudit(p5, `Séance marine · ${label}`)
+    await contrastAudit(p5, `Séance marine · ${label}`)
+    if (zoom) await shot(p5, '27-s7-seance-texte-agrandi')
+    if (label.startsWith('paysage')) await shot(p5, '28-s7-seance-paysage')
+  }
+  await p5.evaluate(() => (document.documentElement.style.fontSize = ''))
+  await p5.setViewportSize(VIEWPORT)
   check('S7 · Aucune erreur JavaScript (lot B)', p5errors.length === 0, p5errors.join(' | '))
   await b5.close()
 

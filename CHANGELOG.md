@@ -49,6 +49,16 @@ Références : dossier Phase 5 (S7-01 à S7-10, T01 à T11), maquette 4.2, Desig
   - prises vides et illisibles simulées par un enregistreur de test.
 - Aucun test sur appareil physique.
 
+### Lot D — recette automatisée et corrections (prévisualisation 3, pour la QA indépendante)
+- **Parties automatisables de T01 à T11** : exécutées (voir `docs/recettes/sprint07.md`).
+- **Contrôles responsive ajoutés** : paysage 844×390, tablette 768×1024, ordinateur 1280×800, texte agrandi à 200 %, pour l’accueil et la séance marine (mise en page, contraste, cibles).
+- **Audit de mise en page renforcé** : il détecte désormais le contenu coupé ou hors écran, que le masquage du défilement horizontal cachait.
+- **Défauts trouvés et corrigés** :
+  - le libellé « Bibliothèque » débordait de sa case dans la barre de navigation (taille normale) ;
+  - avec le texte agrandi, la barre d’outils de la séance (Ressources, Notes) et les accès rapides de l’accueil sortaient de l’écran, et les libellés de la barre de navigation se chevauchaient ;
+  - les grilles passent désormais à la ligne, et les libellés de navigation sont abrégés proprement.
+- Tests : unitaires 44/44 ; e2e **229/229**.
+
 ### Photographies
 - Non intégrées aux prévisualisations (accessibles à toute personne disposant du lien), conformément à l’arbitrage du 25/11 : visuels provisoires autorisés de l’application.
 

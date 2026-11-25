@@ -773,3 +773,6 @@ html[data-v0='1'][data-brand='blanc'] .ds-lead { font-weight: 500; }
   .v0-main { animation: none; }
   .ds-steps-seg, .ds-btn, .ds-chipbtn { transition: none; }
 }
+/* Sprint 07 · S7-10 — barre d’outils : passe à la ligne quand le texte est agrandi */
+.ds-toolbar { grid-template-columns: repeat(auto-fit, minmax(min(7.5rem, 100%), 1fr)); }
+.ds-toolbar > button { min-width: 0; }

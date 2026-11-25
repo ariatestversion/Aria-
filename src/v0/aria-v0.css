@@ -431,3 +431,15 @@ html[data-v0='1'] .v0-app.is-immersive .ds-badge--accent { background: #a8c9eb; 
 html[data-v0='1'] .v0-app.is-immersive .ds-badge--neutral { background: #ffffff; color: #101d35; border-color: #ffffff; }
 /* Sur marine, le rouge #C62828 ne fait que 2,99:1 en texte : le statut passe en blanc, le point et le bouton restent rouges. */
 html[data-v0='1'] .v0-app.is-immersive .ds-recorder-status.is-on { color: #ffffff; }
+
+/* Sprint 07 · S7-10 — libellés de la barre de navigation : jamais de débordement, même avec le texte agrandi */
+.v0-dock button { min-width: 0; }
+.v0-dock button > span:last-child {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: min(0.72rem, 15px);
+}
+.v0-quick { grid-template-columns: repeat(auto-fit, minmax(min(7.5rem, 100%), 1fr)); }
+.v0-quick > button { min-width: 0; }

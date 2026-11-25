@@ -42,3 +42,11 @@ Résultats automatisés : unitaires **44/44**, e2e **180/180** (Chromium, micro 
 | T11 Non-régression | Les 136 contrôles V0.6 rejoués (sélecteurs adaptés aux nouveaux libellés, assertions maintenues) ; build ; contraste ; focus | Réussi | QA indépendante |
 
 Aucun test sur appareil physique n’a été réalisé.
+
+## Lot D — prévisualisation 3, pour la QA indépendante (25/11)
+
+Résultats automatisés : unitaires **44/44**, e2e **229/229** (Chromium, micro simulé).
+
+- Contrôles ajoutés (T08 / S7-10, partie automatisable) : paysage 844×390, tablette 768×1024, ordinateur 1280×800, texte agrandi 200 % ; accueil et séance marine ; mise en page, contraste, cibles, contenu coupé ou hors écran.
+- Défauts trouvés et corrigés : libellé « Bibliothèque » débordant dans la barre de navigation ; barre d’outils de séance et accès rapides hors écran, et libellés de navigation superposés, avec le texte agrandi.
+- Restent non automatisables : toucher, VoiceOver, barres de Safari, micro et audio réels, interruptions iOS, lecture instrument en main (voir les tableaux ci-dessus).
