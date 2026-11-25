@@ -5,6 +5,8 @@ Branche `claude/sprint07-integration`. Référence de non-régression : Alpha V0
 
 ## Lot B — prévisualisation 1 (25/11)
 
+https://6b06c8dd206fa1088b916525--ariafirstversion.netlify.app · commit `397d6d5` · non publiée.
+
 Résultats automatisés (Chromium, micro **simulé**) : unitaires **44/44**, e2e **168/168** (dont 31 contrôles nouveaux du lot B et les 136 contrôles V0.6 rejoués, adaptés au nouveau comportement sans affaiblir les assertions).
 
 | Test Phase 5 | Partie automatisée (Chromium) | Résultat | Reste à faire (humain / appareil réel) |
