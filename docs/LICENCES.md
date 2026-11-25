@@ -56,3 +56,7 @@ L’application V0.4 n’affiche plus aucune image matricielle. Le parcours e2e 
 - Démos du mode découverte : titres et compositeurs d’œuvres du domaine public, sans média associé.
 - L’ancien prototype non monté (`src/App.tsx`, `src/lib/presets.ts`) cite encore des chemins de médias retirés sous forme de texte ; il ne les charge jamais (contrôlé par le parcours e2e : aucune requête vers `/presets/`).
 - **Reste hors du dépôt** : la production actuelle (Sprint 02, verrouillée) sert encore les anciens médias tant qu’une nouvelle version n’y est pas publiée.
+
+## Sprint 07 (25/11/2026) — photographies de la maquette 4.2
+
+Quatre JPEG (cuivre, guitare, piano, voix ; générés par ImageGen, statut « revue interne ») sont fournis par le Product Design. Conformément à l’arbitrage du Head of Product, ils ne sont autorisés que dans un environnement de revue **à accès restreint**. Les prévisualisations Netlify étant accessibles à toute personne disposant du lien, **ils ne sont pas intégrés** : l’application utilise ses visuels provisoires (vagues dessinées pour ARIA, icônes d’instruments). Avant toute intégration : validation du régime de droits du compte de génération, vérification image par image (marques, ressemblances), variantes WebP 240/480/750 px avec repli JPEG.

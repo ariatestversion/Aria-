@@ -78,6 +78,63 @@ async function layoutAudit(page, label) {
   check(`${label} : rien de masqué par la navigation en bas de page`, r.hidden.length === 0, r.hidden.join(', '))
 }
 
+/** Sprint 07 · S7-10 — contraste WCAG AA du texte visible (fonds semi-transparents composés). */
+async function contrastAudit(page, label) {
+  const bad = await page.evaluate(() => {
+    const parse = (c) => {
+      const m = c.match(/rgba?\(([^)]+)\)/)
+      if (!m) return null
+      const [r, g, b, a = '1'] = m[1].split(',').map((x) => x.trim())
+      return [Number(r), Number(g), Number(b), Number(a)]
+    }
+    const blend = (top, bottom) => {
+      const a = top[3]
+      return [0, 1, 2].map((i) => top[i] * a + bottom[i] * (1 - a)).concat(1)
+    }
+    const bgOf = (el) => {
+      const layers = []
+      for (let n = el; n && n.nodeType === 1; n = n.parentElement) {
+        const c = parse(getComputedStyle(n).backgroundColor)
+        if (c && c[3] > 0) layers.push(c)
+        if (c && c[3] >= 1) break
+      }
+      let acc = [255, 255, 255, 1]
+      for (let i = layers.length - 1; i >= 0; i--) acc = blend(layers[i], acc)
+      return acc
+    }
+    const lum = ([r, g, b]) => {
+      const f = (v) => {
+        v /= 255
+        return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+      }
+      return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
+    }
+    const ratio = (a, b) => {
+      const [l1, l2] = [lum(a), lum(b)].sort((x, y) => y - x)
+      return (l1 + 0.05) / (l2 + 0.05)
+    }
+    const out = []
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+    for (let t = walker.nextNode(); t; t = walker.nextNode()) {
+      if (!t.textContent.trim()) continue
+      const el = t.parentElement
+      const cs = getComputedStyle(el)
+      const box = el.getBoundingClientRect()
+      if (!box.width || !box.height || cs.visibility === 'hidden' || Number(cs.opacity) === 0 || el.closest('[aria-hidden="true"],[hidden],option,[aria-disabled="true"],:disabled')) continue
+      const fg = parse(cs.color)
+      if (!fg) continue
+      const bg = bgOf(el)
+      const color = fg[3] < 1 ? blend(fg, bg) : fg
+      const size = parseFloat(cs.fontSize)
+      const large = size >= 24 || (size >= 18.66 && Number(cs.fontWeight) >= 700)
+      const r = ratio(color, bg)
+      if (r < (large ? 3 : 4.5)) out.push(`« ${t.textContent.trim().slice(0, 24)} » ${r.toFixed(2)}:1`)
+    }
+    return [...new Set(out)].slice(0, 6)
+  })
+  check(`${label} : contraste du texte ≥ 4,5:1 (3:1 grands textes)`, bad.length === 0, bad.join(' | '))
+}
+
 async function onboardGuitar(page) {
   await page.goto(`${BASE}?reset`)
   await page.getByRole('button', { name: 'Commencer' }).click()
@@ -133,6 +190,7 @@ async function main() {
   await onboardGuitar(page)
   await page.getByText('Envie de jouer ?').waitFor()
   await shot(page, '03-accueil')
+  await contrastAudit(page, 'Accueil DA A')
   await layoutAudit(page, 'Accueil')
 
   await addPiece(page, 'Ma chanson')
@@ -162,6 +220,7 @@ async function main() {
   check('Scénario guitare : durées des étapes = 15 min', total === 15, `${total} min`)
   check('Scénario guitare : exercices main droite / motif / changement d’accord', /Main droite/.test(plan[0]) && /Motif/.test(plan[1]) && /accord/.test(plan[2]))
   await shot(page, '04-preparation')
+  await contrastAudit(page, 'Préparation DA A')
   await layoutAudit(page, 'Préparation')
   await page.getByRole('button', { name: 'Commencer la séance' }).click()
 
@@ -169,15 +228,17 @@ async function main() {
   const card = page.getByTestId('step-card')
   await card.waitFor()
   const cardText = await card.innerText()
-  check('Séance : consigne + critère de réussite affichés', /Consigne/i.test(cardText) && /Critère de réussite/i.test(cardText))
-  check('Séance : durée d’étape affichée', await page.getByText(/^\d+ min$/).first().isVisible())
+  check('Séance : consigne + repère de réussite affichés (maquette 4.2)', /À travailler/.test(cardText) && /Repère de réussite/.test(cardText) && cardText.split('\n').filter((l) => l.trim()).length >= 4)
+  check('Séance : durée d’étape affichée', /À travailler · \d+ min/.test(cardText))
   check('Séance : bouton d’enregistrement présent pendant le travail', await page.getByRole('button', { name: 'Démarrer l’enregistrement' }).isVisible())
   check('S05 · Séance : tempo de l’étape affiché avec accès direct au métronome', await page.getByRole('button', { name: /^Métronome · \d+ BPM$/ }).isVisible())
-  check('S05 · DA 4 Ivoire & marine appliquée par défaut', (await page.evaluate(() => document.documentElement.dataset.brand)) === 'ivoire')
+  check('S7-01 · DA A Blanc & marine appliquée par défaut', (await page.evaluate(() => document.documentElement.dataset.brand)) === 'blanc')
+  check('S7-01 · Séance immersive marine par défaut', (await page.evaluate(() => getComputedStyle(document.querySelector('.v0-app')).backgroundColor)) === 'rgb(16, 29, 53)')
   await page.getByRole('button', { name: 'Métronome', exact: true }).click()
   await page.getByTestId('metronome').getByRole('button', { name: 'Démarrer' }).click()
   await page.waitForTimeout(1200)
   await shot(page, '05-seance-etape1')
+  await contrastAudit(page, 'Séance marine')
   await page.getByTestId('metronome').getByRole('button', { name: 'Arrêter' }).click()
   await layoutAudit(page, 'Séance')
 
@@ -207,6 +268,7 @@ async function main() {
   const corrective = await page.getByTestId('corrective').innerText()
   check('Bilan : exercice correctif concret lié à la difficulté notée', /rythm|Motif/i.test(corrective), corrective.split('\n')[2] || '')
   await shot(page, '07-bilan')
+  await contrastAudit(page, 'Bilan DA A')
   await layoutAudit(page, 'Bilan')
   await page.getByRole('button', { name: 'Terminer la séance' }).click()
   await page.getByRole('heading', { name: 'Suivi' }).waitFor()
@@ -256,7 +318,7 @@ async function main() {
   await page.getByRole('button', { name: 'Commencer la séance' }).click()
   await page.getByRole('button', { name: 'Étape suivante' }).click()
   check('S05 · Séance de suite : étape 2 = reprise citant l’observation', /Reprise ·/.test(await page.getByTestId('step-card').innerText()) && /Le rythme décroche/.test(await page.getByTestId('step-card').innerText()))
-  await page.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).click()
+  await page.getByRole('button', { name: 'Faire le bilan maintenant' }).click()
   check('S05 · Bilan : rappel de ce que l’utilisateur voulait travailler la fois précédente', await page.getByTestId('review-previous').isVisible())
   await shot(page, '16-bilan-rappel')
   // S7-08 — bilan anticipé sans travail évalué : aucun bilan, « Terminer » n’est pas proposé.
@@ -275,7 +337,7 @@ async function main() {
   await page.getByRole('button', { name: 'Commencer la séance' }).click()
   // Une étape auto-évaluée, sans prise : le bilan doit proposer une première prise de référence.
   await page.getByRole('button', { name: 'Oui, réussi' }).click()
-  await page.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).click()
+  await page.getByRole('button', { name: 'Faire le bilan maintenant' }).click()
   const nextNoRef = await page.locator('.ds-feed').nth(3).innerText()
   check('NR · Bilan sans prise : propose une première prise de référence', /première prise/.test(nextNoRef), nextNoRef.split('\n').pop())
   check('NR · Bilan sans prise : pas d’invitation à comparer', !/compare|précédente/i.test(nextNoRef))
@@ -334,7 +396,7 @@ async function main() {
   }
   await page.goto(BASE)
   await page.getByText('Envie de jouer ?').waitFor()
-  check('S05 · Thème de comparaison non mémorisé : retour à la DA 4', (await theme()) === 'ivoire')
+  check('S05 · Thème de comparaison non mémorisé : retour à la DA A', (await theme()) === 'blanc')
   await page.setViewportSize({ width: 320, height: 640 })
   await layoutAudit(page, 'Accueil · 320 px')
   await page.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
@@ -446,7 +508,7 @@ async function main() {
   check('QA · Scénario Work : étape 1 = « Main droite seule, cordes étouffées »', /Main droite seule, cordes étouffées/.test(await p3.getByTestId('step-card').innerText()))
   check('QA P1 · Séance : onglet actif = Bibliothèque', (await activeTab()) === 'Bibliothèque')
   await p3.getByRole('button', { name: 'Pas encore' }).click()
-  await p3.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).click()
+  await p3.getByRole('button', { name: 'Faire le bilan maintenant' }).click()
   await p3.getByText('Ce qui fonctionne').first().waitFor()
   check('QA P1 · Bilan : onglet actif = Bibliothèque', (await activeTab()) === 'Bibliothèque')
   const corr1 = await p3.getByTestId('corrective').innerText()
@@ -473,7 +535,7 @@ async function main() {
   check('QA P0 · Séance suivante : même consigne et même tempo que le bilan', /Reprise · Main droite seule/.test(card3) && /52 BPM/.test(card3) && (await p3.getByRole('button', { name: 'Métronome · 52 BPM' }).isVisible()))
 
   // P0 · Reprise du bilan : observation saisie pendant le bilan, puis rechargement.
-  await p3.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).click()
+  await p3.getByRole('button', { name: 'Faire le bilan maintenant' }).click()
   const qaNote = 'Le pouce reste régulier, l’index accroche.'
   await p3.getByLabel('Ce qui fonctionne').fill(qaNote)
   await p3.waitForTimeout(1000)
@@ -582,7 +644,7 @@ async function main() {
   check('S06 · Séance : la partition est accessible depuis la séance', await p4.getByRole('link', { name: 'Ouvrir « groove.pdf »' }).isVisible())
   await record(p4, 1500)
   await p4.getByRole('button', { name: 'Oui, réussi' }).click()
-  await p4.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).click()
+  await p4.getByRole('button', { name: 'Faire le bilan maintenant' }).click()
   await p4.getByLabel('Ce qui fonctionne').fill('La grosse caisse est stable.')
   await p4.getByRole('button', { name: 'Terminer la séance' }).click()
   await p4.getByRole('heading', { name: 'Suivi' }).waitFor()
@@ -673,8 +735,9 @@ async function main() {
   await p5.keyboard.press('Enter')
   check('S7-05 · Prise active : toucher et clavier sur Suivi/Profil laissent en séance', (await p5.getByTestId('step-card').isVisible()) && (await p5.getByText(/Enregistrement en cours ·/).isVisible()))
   check('S7-05 · Prise active : « Étape suivante » indisponible, la suite est expliquée', (await p5.getByRole('button', { name: /Étape suivante/ }).getAttribute('aria-disabled')) === 'true' && (await p5.getByText('Arrête la prise pour passer à l’étape suivante.').isVisible()))
-  check('S7-05 · Prise active : pas de bilan anticipé', (await p5.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).count()) === 0)
+  check('S7-05 · Prise active : pas de bilan anticipé', (await p5.getByRole('button', { name: 'Faire le bilan maintenant' }).count()) === 0)
   await shot(p5, '21-s7-prise-navigation-indisponible')
+  await contrastAudit(p5, 'Séance marine pendant une prise')
   await layoutAudit(p5, 'Séance pendant une prise')
   await p5.waitForTimeout(1200)
   await p5.getByRole('button', { name: 'Arrêter et sauvegarder la prise' }).click()
@@ -739,7 +802,7 @@ async function main() {
   check('S7-06 · Après fermeture : note retrouvée', (await p5.getByLabel('Notes personnelles').inputValue()) === 'Index qui accroche.')
 
   // T05 — bilan : comparaison des seules prises éligibles, métadonnées dans l’ordre.
-  await p5.getByRole('button', { name: 'Terminer maintenant et faire le bilan' }).click()
+  await p5.getByRole('button', { name: 'Faire le bilan maintenant' }).click()
   const cmp = await p5.getByTestId('takes-compare').innerText().catch(() => '')
   check('S7-07 · Bilan : comparaison des deux prises éligibles (même séance, passage, tempo)', (await p5.getByTestId('compare').locator('.ds-take').count()) === 2 && /même séance, même passage, même tempo/.test(cmp))
   check('S7-07 · Métadonnées « passage · tempo · durée » dans l’ordre', /Intro · 60 BPM · \d\d:\d\d/.test(cmp) && /Intro · 64 BPM · \d\d:\d\d/.test(cmp))
@@ -801,6 +864,30 @@ async function main() {
   check('S7-06 · Séance mise de côté reprise à son étape', /Étape 2 sur/.test(await p5.getByText(/^Étape \d+ sur \d+$/).first().innerText()))
   await tab5('Suivi').click()
   check('S7-09 · Après reprise : l’autre séance du morceau est à son tour mise de côté, rien n’est perdu', /Brouillon mis de côté/.test(await p5.getByTestId('drafts').innerText()))
+  // Lot C — T07 : à la dernière étape, « Faire le bilan » est l’action principale et reçoit le focus.
+  await tab5('Accueil').click()
+  await p5.locator('.v0-resume').click()
+  await p5.getByTestId('step-card').waitFor()
+  for (let i = 0; i < 6 && (await p5.getByRole('button', { name: 'Étape suivante' }).count()); i++) await p5.getByRole('button', { name: 'Étape suivante' }).click()
+  await p5.waitForTimeout(200)
+  const focused = await p5.evaluate(() => `${document.activeElement?.tagName}:${(document.activeElement?.textContent || '').trim()}`)
+  check('S7-04 · Dernière étape : « Faire le bilan » action principale, focus déplacé', focused === 'BUTTON:Faire le bilan' && (await p5.getByRole('button', { name: 'Faire le bilan maintenant' }).count()) === 0, focused)
+  const small48 = await p5.evaluate(() =>
+    [...document.querySelectorAll('.ds-btn--primary, .ds-recbtn')].filter((b) => b.getBoundingClientRect().height && b.getBoundingClientRect().height < 47.5).map((b) => b.textContent.trim()),
+  )
+  check('S7-10 · Actions principales ≥ 48 px', small48.length === 0, small48.join(', '))
+  await shot(p5, '24-s7-derniere-etape-marine')
+  await p5.emulateMedia({ reducedMotion: 'reduce' })
+  await tab5('Accueil').click()
+  check('S7-10 · Mouvement réduit : pas d’animation d’entrée', (await p5.evaluate(() => getComputedStyle(document.querySelector('.v0-main')).animationName)) === 'none')
+  check('S7-02 · Accueil : slogan exact et une action principale « Reprendre ma séance »', (await p5.getByText('Just Play Something.', { exact: true }).isVisible()) && (await p5.locator('.v0-resume').count()) === 1 && /Reprendre ma séance/.test(await p5.locator('.v0-resume').innerText()))
+  await shot(p5, '25-s7-accueil-reprise')
+  await p5.goto(`${BASE}?seance=clair`)
+  await p5.locator('.v0-resume').click()
+  await p5.getByTestId('step-card').waitFor()
+  check('S7-01 · Témoin QA : séance claire avec ?seance=clair', (await p5.evaluate(() => getComputedStyle(document.querySelector('.v0-app')).backgroundColor)) !== 'rgb(16, 29, 53)')
+  await shot(p5, '26-s7-seance-claire-temoin')
+  await contrastAudit(p5, 'Séance claire (témoin)')
   check('S7 · Aucune erreur JavaScript (lot B)', p5errors.length === 0, p5errors.join(' | '))
   await b5.close()
 

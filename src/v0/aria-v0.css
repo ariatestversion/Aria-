@@ -374,3 +374,60 @@ html[data-v0='1'][data-brand='marine'] .v0-dock button.on .v0-dock-icon { backgr
 .v0-dock button[aria-disabled='true'] { opacity: 0.45; cursor: not-allowed; }
 /* Pendant une prise, le message de navigation occupe une ligne de plus au-dessus de la barre. */
 .v0-app.is-capturing:not(.nodock) { padding-bottom: calc(var(--dock-h) + var(--dock-gap) + 80px); }
+
+/* ———————————— Sprint 07 · S7-01 / S7-04 — séance immersive marine (DA A, privilégiée) ————————————
+ * Appliquée à l’écran Séance. Le fond clair reste disponible comme témoin QA (?seance=clair),
+ * sans sélecteur pour l’utilisateur. Contrastes : blanc sur #101D35 16,81:1 ; #C9D4E3 sur
+ * #101D35 11,6:1 ; marine sur bleu ciel 9,78:1 ; blanc sur rouge 5,62:1. Rouge = prise active.
+ */
+html[data-v0='1'] .v0-app.is-immersive {
+  --id-bg: #101d35;
+  --id-accent-soft: transparent;
+  --ink: #ffffff;
+  --id-ink: #ffffff;
+  --ink-muted: #c9d4e3;
+  --ink-faint: #c9d4e3;
+  --line: rgba(255, 255, 255, 0.22);
+  --line-strong: #8fa3bf;
+  --id-primary: #ffffff; /* action principale : blanc, texte marine */
+  --id-on-primary: #101d35;
+  --id-accent: #a8c9eb;
+  --id-accent-ink: #101d35;
+  --id-surface: rgba(255, 255, 255, 0.06);
+  --id-surface-sunken: rgba(255, 255, 255, 0.1);
+  --card-bg: rgba(255, 255, 255, 0.06);
+  --card-border: rgba(255, 255, 255, 0.28);
+  --block-bg: rgba(255, 255, 255, 0.04);
+  --block-ink: #ffffff;
+  --block-label: #a8c9eb;
+  --rec-idle-bg: #a8c9eb; /* « Enregistrer une prise » au repos : bleu ciel, texte marine */
+  --rec-idle-ink: #101d35;
+  --fn-success: #9be3b5;
+  --fn-success-soft: rgba(155, 227, 181, 0.14);
+  --fn-warning: #f2c46b;
+  --fn-warning-strong: #f2c46b;
+  --fn-warning-soft: rgba(242, 196, 107, 0.14);
+  --fn-error: #ffffff;
+  --fn-error-soft: rgba(255, 255, 255, 0.1);
+  --fn-info: #ffffff;
+  --fn-info-soft: rgba(255, 255, 255, 0.08);
+  --dock-bg: #101d35;
+  --dock-active-bg: #a8c9eb;
+  --dock-active-ink: #101d35;
+  --focus-ring: 0 0 0 2px #101d35, 0 0 0 4px #a8c9eb;
+  color: var(--ink);
+  background: #101d35;
+}
+html[data-v0='1'] .v0-app.is-immersive .ds-stepblock { border: var(--bw) solid var(--card-border); }
+html[data-v0='1'] .v0-app.is-immersive .ds-btn--secondary { color: #ffffff; border-color: rgba(255, 255, 255, 0.7); background: transparent; }
+html[data-v0='1'] .v0-app.is-immersive .ds-btn--quiet { color: #ffffff; }
+html[data-v0='1'] .v0-app.is-immersive .ds-field { background: #ffffff; color: #202124; }
+html[data-v0='1'] .v0-app.is-immersive .ds-statusbar { background: rgba(255, 255, 255, 0.08); color: #ffffff; }
+html[data-v0='1'] .v0-app.is-immersive .v0-dock { border-top-color: rgba(255, 255, 255, 0.22); box-shadow: none; }
+html[data-v0='1'] .v0-app.is-immersive .v0-navlock { background: #f0f1f3; color: #202124; }
+.v0-slogan { margin-top: calc(-1 * var(--sp-2)); }
+.v0-resume-meta { color: var(--hero-label); font-weight: 600; }
+html[data-v0='1'] .v0-app.is-immersive .ds-badge--accent { background: #a8c9eb; color: #101d35; border-color: #a8c9eb; }
+html[data-v0='1'] .v0-app.is-immersive .ds-badge--neutral { background: #ffffff; color: #101d35; border-color: #ffffff; }
+/* Sur marine, le rouge #C62828 ne fait que 2,99:1 en texte : le statut passe en blanc, le point et le bouton restent rouges. */
+html[data-v0='1'] .v0-app.is-immersive .ds-recorder-status.is-on { color: #ffffff; }

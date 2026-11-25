@@ -23,9 +23,30 @@ Références : dossier Phase 5 (S7-01 à S7-10, T01 à T11), maquette 4.2, Desig
 - **S7-09 · Suivi et Profil** : brouillons distingués (« Brouillon de pratique » avec étape et prises, « Brouillon de bilan », « Brouillon mis de côté »), tous reprenables ; avertissement de stockage local dans le Profil.
 - Une séance est « en cours » tant qu’aucune séance terminée ne porte son identifiant (comparaison par date conservée pour les séances antérieures au Sprint 05).
 
+### Lot C — intégration Product Design et DA A (prévisualisation 2)
+- **S7-01 · DA A Blanc & marine** appliquée par défaut :
+  - jetons du Design System Phase 3 et de l’addendum 4.2 (blanc doux `#F7F8FA`, surfaces `#FFFFFF`, marine `#101D35`, bleu ciel `#A8C9EB`, encre `#202124`, texte secondaire `#4F5560`, filet `#CBD1D9`, rouge `#C62828` réservé à la prise active) ;
+  - Manrope en police variable (titres et actions 800, repères 650, texte 500).
+  - La DA 4 et les autres thèmes restent consultables par `?theme=` pour comparaison.
+- **Séance immersive marine** par défaut sur l’écran Séance ; fond clair conservé comme **témoin QA** avec `?seance=clair`, sans sélecteur utilisateur. Réserve ergonomique iPhone et réserve « blanc doux » maintenues.
+- **S7-02 · Accueil** : slogan « Just Play Something. » ; une action principale selon l’état réel (« Reprendre ma séance », « Reprendre mon bilan », nouvelle séance après une séance terminée, ou choisir un morceau) ; « Choisir un morceau » en secondaire.
+- **S7-03 · Préparation** : passage, objectif, durée et plan d’abord, avec « Commencer la séance » ; puis « Réglages de la séance » (instrument, niveau, support, difficulté), tous conservés.
+- **S7-04 · Séance** :
+  - un seul bloc : morceau · passage, étape, tempo (accès direct au métronome), objectif, minuteur, segments, « À travailler », consigne, « Repère de réussite » ;
+  - « Comment jouer ce passage » repliable (comment et pourquoi) ;
+  - une action principale : « Étape suivante », puis « Faire le bilan » à la dernière étape, qui reçoit le focus ; « Faire le bilan maintenant » en secondaire, absent pendant la prise ; « Étape précédente » discrète.
+- **S7-10 · Accessibilité** :
+  - actions principales de 52 px (≥ 48 px) et commandes secondaires de 48 px ;
+  - entrée d’écran en 180 ms, supprimée en mouvement réduit ;
+  - contrastes vérifiés automatiquement. Deux défauts trouvés et corrigés : pastille d’étape invisible sur marine, statut d’enregistrement rouge sur marine à 2,99:1, passé en blanc.
+- **Photographies** : non intégrées (prévisualisation publique par lien) ; visuels provisoires autorisés.
+
 ### Tests
 - Unitaires : **44/44** (7 nouveaux : comparabilité, métadonnées, séparation des prises).
-- e2e (Chromium, micro simulé) : **168/168**, dont 31 contrôles du lot B ; prises vides et illisibles simulées par un enregistreur de test.
+- e2e (Chromium, micro simulé) : **180/180** :
+  - 31 contrôles du lot B, 12 du lot C ;
+  - audit de contraste WCAG du texte affiché sur 6 écrans ;
+  - prises vides et illisibles simulées par un enregistreur de test.
 - Aucun test sur appareil physique.
 
 ### Photographies

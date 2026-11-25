@@ -20,3 +20,23 @@ Résultats automatisés (Chromium, micro **simulé**) : unitaires **44/44**, e2e
 | T01, T07, T08, T09, T11 | Après le lot C | — | — |
 
 Aucun test sur appareil physique n’a été réalisé.
+
+## Lot C — prévisualisation 2 (25/11)
+
+Résultats automatisés : unitaires **44/44**, e2e **180/180** (Chromium, micro simulé).
+
+| Test Phase 5 | Partie automatisée (Chromium) | Résultat | Reste à faire (humain / appareil réel) |
+| --- | --- | --- | --- |
+| T01 Profil vierge → bilan | Onboarding, bibliothèque, recherche, ajout, préparation, séance, bilan, états vides (contrôles V0.6 rejoués en DA A) | Réussi | iPhone : compréhension sans aide |
+| T02 Pédagogie | Contrôle exhaustif de plus de 10 000 programmes ; scénario Blackbird (reprise même exercice, tempo, durée, sans doublon) | Réussi | — |
+| T03 Prise active | Voir lot B ; mise en page et contraste pendant la prise | Réussi | VoiceOver iPhone |
+| T04 Brouillons | Voir lot B | Réussi | Fermeture réelle de Safari, micro réel |
+| T05 Prises | Voir lot B | Réussi | Audio réel |
+| T06 Arrêt, vide, illisible | Voir lot B | Réussi (simulé) | iPhone et Android réels |
+| T07 Action suivante | Étapes intermédiaires : « Étape suivante » principale, bilan anticipé secondaire ; dernière étape : « Faire le bilan » principale avec focus ; pendant la prise : indisponible avec texte | Réussi | Clavier physique, VoiceOver |
+| T08 Marine vs clair | Séance marine par défaut, témoin clair `?seance=clair`, contrastes AA sur les deux, 390 et 320 px, cibles ≥ 48 px, mouvement réduit | Réussi (automatisé) | **Fondatrice, iPhone, instrument en main** : repérage tempo, consigne, critère, arrêt ; texte agrandi ; paysage ; barres Safari. Réserve blanc doux à consigner |
+| T09 Métronome / minuteur | Minuteur sauvegardé et restauré ; métronome au tempo de l’étape ; arrêt à la sortie (comportement V0.6) | Partiel | **Audio réel** : accent, clic capté ou non, aucun clic résiduel |
+| T10 Historique | Voir lot B | Réussi | — |
+| T11 Non-régression | Les 136 contrôles V0.6 rejoués (sélecteurs adaptés aux nouveaux libellés, assertions maintenues) ; build ; contraste ; focus | Réussi | QA indépendante |
+
+Aucun test sur appareil physique n’a été réalisé.

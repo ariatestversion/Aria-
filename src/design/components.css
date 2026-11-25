@@ -670,17 +670,17 @@ html[data-v0='1'] .ds-toolbar button.is-on { border-color: var(--id-primary); bo
 }
 
 /* DA 4 : chips sélectionnées et options actives en bleu ciel (état sélectionné), texte anthracite. */
-html[data-v0='1'][data-brand='ivoire'] .ds-chip.is-on,
-html[data-v0='1'][data-brand='ivoire'] .ds-option.is-on { background: var(--id-accent); border-color: var(--id-ink); color: var(--id-ink); }
-html[data-v0='1'][data-brand='ivoire'] .ds-option.is-on span { color: var(--ink-muted); opacity: 1; }
-html[data-v0='1'][data-brand='ivoire'] .ds-take-delete { color: var(--ink) !important; }
+html[data-v0='1']:is([data-brand='ivoire'], [data-brand='blanc']) .ds-chip.is-on,
+html[data-v0='1']:is([data-brand='ivoire'], [data-brand='blanc']) .ds-option.is-on { background: var(--id-accent); border-color: var(--id-ink); color: var(--id-ink); }
+html[data-v0='1']:is([data-brand='ivoire'], [data-brand='blanc']) .ds-option.is-on span { color: var(--ink-muted); opacity: 1; }
+html[data-v0='1']:is([data-brand='ivoire'], [data-brand='blanc']) .ds-take-delete { color: var(--ink) !important; }
 /* DA 4 sur ordinateur : marges latérales en gris clair, colonne de contenu en ivoire (même structure). */
 @media (min-width: 840px) {
   html[data-v0='1'][data-brand='ivoire'] .v0-app { background: var(--id-surface); }
   html[data-v0='1'][data-brand='ivoire'] .v0-main { background: var(--id-bg); border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
 }
-html[data-v0='1'][data-brand='ivoire'] .v0-inst.on { background: var(--id-accent); border-color: var(--id-ink); color: var(--id-ink); }
-html[data-v0='1'][data-brand='ivoire'] .v0-inst.on .v0-inst-icon { color: var(--id-ink); }
+html[data-v0='1']:is([data-brand='ivoire'], [data-brand='blanc']) .v0-inst.on { background: var(--id-accent); border-color: var(--id-ink); color: var(--id-ink); }
+html[data-v0='1']:is([data-brand='ivoire'], [data-brand='blanc']) .v0-inst.on .v0-inst-icon { color: var(--id-ink); }
 
 /* Case à cocher avec libellé (Sprint 05) — cible tactile ≥ 44 px */
 .ds-check {
@@ -725,4 +725,51 @@ html[data-v0='1'][data-brand='ivoire'] .v0-inst.on .v0-inst-icon { color: var(--
 .ds-steps-seg[aria-disabled='true'] {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+/* ———————— Sprint 07 · DA A (S7-01, S7-04, S7-10) ———————— */
+html[data-v0='1'][data-brand='blanc'] {
+  --btn-h: 52px; /* cibles principales ≥ 48 px (DS Phase 3) */
+  --btn-h-sm: 48px;
+}
+html[data-v0='1'][data-brand='blanc'] .ds-h1,
+html[data-v0='1'][data-brand='blanc'] .ds-h2,
+html[data-v0='1'][data-brand='blanc'] .ds-btn { font-weight: 800; }
+html[data-v0='1'][data-brand='blanc'] .ds-overline,
+html[data-v0='1'][data-brand='blanc'] .ds-stepblock-label,
+html[data-v0='1'][data-brand='blanc'] .ds-badge { font-weight: 650; }
+html[data-v0='1'][data-brand='blanc'] body,
+html[data-v0='1'][data-brand='blanc'] .ds-body,
+html[data-v0='1'][data-brand='blanc'] .ds-lead { font-weight: 500; }
+
+/* Pastille-bouton (tempo de l’étape) */
+.ds-chipbtn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 44px;
+  padding: 0 var(--sp-4);
+  border-radius: 999px;
+  border: var(--bw) solid var(--id-primary);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 650;
+  font-size: var(--fs-small);
+  cursor: pointer;
+}
+.ds-chipbtn[aria-pressed='true'] { background: var(--id-accent); color: var(--id-accent-ink); border-color: var(--id-accent); }
+.v0-session-over { margin: 0; }
+
+/* Entrée d’écran : fondu + 4 px sur 180 ms ; supprimé si mouvement réduit */
+.v0-main { animation: ds-enter 180ms ease-out both; }
+@keyframes ds-enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+.ds-steps-seg { transition: background-color 160ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  .v0-main { animation: none; }
+  .ds-steps-seg, .ds-btn, .ds-chipbtn { transition: none; }
 }

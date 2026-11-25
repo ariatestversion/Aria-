@@ -394,3 +394,94 @@ html[data-v0='1'][data-brand='ivoire'] {
   --page-x: 20px;
   --dock-h: calc(70px + env(safe-area-inset-bottom));
 }
+
+/* ———————————————————— DA A · Blanc & marine (Design System Phase 3, addendum 4.2 — Sprint 07) ————————————————————
+ * Fond principal blanc doux #F7F8FA (réserve esthétique de la fondatrice consignée, non levée) ;
+ * surfaces et champs blanc pur #FFFFFF ; marine #101D35 (séance immersive) ; bleu ciel #A8C9EB
+ * (étape active, action au repos sur marine) ; encre #202124 ; texte secondaire #4F5560 ;
+ * filet #CBD1D9 ; gris #F0F1F3. Rouge #C62828 réservé à la prise active.
+ * Contrastes (DS Phase 3) : blanc sur marine 16,81:1 ; marine sur bleu ciel 9,78:1 ; blanc sur rouge 5,62:1.
+ * Manrope : titres et actions 800, repères 650, texte courant 500. Cibles principales 48 px.
+ */
+html[data-v0='1'][data-brand='blanc'] {
+  --id-bg: #f7f8fa; /* Blanc doux */
+  --id-surface: #ffffff; /* Blanc pur */
+  --id-surface-sunken: #f0f1f3; /* Gris */
+  --id-ink: #202124; /* Encre */
+  --id-primary: #101d35; /* Marine */
+  --id-on-primary: #ffffff;
+  --id-accent: #a8c9eb; /* Bleu ciel */
+  --id-accent-soft: #e6eef8;
+  --id-accent-ink: #101d35;
+
+  --ink-muted: #4f5560; /* 7,26:1 sur blanc doux */
+  --ink-faint: #4f5560;
+  --line: #cbd1d9; /* filet décoratif */
+  --line-strong: #68778e; /* contour de champ : 4,52:1 sur blanc */
+
+  --fn-success: #2f6b45;
+  --fn-success-soft: rgba(47, 107, 69, 0.1);
+  --fn-warning: #8a5a00;
+  --fn-warning-strong: #d79a1a;
+  --fn-warning-soft: rgba(215, 154, 26, 0.14);
+  --fn-error: #202124; /* rouge réservé à la prise active : erreur = contour + icône + libellé */
+  --fn-error-soft: #f0f1f3;
+  --fn-record: #c62828;
+  --fn-record-soft: rgba(198, 40, 40, 0.1);
+  --fn-info: #101d35;
+  --fn-info-soft: #e6eef8;
+
+  --font-title: Manrope, system-ui, sans-serif;
+  --fw-title: 800;
+  --fw-label: 650;
+  --fw-body: 500;
+  --ls-title: -0.02em;
+  --section-transform: none;
+  --section-size: 1.125rem;
+  --section-weight: 800;
+  --section-color: var(--ink);
+  --section-spacing: 0;
+
+  --hero-bg: #101d35;
+  --hero-ink: #ffffff;
+  --hero-label: #a8c9eb;
+  --hero-btn-bg: #a8c9eb;
+  --hero-btn-ink: #101d35;
+  --hero-visual: linear-gradient(135deg, #1b2b4b 0%, #101d35 100%);
+  --welcome-top: #1b2b4b;
+  --welcome-bottom: #101d35;
+  --staff-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='112' viewBox='0 0 220 112'%3E%3Cg fill='none' stroke='%23a8c9eb' stroke-opacity='.45' stroke-width='2'%3E%3Cpath d='M0 40c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 56c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 72c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3C/g%3E%3C/svg%3E");
+
+  --block-bg: #101d35;
+  --block-ink: #ffffff;
+  --block-label: #a8c9eb;
+  --block-rule: transparent;
+
+  --rec-idle-bg: #101d35;
+  --rec-idle-ink: #ffffff;
+  --rec-on-bg: #c62828;
+  --rec-on-ink: #ffffff;
+  --rec-on-border: #c62828;
+
+  --card-bg: #ffffff;
+  --card-border: #cbd1d9;
+  --card-shadow: none;
+  --field-bg: #ffffff;
+  --field-border: #68778e;
+  --dock-bg: #ffffff;
+  --dock-active-bg: #a8c9eb;
+  --dock-active-ink: #101d35;
+
+  --thumb-1: #a8c9eb;
+  --thumb-2: #f0f1f3;
+  --thumb-3: #e6eef8;
+  --thumb-ink: #101d35;
+  --thumb-display: grid;
+
+  --r-lg: 16px;
+  --shadow-1: none;
+  --shadow-2: 0 10px 28px rgba(16, 29, 53, 0.12);
+  --focus-ring: 0 0 0 2px #ffffff, 0 0 0 4px #101d35;
+  --page-x: 20px;
+  --dock-h: calc(70px + env(safe-area-inset-bottom));
+}

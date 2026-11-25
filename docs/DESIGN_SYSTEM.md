@@ -1,3 +1,5 @@
+> **Sprint 07 (25/11/2026)** : thème par défaut **DA A Blanc & marine** (`data-brand='blanc'`, bloc en fin de `src/design/tokens.css`), séance immersive marine (`.v0-app.is-immersive`, `src/v0/aria-v0.css`), témoin clair `?seance=clair`. Références : Design System Phase 3 et addendum 4.2 (dossier Drive « Sprint 07 »). Les thèmes antérieurs restent consultables par `?theme=`.
+
 # ARIA — Design System (Sprint 04)
 
 Source unique : `src/design/tokens.css` (fondations) et `src/design/components.css` (composants `ds-*`).
