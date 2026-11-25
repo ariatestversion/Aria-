@@ -55,7 +55,7 @@ Résultats automatisés : unitaires **44/44**, e2e **229/229** (Chromium, micro 
 
 ## Corrections finales — contre-recette QA de `a7d1690` et réserves Product Design (25/11)
 
-Prévisualisation 4 : voir `SOURCE_VERSION.json` (lien et commit) · non publiée. Une contre-recette ciblée est attendue avant la décision du Head of Product.
+https://6b06f9934ca1d2e7fb6e60b2--ariafirstversion.netlify.app (séance marine) · témoin clair : `?seance=clair` · commit `d5e4a7a` · non publiée. Une contre-recette ciblée est attendue avant la décision du Head of Product.
 
 Résultats automatisés : unitaires **44/44**, e2e **240/240** (Chromium, micro simulé).
 
