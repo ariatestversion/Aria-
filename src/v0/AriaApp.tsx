@@ -348,14 +348,15 @@ export function AriaApp() {
     return takesOfSession(takes, sessionStart(piece))
   }, [takes, piece?.program?.startedAt, piece?.program?.updatedAt])
 
-  const resumePracticeFor = (id: string) => {
+  /** `shown` = phase affichée sur la carte ou la ligne cliquée : la destination suit toujours le libellé. */
+  const resumePracticeFor = (id: string, shown?: 'session' | 'review') => {
     const target = getPiece(id)
     if (!target) return
     setPieceId(id)
     refreshTakes(email, id)
     if (target.program?.steps?.length) {
       // Bilan commencé : on y revient directement, observations comprises.
-      if (target.program.phase === 'review') openReview(target)
+      if ((shown || target.program.phase) === 'review') openReview(target)
       else setScreen('session')
       return
     }
@@ -684,7 +685,9 @@ export function AriaApp() {
 
   function updatePieceFields(patch: Partial<Piece>) {
     if (!piece) return
-    const next = { ...piece, ...patch, updatedAt: new Date().toISOString() }
+    // Base = version enregistrée (le minuteur et la phase y sont écrits sans recharger l’écran).
+    const base = getPiece(piece.id) || piece
+    const next = { ...base, ...patch, updatedAt: new Date().toISOString() }
     savePiece(next)
     refreshPieces()
     setPieceId(next.id)
@@ -745,6 +748,13 @@ export function AriaApp() {
 
   // S7-04 / T07 — à la dernière étape, « Faire le bilan » devient l’action principale et reçoit le focus.
   const reviewBtnRef = useRef<HTMLButtonElement | null>(null)
+  // QA-01 — à l’ouverture du bilan (bouton, clavier, reprise), le focus arrive sur son titre.
+  const reviewTitleRef = useRef<HTMLHeadingElement | null>(null)
+  useEffect(() => {
+    if (screen !== 'review') return
+    const id = window.requestAnimationFrame(() => reviewTitleRef.current?.focus())
+    return () => window.cancelAnimationFrame(id)
+  }, [screen, pieceId])
   const stepPos = piece?.program ? `${piece.id}:${piece.program.stepIndex}:${piece.program.steps.length}` : ''
   useEffect(() => {
     if (screen !== 'session' || !piece?.program) return
@@ -762,18 +772,20 @@ export function AriaApp() {
     }
   }
 
+  const storedProgram = () => (piece ? getPiece(piece.id)?.program || piece.program : undefined)
+
   function setStepIndex(index: number) {
-    if (!piece?.program) return
-    const max = piece.program.steps.length - 1
-    updatePieceFields({ program: { ...piece.program, stepIndex: Math.max(0, Math.min(max, index)) } })
+    const program = storedProgram()
+    if (!program) return
+    const max = program.steps.length - 1
+    updatePieceFields({ program: { ...program, stepIndex: Math.max(0, Math.min(max, index)) } })
   }
 
   function setStepCheck(stepId: string, check: StepCheck) {
-    if (!piece?.program) return
-    const steps = piece.program.steps.map((s) =>
-      s.id === stepId ? { ...s, check: s.check === check ? undefined : check } : s,
-    )
-    updatePieceFields({ program: { ...piece.program, steps } })
+    const program = storedProgram()
+    if (!program) return
+    const steps = program.steps.map((s) => (s.id === stepId ? { ...s, check: s.check === check ? undefined : check } : s))
+    updatePieceFields({ program: { ...program, steps } })
   }
 
   async function stopAndSaveTake(cause: 'user' | 'hidden' = 'user') {
@@ -836,7 +848,8 @@ export function AriaApp() {
         unreadable: unreadable || undefined,
       }
       saveTakeMeta(take)
-      savePiece({ ...current, lastWorkedAt: new Date().toISOString(), updatedAt: new Date().toISOString() })
+      // Relecture après l’attente : la phase (séance ou bilan) a pu changer pendant le décodage.
+      savePiece({ ...(getPiece(current.id) || current), lastWorkedAt: new Date().toISOString(), updatedAt: new Date().toISOString() })
       refreshPieces()
       refreshTakes(email, current.id)
       if (unreadable) {
@@ -1245,7 +1258,7 @@ export function AriaApp() {
           <p className="ds-lead v0-slogan">Just Play Something.</p>
           {inProgressPiece ? (
             <div className="ds-stack">
-            <button className="v0-resume" type="button" onClick={() => resumePracticeFor(inProgressPiece.id)}>
+            <button className="v0-resume" type="button" onClick={() => resumePracticeFor(inProgressPiece.id, inProgressPiece.program?.phase === 'review' ? 'review' : 'session')}>
               <span className="v0-resume-visual" aria-hidden />
               <span className="v0-resume-body">
                 <small>
@@ -1823,6 +1836,8 @@ export function AriaApp() {
             const total = program.steps.length
             const step = currentStep
             const last = idx >= total - 1
+            // QA-02 — l’en-tête suit le tempo du métronome ouvert (celui qui sonne ou sonnera).
+            const activeBpm = step.bpm && tool === 'metronome' && metro.bpm > 0 ? metro.bpm : step.bpm
             return (
               <>
                 <TopBar onBack={() => setScreen('piece')} locked={capturing} />
@@ -1840,11 +1855,17 @@ export function AriaApp() {
                       type="button"
                       className="ds-chipbtn"
                       aria-pressed={tool === 'metronome'}
+                      data-testid="tempo-chip"
                       onClick={() => setTool(tool === 'metronome' ? 'none' : 'metronome')}
                     >
                       <Icon name="metronome" size={16} />
-                      Métronome · {step.bpm} BPM
+                      Métronome · {activeBpm} BPM
                     </button>
+                  ) : null}
+                  {step.bpm && activeBpm !== step.bpm ? (
+                    <Badge tone="neutral">
+                      <span data-testid="tempo-advised">Conseillé : {step.bpm} BPM</span>
+                    </Badge>
                   ) : null}
                   {program.objective ? <Badge tone="neutral">{program.objective}</Badge> : null}
                 </div>
@@ -1929,25 +1950,6 @@ export function AriaApp() {
                   </div>
                 </div>
 
-                <div className="ds-toolbar" role="group" aria-label="Outils">
-                  <button type="button" aria-pressed={tool === 'metronome'} className={tool === 'metronome' ? 'is-on' : ''} onClick={() => setTool(tool === 'metronome' ? 'none' : 'metronome')}>
-                    <Icon name="metronome" />
-                    Métronome
-                  </button>
-                  <button type="button" aria-pressed={tool === 'resources'} className={tool === 'resources' ? 'is-on' : ''} onClick={() => setTool(tool === 'resources' ? 'none' : 'resources')}>
-                    <Icon name="score" />
-                    Ressources
-                  </button>
-                  <button type="button" aria-pressed={tool === 'notes'} className={tool === 'notes' ? 'is-on' : ''} onClick={() => setTool(tool === 'notes' ? 'none' : 'notes')}>
-                    <Icon name="notes" />
-                    Notes
-                  </button>
-                </div>
-                {tool === 'metronome' ? <MetronomePanel key={step.id} initialBpm={step.bpm || 60} onState={setMetro} /> : null}
-                {tool === 'resources' ? resourcesPanel : null}
-                {tool === 'notes' ? notesPanel : null}
-
-
                 {capturing ? (
                   <p id="capture-hint" className="ds-hint" role="status">
                     {last ? 'Arrête la prise avant de faire le bilan.' : 'Arrête la prise pour passer à l’étape suivante.'}
@@ -2002,6 +2004,24 @@ export function AriaApp() {
                     </button>
                   ) : null}
                 </div>
+
+                <div className="ds-toolbar" role="group" aria-label="Outils">
+                  <button type="button" aria-pressed={tool === 'metronome'} className={tool === 'metronome' ? 'is-on' : ''} onClick={() => setTool(tool === 'metronome' ? 'none' : 'metronome')}>
+                    <Icon name="metronome" />
+                    Métronome
+                  </button>
+                  <button type="button" aria-pressed={tool === 'resources'} className={tool === 'resources' ? 'is-on' : ''} onClick={() => setTool(tool === 'resources' ? 'none' : 'resources')}>
+                    <Icon name="score" />
+                    Ressources
+                  </button>
+                  <button type="button" aria-pressed={tool === 'notes'} className={tool === 'notes' ? 'is-on' : ''} onClick={() => setTool(tool === 'notes' ? 'none' : 'notes')}>
+                    <Icon name="notes" />
+                    Notes
+                  </button>
+                </div>
+                {tool === 'metronome' ? <MetronomePanel key={step.id} initialBpm={step.bpm || 60} onState={setMetro} /> : null}
+                {tool === 'resources' ? resourcesPanel : null}
+                {tool === 'notes' ? notesPanel : null}
 
                 <button className="ds-disclosure" type="button" aria-expanded={showPlan} onClick={() => setShowPlan((v) => !v)}>
                   Programme complet ({program.minutes} min)
@@ -2077,7 +2097,9 @@ export function AriaApp() {
       {screen === 'review' && piece && review ? (
         <section className="v0-main v0-review">
           <TopBar onBack={() => setScreen(piece.program ? 'session' : 'record')} title="Bilan de séance" />
-          <h1 className="ds-h1">{piece.title}</h1>
+          <h1 className="ds-h1 v0-focus-target" ref={reviewTitleRef} tabIndex={-1} aria-label={`Bilan de séance : ${piece.title}`} data-testid="review-title">
+            {piece.title}
+          </h1>
           <p className="ds-lead">
             {piece.program?.objective ? `Objectif : ${piece.program.objective}` : 'Séance'}
             {piece.program?.minutes ? ` · ${piece.program.minutes} min` : ''}
@@ -2391,7 +2413,7 @@ export function AriaApp() {
                 kind: review ? 'Brouillon de bilan' : 'Brouillon de pratique',
                 detail: `${review ? 'Bilan commencé' : `Étape ${Math.min(p.program.stepIndex + 1, p.program.steps.length)} sur ${p.program.steps.length}`} · ${n} prise${n > 1 ? 's' : ''}`,
                 date: log?.createdAt || p.program.updatedAt,
-                onOpen: () => resumePracticeFor(p.id),
+                onOpen: () => resumePracticeFor(p.id, review ? 'review' : 'session'),
               })
             }
             for (const log of draftLogs) {

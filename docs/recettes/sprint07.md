@@ -52,3 +52,18 @@ Résultats automatisés : unitaires **44/44**, e2e **229/229** (Chromium, micro 
 - Contrôles ajoutés (T08 / S7-10, partie automatisable) : paysage 844×390, tablette 768×1024, ordinateur 1280×800, texte agrandi 200 % ; accueil et séance marine ; mise en page, contraste, cibles, contenu coupé ou hors écran.
 - Défauts trouvés et corrigés : libellé « Bibliothèque » débordant dans la barre de navigation ; barre d’outils de séance et accès rapides hors écran, et libellés de navigation superposés, avec le texte agrandi.
 - Restent non automatisables : toucher, VoiceOver, barres de Safari, micro et audio réels, interruptions iOS, lecture instrument en main (voir les tableaux ci-dessus).
+
+## Corrections finales — contre-recette QA de `a7d1690` et réserves Product Design (25/11)
+
+Prévisualisation 4 : voir `SOURCE_VERSION.json` (lien et commit) · non publiée. Une contre-recette ciblée est attendue avant la décision du Head of Product.
+
+Résultats automatisés : unitaires **44/44**, e2e **240/240** (Chromium, micro simulé).
+
+| Point | Correction | Contrôle automatisé | Reste à vérifier (humain / appareil) |
+| --- | --- | --- | --- |
+| QA-01 · Focus du bilan | Focus sur le titre « Bilan de séance : <morceau> » à chaque ouverture du bilan | Entrée sur « Faire le bilan maintenant » et sur « Faire le bilan » (étape 4) : élément actif = titre ; première tabulation = contrôle du bilan ; reprise depuis l’accueil : titre | Annonce VoiceOver sur iPhone ; clavier physique |
+| QA-02 · Tempo affiché | En-tête = tempo du métronome ouvert ; « Conseillé : N BPM » si différent ; retour au tempo conseillé à la fermeture | Accélérer de 4 BPM et démarrer : en-tête et panneau identiques, tempo conseillé distingué ; fermeture : un seul tempo | Clic audible au tempo affiché ; tempo de la prise avec micro réel |
+| PD · « Reprendre mon bilan » | La destination suit le libellé (accueil, Suivi) ; programme relu depuis le stockage | Accueil → bilan (pas la séance) ; Suivi « Brouillon de bilan » → bilan | QA-03 : rejouer sur iPhone après fermeture de Safari, avec et sans prise |
+| PD · « Faire le bilan » à la dernière étape | Actions placées avant les outils | Ordre vérifié ; premier écran sur ordinateur 1348×936 | Repérage sur iPhone, téléphone posé, instrument en main |
+
+Aucun test sur appareil physique n’a été réalisé.

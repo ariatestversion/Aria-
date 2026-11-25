@@ -4,7 +4,7 @@
 
 Branche : `claude/sprint07-integration`, depuis `main` (`f0a61a0`, Alpha V0.6, code audité `67aa241`).
 Références : dossier Phase 5 (S7-01 à S7-10, T01 à T11), maquette 4.2, Design System Phase 3 et addendum 4.2 (dossier Drive « Sprint 07 »).
-**Statut : en cours.** Lot A et lot B livrés ; lots C et D à venir. Pas de publication en production, pas de clôture sans recette indépendante.
+**Statut : en cours.** Lots A à D livrés ; corrections finales QA-01 / QA-02 livrées (prévisualisation 4). Pas de publication en production, pas de clôture sans recette indépendante.
 
 ### Lot B — intégrité fonctionnelle (prévisualisation 1)
 - **S7-05 · Navigation pendant la prise** : pendant un enregistrement, les onglets, le retour, le changement d’étape et le bilan sont **indisponibles**, avec le message « Navigation indisponible. Arrête la prise pour changer d’écran. » relié aux commandes (`aria-disabled`, `aria-describedby`). Le bilan anticipé est masqué pendant la prise. Tout redevient disponible dès l’arrêt. La sauvegarde automatique en arrière-plan est conservée.
@@ -58,6 +58,14 @@ Références : dossier Phase 5 (S7-01 à S7-10, T01 à T11), maquette 4.2, Desig
   - avec le texte agrandi, la barre d’outils de la séance (Ressources, Notes) et les accès rapides de l’accueil sortaient de l’écran, et les libellés de la barre de navigation se chevauchaient ;
   - les grilles passent désormais à la ligne, et les libellés de navigation sont abrégés proprement.
 - Tests : unitaires 44/44 ; e2e **229/229**.
+
+### Corrections finales — contre-recette QA et réserves Product Design sur `a7d1690` (prévisualisation 4)
+- **QA-01 · Focus à l’ouverture du bilan** : sur tous les chemins (« Faire le bilan maintenant », « Faire le bilan » à la dernière étape, reprise depuis l’accueil ou le Suivi), le focus arrive sur le titre du bilan, nommé « Bilan de séance : <morceau> ». La tabulation suivante atteint le premier contrôle du bilan. L’anneau de focus n’apparaît qu’à la navigation au clavier. Le focus sur « Faire le bilan » à l’arrivée à la dernière étape est conservé.
+- **QA-02 · Tempo affiché** : quand le métronome est ouvert, l’en-tête « Métronome · N BPM » affiche le tempo du métronome, c’est-à-dire celui qui sonne ou qui sonnera. Si ce tempo diffère de la consigne, un repère distinct « Conseillé : N BPM » apparaît. Une fois le métronome fermé, l’en-tête revient au tempo conseillé. La métadonnée de tempo d’une prise suit déjà le métronome en marche (lot B). Le panneau signale aussi son dernier tempo à la fermeture.
+- **Réserve PD · « Reprendre mon bilan »** : la destination suit désormais le libellé cliqué (accueil et Suivi) : « Reprendre mon bilan » et « Brouillon de bilan » ouvrent toujours le bilan. L’écart n’a pas été reproduit sur données isolées (accueil, minuteur en marche, détour par l’enregistrement direct, rechargement). Par précaution, les modifications d’étape et la sauvegarde d’une prise repartent de la version enregistrée du morceau, au lieu d’une copie d’écran qui pouvait être en retard.
+- **Réserve PD · « Faire le bilan » à la dernière étape** : les actions de la séance (« Étape suivante » / « Faire le bilan ») passent juste après l’auto-évaluation, **avant** la barre d’outils et ses panneaux. Sur ordinateur (1348×936), « Faire le bilan » est dans le premier écran. Sur 390×844, il faut un court défilement après la prise et l’auto-évaluation. À vérifier sur iPhone.
+- Règle inchangée : une étape sans tempo n’affiche pas de repère de métronome dans l’en-tête. Le métronome reste accessible par la barre d’outils.
+- Tests : unitaires 44/44 ; e2e **240/240** (11 contrôles ajoutés : QA-01 sur trois chemins et la première tabulation, QA-02, destination de la reprise depuis l’accueil et le Suivi, ordre des actions).
 
 ### Photographies
 - Non intégrées aux prévisualisations (accessibles à toute personne disposant du lien), conformément à l’arbitrage du 25/11 : visuels provisoires autorisés de l’application.

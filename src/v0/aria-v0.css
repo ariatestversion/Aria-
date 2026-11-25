@@ -443,3 +443,12 @@ html[data-v0='1'] .v0-app.is-immersive .ds-recorder-status.is-on { color: #fffff
 }
 .v0-quick { grid-template-columns: repeat(auto-fit, minmax(min(7.5rem, 100%), 1fr)); }
 .v0-quick > button { min-width: 0; }
+
+/* Sprint 07 · QA-01 — titre du bilan focalisé à l’ouverture : anneau visible au clavier seulement. */
+.v0-focus-target:focus {
+  outline: none;
+}
+.v0-focus-target:focus-visible {
+  box-shadow: var(--focus-ring);
+  border-radius: 4px;
+}

@@ -351,10 +351,12 @@ export function MetronomePanel({
     m.setBpm(initialBpm)
   }, [initialBpm])
   useEffect(() => m.stop, [m.stop])
+  const bpmRef = useRef(m.bpm)
+  bpmRef.current = m.bpm
   useEffect(() => {
     onState?.({ bpm: m.bpm, running: m.running })
   }, [m.bpm, m.running])
-  useEffect(() => () => onState?.({ bpm: m.bpm, running: false }), [])
+  useEffect(() => () => onState?.({ bpm: bpmRef.current, running: false }), [])
   return (
     <div className="ds-metronome" data-testid="metronome">
       <div className="ds-metronome-beats" aria-hidden>
