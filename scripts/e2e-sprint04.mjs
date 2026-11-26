@@ -14,7 +14,28 @@ import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const require = createRequire(import.meta.url)
-const { chromium } = require('playwright')
+const { chromium: chromiumBase } = require('playwright')
+// Sprint 08 — THEME=cuivre|bleu rejoue toute la recette dans une palette candidate :
+// le paramètre ?theme= est ajouté à chaque page avant le démarrage de l’application.
+const THEME = process.env.THEME || ''
+const DEFAULT_THEME = THEME || 'blanc'
+const chromium = {
+  async launch(opts) {
+    const browser = await chromiumBase.launch(opts)
+    if (!THEME) return browser
+    const newContext = browser.newContext.bind(browser)
+    browser.newContext = async (o) => {
+      const ctx = await newContext(o)
+      await ctx.addInitScript((t) => {
+        if (!/[?&](theme|brand)=/.test(location.search)) {
+          history.replaceState(null, '', location.pathname + (location.search ? location.search + '&' : '?') + 'theme=' + t + location.hash)
+        }
+      }, THEME)
+      return ctx
+    }
+    return browser
+  },
+}
 
 const BASE = process.argv[2] || 'http://localhost:43123/'
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -242,8 +263,8 @@ async function main() {
   check('Séance : durée d’étape affichée', /À travailler · \d+ min/.test(cardText))
   check('Séance : bouton d’enregistrement présent pendant le travail', await page.getByRole('button', { name: 'Démarrer l’enregistrement' }).isVisible())
   check('S05 · Séance : tempo de l’étape affiché avec accès direct au métronome', await page.getByRole('button', { name: /^Métronome · \d+ BPM$/ }).isVisible())
-  check('S7-01 · DA A Blanc & marine appliquée par défaut', (await page.evaluate(() => document.documentElement.dataset.brand)) === 'blanc')
-  check('S7-01 · Séance immersive marine par défaut', (await page.evaluate(() => getComputedStyle(document.querySelector('.v0-app')).backgroundColor)) === 'rgb(16, 29, 53)')
+  check(`S7-01 · Palette par défaut appliquée (${DEFAULT_THEME})`, (await page.evaluate(() => document.documentElement.dataset.brand)) === DEFAULT_THEME)
+  check(`S7-01 · Séance immersive par défaut (fond --imm-bg de la palette ${DEFAULT_THEME})`, (await page.evaluate(() => getComputedStyle(document.querySelector('.v0-app')).backgroundColor)) === ({ blanc: 'rgb(16, 29, 53)', cuivre: 'rgb(42, 24, 18)', bleu: 'rgb(11, 31, 69)' }[DEFAULT_THEME] || 'rgb(16, 29, 53)'))
   await page.getByRole('button', { name: 'Métronome', exact: true }).click()
   await page.getByTestId('metronome').getByRole('button', { name: 'Démarrer' }).click()
   await page.waitForTimeout(1200)
@@ -399,14 +420,15 @@ async function main() {
   // restent consultables avec ?theme=… (comparaison), sans être mémorisés.
   const theme = () => page.evaluate(() => document.documentElement.dataset.brand)
   check('S05 · Profil : plus de sélecteur de direction visuelle', (await page.getByText('Direction visuelle (aperçu)').count()) === 0)
-  for (const id of ['marine', 'electrique', 'espresso']) {
+  for (const id of ['marine', 'electrique', 'espresso', 'cuivre', 'bleu']) {
     await page.goto(`${BASE}?theme=${id}`)
     await page.getByText('Envie de jouer ?').waitFor()
     check(`Comparaison : thème ${id} accessible par l’adresse`, (await theme()) === id)
+    if (id === 'cuivre' || id === 'bleu') check(`S08 · Palette candidate ${id} : mise en page DA A conservée`, (await page.evaluate(() => document.documentElement.dataset.layout)) === 'a' && (await page.locator('.ds-btn').first().evaluate((e) => e.getBoundingClientRect().height)) >= 47.5)
   }
   await page.goto(BASE)
   await page.getByText('Envie de jouer ?').waitFor()
-  check('S05 · Thème de comparaison non mémorisé : retour à la DA A', (await theme()) === 'blanc')
+  check('S05 · Thème de comparaison non mémorisé : retour à la palette par défaut', (await theme()) === DEFAULT_THEME)
   await page.setViewportSize({ width: 320, height: 640 })
   await layoutAudit(page, 'Accueil · 320 px')
   await page.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()

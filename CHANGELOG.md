@@ -1,5 +1,23 @@
 # Changelog — ARIA
 
+## [Sprint 08] — Identité visuelle : préparation technique (en cours, 2026-11-26)
+
+Branche : `claude/sprint08-identite`, depuis `1276a2a`, dont le code applicatif est identique à la référence `d5e4a7a` du Sprint 07.
+**Statut : en cours.** Intégration de l’identité soumise à la validation de la fondatrice. Aucune publication.
+- **Couleurs centralisées** : séance immersive (`--imm-*`), écran de bienvenue, barre de navigation et états fonctionnels passent désormais par des jetons. Il ne reste plus aucune couleur en dur dans les écrans.
+- **Famille de palettes DA A** (`data-layout='a'`) : une palette se limite à un bloc de couleurs, et la mise en page comme les composants sont partagés.
+- **Deux palettes candidates provisoires**, pour comparaison avec la DA A :
+  - `?theme=cuivre` : brun chaud et cuivre ;
+  - `?theme=bleu` : bleu outremer et bleu ciel.
+
+  Contrastes AA vérifiés. Ce ne sont pas des décisions de marque.
+- **Nom de marque centralisé** (`src/v0/brand.ts`). Le nom affiché reste « ARIA » et le slogan est inchangé.
+- **Emplacement photographique** `--welcome-photo` prêt, sans image (droits à documenter).
+- **Recette par palette** : `THEME=cuivre|bleu node scripts/e2e-sprint04.mjs`.
+- Acquis du Sprint 07 inchangés : la palette par défaut reste la DA A, et ses captures sont identiques à celles du Sprint 07, aux dates près.
+- Tests : unitaires 44/44 ; e2e **244/244** dans chacune des palettes DA A, cuivre et bleu.
+- Faisabilité, estimations et blocages : `docs/sprint08/FAISABILITE.md`. Préparation du Sprint 09 : `docs/recettes/sprint09.md`. Comparaisons : `docs/screenshots/sprint08/`.
+
 ## [Sprint 07] — Intégration et consolidation (clôture technique sous réserves, 2026-11-25)
 
 Branche : `claude/sprint07-integration`, depuis `main` (`f0a61a0`, Alpha V0.6, code audité `67aa241`).

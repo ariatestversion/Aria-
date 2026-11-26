@@ -3,6 +3,7 @@ import { Icon, INSTRUMENT_ICON, type IconName } from '../design/Icon'
 import type { InstrumentId, PieceResource, Take } from './model'
 import { getBlob } from './store'
 import { useMetronome } from './metronome'
+import { BRAND_NAME } from './brand'
 
 export function fmt(sec: number) {
   const s = Math.max(0, Math.round(Number.isFinite(sec) ? sec : 0))
@@ -44,7 +45,7 @@ export function Badge({ tone, icon, children }: { tone: Tone; icon?: IconName; c
 const SOURCE_LABEL = {
   user: 'Ta propre observation',
   'self-check': 'Ton auto-évaluation',
-  rules: 'Conseil pédagogique ARIA',
+  rules: `Conseil pédagogique ${BRAND_NAME}`,
   facts: 'Données de la prise',
 } as const
 

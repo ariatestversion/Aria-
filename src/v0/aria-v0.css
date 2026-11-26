@@ -213,7 +213,7 @@ html[data-v0='1'] .v0-inst.on .v0-inst-icon { color: var(--id-on-primary); }
   background: color-mix(in srgb, var(--dock-bg) 97%, transparent);
   border-top: var(--bw) solid var(--line);
   backdrop-filter: blur(10px);
-  box-shadow: 0 -8px 24px rgba(60, 42, 33, 0.06);
+  box-shadow: var(--dock-shadow);
 }
 .v0-dock button {
   appearance: none;
@@ -248,14 +248,16 @@ html[data-v0='1'][data-brand='marine'] .v0-dock button.on .v0-dock-icon { backgr
   flex-direction: column;
   justify-content: flex-end;
   padding: var(--sp-8) var(--sp-5) calc(var(--sp-8) + env(safe-area-inset-bottom));
-  color: #f7f1e8;
+  color: var(--welcome-ink);
   overflow: hidden;
 }
 .v0-welcome-bg {
   position: absolute;
   inset: -4%;
   /* Fond neutre dessiné en CSS (portées stylisées) : aucune image externe. */
+  /* Sprint 08 — --welcome-photo : emplacement prévu pour une photographie musicale aux droits documentés (aucune par défaut). */
   background:
+    var(--welcome-photo),
     radial-gradient(70% 45% at 22% 18%, color-mix(in srgb, var(--id-accent) 38%, transparent), transparent 62%),
     radial-gradient(60% 40% at 88% 78%, color-mix(in srgb, var(--id-accent) 20%, transparent), transparent 64%),
     var(--staff-lines),
@@ -285,8 +287,8 @@ html[data-v0='1'][data-brand='marine'] .v0-dock button.on .v0-dock-icon { backgr
   font-weight: 560;
   letter-spacing: 0.08em;
   margin: 0;
-  color: #f7f1e8;
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
+  color: var(--welcome-ink);
+  text-shadow: var(--welcome-shadow);
 }
 .v0-welcome .v0-slogan {
   margin: var(--sp-2) 0 var(--sp-1);
@@ -294,15 +296,15 @@ html[data-v0='1'][data-brand='marine'] .v0-dock button.on .v0-dock-icon { backgr
   font-size: clamp(1.35rem, 4.5vw, 1.75rem);
   font-weight: 560;
   line-height: 1.2;
-  color: #f7f1e8;
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.3);
+  color: var(--welcome-ink);
+  text-shadow: var(--welcome-shadow);
 }
 .v0-welcome .v0-tag {
   margin: var(--sp-1) 0 var(--sp-6);
   font-size: 1.02rem;
   line-height: 1.4;
-  color: rgba(247, 241, 232, 0.92);
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.28);
+  color: var(--welcome-ink-soft);
+  text-shadow: var(--welcome-shadow);
 }
 
 /* —— Écran de connexion (AuthGate, styles hérités) —— */
@@ -381,56 +383,57 @@ html[data-v0='1'][data-brand='marine'] .v0-dock button.on .v0-dock-icon { backgr
  * #101D35 11,6:1 ; marine sur bleu ciel 9,78:1 ; blanc sur rouge 5,62:1. Rouge = prise active.
  */
 html[data-v0='1'] .v0-app.is-immersive {
-  --id-bg: #101d35;
+  /* Sprint 08 — toutes les valeurs viennent des jetons --imm-* (src/design/tokens.css), propres à chaque palette. */
+  --id-bg: var(--imm-bg);
   --id-accent-soft: transparent;
-  --ink: #ffffff;
-  --id-ink: #ffffff;
-  --ink-muted: #c9d4e3;
-  --ink-faint: #c9d4e3;
-  --line: rgba(255, 255, 255, 0.22);
-  --line-strong: #8fa3bf;
-  --id-primary: #ffffff; /* action principale : blanc, texte marine */
-  --id-on-primary: #101d35;
-  --id-accent: #a8c9eb;
-  --id-accent-ink: #101d35;
-  --id-surface: rgba(255, 255, 255, 0.06);
-  --id-surface-sunken: rgba(255, 255, 255, 0.1);
-  --card-bg: rgba(255, 255, 255, 0.06);
-  --card-border: rgba(255, 255, 255, 0.28);
-  --block-bg: rgba(255, 255, 255, 0.04);
-  --block-ink: #ffffff;
-  --block-label: #a8c9eb;
-  --rec-idle-bg: #a8c9eb; /* « Enregistrer une prise » au repos : bleu ciel, texte marine */
-  --rec-idle-ink: #101d35;
-  --fn-success: #9be3b5;
-  --fn-success-soft: rgba(155, 227, 181, 0.14);
-  --fn-warning: #f2c46b;
-  --fn-warning-strong: #f2c46b;
-  --fn-warning-soft: rgba(242, 196, 107, 0.14);
-  --fn-error: #ffffff;
-  --fn-error-soft: rgba(255, 255, 255, 0.1);
-  --fn-info: #ffffff;
-  --fn-info-soft: rgba(255, 255, 255, 0.08);
-  --dock-bg: #101d35;
-  --dock-active-bg: #a8c9eb;
-  --dock-active-ink: #101d35;
-  --focus-ring: 0 0 0 2px #101d35, 0 0 0 4px #a8c9eb;
+  --ink: var(--imm-ink);
+  --id-ink: var(--imm-ink);
+  --ink-muted: var(--imm-muted);
+  --ink-faint: var(--imm-muted);
+  --line: var(--imm-line);
+  --line-strong: var(--imm-line-strong);
+  --id-primary: var(--imm-ink); /* action principale : claire, texte sur fond de séance */
+  --id-on-primary: var(--imm-bg);
+  --id-accent: var(--imm-accent);
+  --id-accent-ink: var(--imm-accent-ink);
+  --id-surface: var(--imm-surface);
+  --id-surface-sunken: var(--imm-surface-2);
+  --card-bg: var(--imm-surface);
+  --card-border: var(--imm-card-border);
+  --block-bg: var(--imm-block);
+  --block-ink: var(--imm-ink);
+  --block-label: var(--imm-accent);
+  --rec-idle-bg: var(--imm-accent); /* « Enregistrer une prise » au repos */
+  --rec-idle-ink: var(--imm-accent-ink);
+  --fn-success: var(--imm-success);
+  --fn-success-soft: var(--imm-success-soft);
+  --fn-warning: var(--imm-warning);
+  --fn-warning-strong: var(--imm-warning);
+  --fn-warning-soft: var(--imm-warning-soft);
+  --fn-error: var(--imm-ink);
+  --fn-error-soft: var(--imm-surface-2);
+  --fn-info: var(--imm-ink);
+  --fn-info-soft: var(--imm-surface);
+  --dock-bg: var(--imm-bg);
+  --dock-active-bg: var(--imm-accent);
+  --dock-active-ink: var(--imm-accent-ink);
+  --focus-ring: 0 0 0 2px var(--imm-bg), 0 0 0 4px var(--imm-accent);
   color: var(--ink);
-  background: #101d35;
+  background: var(--imm-bg);
 }
 html[data-v0='1'] .v0-app.is-immersive .ds-stepblock { border: var(--bw) solid var(--card-border); }
-html[data-v0='1'] .v0-app.is-immersive .ds-btn--secondary { color: #ffffff; border-color: rgba(255, 255, 255, 0.7); background: transparent; }
-html[data-v0='1'] .v0-app.is-immersive .ds-btn--quiet { color: #ffffff; }
-html[data-v0='1'] .v0-app.is-immersive .ds-field { background: #ffffff; color: #202124; }
-html[data-v0='1'] .v0-app.is-immersive .ds-statusbar { background: rgba(255, 255, 255, 0.08); color: #ffffff; }
-html[data-v0='1'] .v0-app.is-immersive .v0-dock { border-top-color: rgba(255, 255, 255, 0.22); box-shadow: none; }
-html[data-v0='1'] .v0-app.is-immersive .v0-navlock { background: #f0f1f3; color: #202124; }
+html[data-v0='1'] .v0-app.is-immersive .ds-btn--secondary { color: var(--imm-ink); border-color: var(--imm-outline); background: transparent; }
+html[data-v0='1'] .v0-app.is-immersive .ds-btn--quiet { color: var(--imm-ink); }
+html[data-v0='1'] .v0-app.is-immersive .ds-field { background: var(--imm-field-bg); color: var(--imm-field-ink); }
+html[data-v0='1'] .v0-app.is-immersive .ds-statusbar { background: var(--imm-surface-2); color: var(--imm-ink); }
+html[data-v0='1'] .v0-app.is-immersive .v0-dock { border-top-color: var(--imm-line); box-shadow: none; }
+html[data-v0='1'] .v0-app.is-immersive .v0-navlock { background: var(--imm-field-bg); color: var(--imm-field-ink); }
 .v0-slogan { margin-top: calc(-1 * var(--sp-2)); }
 .v0-resume-meta { color: var(--hero-label); font-weight: 600; }
-html[data-v0='1'] .v0-app.is-immersive .ds-badge--accent { background: #a8c9eb; color: #101d35; border-color: #a8c9eb; }
-html[data-v0='1'] .v0-app.is-immersive .ds-badge--neutral { background: #ffffff; color: #101d35; border-color: #ffffff; }
-/* Sur marine, le rouge #C62828 ne fait que 2,99:1 en texte : le statut passe en blanc, le point et le bouton restent rouges. */
-html[data-v0='1'] .v0-app.is-immersive .ds-recorder-status.is-on { color: #ffffff; }
+html[data-v0='1'] .v0-app.is-immersive .ds-badge--accent { background: var(--imm-accent); color: var(--imm-accent-ink); border-color: var(--imm-accent); }
+html[data-v0='1'] .v0-app.is-immersive .ds-badge--neutral { background: var(--imm-ink); color: var(--imm-bg); border-color: var(--imm-ink); }
+/* Sur fond de séance, le rouge de prise reste réservé au point et au bouton ; le statut écrit prend la couleur du texte. */
+html[data-v0='1'] .v0-app.is-immersive .ds-recorder-status.is-on { color: var(--imm-ink); }
 
 /* Sprint 07 · S7-10 — libellés de la barre de navigation : jamais de débordement, même avec le texte agrandi */
 .v0-dock button { min-width: 0; }

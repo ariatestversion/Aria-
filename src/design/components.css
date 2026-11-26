@@ -167,13 +167,13 @@ html[data-v0='1'] .ds-btn--secondary { background: transparent; color: var(--id-
 html[data-v0='1'] .ds-btn--secondary:hover:not(:disabled) { background: var(--fn-info-soft); }
 html[data-v0='1'] .ds-btn--quiet { background: transparent; color: var(--id-primary); text-decoration: underline; text-underline-offset: 3px; }
 html[data-v0='1'] .ds-btn--quiet:hover:not(:disabled) { background: var(--fn-info-soft); }
-html[data-v0='1'] .ds-btn--danger { background: var(--fn-error); color: #fff; }
-html[data-v0='1'] .ds-btn--light { background: rgba(247, 241, 232, 0.95); color: #3c2a21; }
-html[data-v0='1'] .ds-btn--link-light { background: transparent; color: rgba(247, 241, 232, 0.95); text-decoration: underline; text-underline-offset: 3px; }
+html[data-v0='1'] .ds-btn--danger { background: var(--fn-error); color: var(--on-strong); }
+html[data-v0='1'] .ds-btn--light { background: var(--welcome-btn-bg); color: var(--welcome-btn-ink); }
+html[data-v0='1'] .ds-btn--link-light { background: transparent; color: var(--welcome-ink-soft); text-decoration: underline; text-underline-offset: 3px; }
 html[data-v0='1'] .ds-btn--success-outline { background: transparent; color: var(--fn-success); border-color: var(--fn-success); }
-html[data-v0='1'] .ds-btn--success-outline.is-on { background: var(--fn-success); color: #fff; }
+html[data-v0='1'] .ds-btn--success-outline.is-on { background: var(--fn-success); color: var(--on-strong); }
 html[data-v0='1'] .ds-btn--warning-outline { background: transparent; color: var(--fn-warning); border-color: var(--fn-warning-strong); }
-html[data-v0='1'] .ds-btn--warning-outline.is-on { background: var(--fn-warning-strong); color: #2b1d00; border-color: var(--fn-warning-strong); }
+html[data-v0='1'] .ds-btn--warning-outline.is-on { background: var(--fn-warning-strong); color: var(--fn-warning-on); border-color: var(--fn-warning-strong); }
 
 .ds-iconbtn {
   appearance: none;
@@ -344,7 +344,7 @@ html[data-v0='1'][data-brand='electrique'] .ds-row-card { grid-template-columns:
 .ds-badge--success { background: var(--fn-success-soft); color: var(--fn-success); }
 .ds-badge--warning { background: var(--fn-warning-soft); color: var(--fn-warning); }
 .ds-badge--error { background: var(--fn-error-soft); color: var(--fn-error); border: var(--bw) solid var(--fn-error); }
-.ds-badge--record { background: var(--fn-record); color: #fff; }
+.ds-badge--record { background: var(--fn-record); color: var(--on-strong); }
 .ds-badge--record .ds-icon { animation: ds-blink 1s steps(2, start) infinite; }
 .ds-badge--neutral { background: var(--fn-info-soft); color: var(--ink-muted); }
 .ds-badge--accent { background: var(--id-accent-soft); color: var(--id-accent-ink); }
@@ -385,7 +385,7 @@ html[data-v0='1'][data-brand='electrique'] .ds-row-card { grid-template-columns:
 .ds-alert p { margin: var(--sp-1) 0 var(--sp-3); }
 .ds-alert--info { background: var(--fn-info-soft); color: var(--ink); }
 .ds-alert--success { background: var(--fn-success-soft); color: var(--fn-success); }
-.ds-alert--warning { background: var(--fn-warning-soft); color: #5c3c00; }
+.ds-alert--warning { background: var(--fn-warning-soft); color: var(--fn-warning-text); }
 /* Erreur : contour rouge + fond très léger + icône — distinct de l’enregistrement (plein). */
 .ds-alert--error { background: var(--fn-error-soft); color: var(--fn-error); border: var(--bw-strong) solid var(--fn-error); }
 .ds-alert--error p { color: var(--ink); }
@@ -648,11 +648,11 @@ html[data-v0='1'] .ds-toolbar button.is-on { border-color: var(--id-primary); bo
 }
 .ds-disclosure[aria-expanded='true'] .ds-icon { transform: rotate(180deg); }
 
-.ds-swatch { display: inline-block; width: 14px; height: 14px; border-radius: 4px; background: #152642; vertical-align: -2px; }
+.ds-swatch { display: inline-block; width: 14px; height: 14px; border-radius: 4px; background: var(--id-primary); vertical-align: -2px; }
 
 @keyframes ds-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(217, 45, 32, 0.45); }
-  50% { box-shadow: 0 0 0 12px rgba(217, 45, 32, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 var(--rec-pulse); }
+  50% { box-shadow: 0 0 0 12px transparent; }
 }
 @keyframes ds-blink {
   to { visibility: hidden; }
@@ -670,17 +670,17 @@ html[data-v0='1'] .ds-toolbar button.is-on { border-color: var(--id-primary); bo
 }
 
 /* DA 4 : chips sélectionnées et options actives en bleu ciel (état sélectionné), texte anthracite. */
-html[data-v0='1']:is([data-brand='ivoire'], [data-brand='blanc']) .ds-chip.is-on,
-html[data-v0='1']:is([data-brand='ivoire'], [data-brand='blanc']) .ds-option.is-on { background: var(--id-accent); border-color: var(--id-ink); color: var(--id-ink); }
-html[data-v0='1']:is([data-brand='ivoire'], [data-brand='blanc']) .ds-option.is-on span { color: var(--ink-muted); opacity: 1; }
-html[data-v0='1']:is([data-brand='ivoire'], [data-brand='blanc']) .ds-take-delete { color: var(--ink) !important; }
+html[data-v0='1']:is([data-brand='ivoire'], [data-layout='a']) .ds-chip.is-on,
+html[data-v0='1']:is([data-brand='ivoire'], [data-layout='a']) .ds-option.is-on { background: var(--id-accent); border-color: var(--id-ink); color: var(--id-ink); }
+html[data-v0='1']:is([data-brand='ivoire'], [data-layout='a']) .ds-option.is-on span { color: var(--ink-muted); opacity: 1; }
+html[data-v0='1']:is([data-brand='ivoire'], [data-layout='a']) .ds-take-delete { color: var(--ink) !important; }
 /* DA 4 sur ordinateur : marges latérales en gris clair, colonne de contenu en ivoire (même structure). */
 @media (min-width: 840px) {
   html[data-v0='1'][data-brand='ivoire'] .v0-app { background: var(--id-surface); }
   html[data-v0='1'][data-brand='ivoire'] .v0-main { background: var(--id-bg); border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
 }
-html[data-v0='1']:is([data-brand='ivoire'], [data-brand='blanc']) .v0-inst.on { background: var(--id-accent); border-color: var(--id-ink); color: var(--id-ink); }
-html[data-v0='1']:is([data-brand='ivoire'], [data-brand='blanc']) .v0-inst.on .v0-inst-icon { color: var(--id-ink); }
+html[data-v0='1']:is([data-brand='ivoire'], [data-layout='a']) .v0-inst.on { background: var(--id-accent); border-color: var(--id-ink); color: var(--id-ink); }
+html[data-v0='1']:is([data-brand='ivoire'], [data-layout='a']) .v0-inst.on .v0-inst-icon { color: var(--id-ink); }
 
 /* Case à cocher avec libellé (Sprint 05) — cible tactile ≥ 44 px */
 .ds-check {
@@ -728,19 +728,19 @@ html[data-v0='1']:is([data-brand='ivoire'], [data-brand='blanc']) .v0-inst.on .v
 }
 
 /* ———————— Sprint 07 · DA A (S7-01, S7-04, S7-10) ———————— */
-html[data-v0='1'][data-brand='blanc'] {
+html[data-v0='1'][data-layout='a'] {
   --btn-h: 52px; /* cibles principales ≥ 48 px (DS Phase 3) */
   --btn-h-sm: 48px;
 }
-html[data-v0='1'][data-brand='blanc'] .ds-h1,
-html[data-v0='1'][data-brand='blanc'] .ds-h2,
-html[data-v0='1'][data-brand='blanc'] .ds-btn { font-weight: 800; }
-html[data-v0='1'][data-brand='blanc'] .ds-overline,
-html[data-v0='1'][data-brand='blanc'] .ds-stepblock-label,
-html[data-v0='1'][data-brand='blanc'] .ds-badge { font-weight: 650; }
-html[data-v0='1'][data-brand='blanc'] body,
-html[data-v0='1'][data-brand='blanc'] .ds-body,
-html[data-v0='1'][data-brand='blanc'] .ds-lead { font-weight: 500; }
+html[data-v0='1'][data-layout='a'] .ds-h1,
+html[data-v0='1'][data-layout='a'] .ds-h2,
+html[data-v0='1'][data-layout='a'] .ds-btn { font-weight: 800; }
+html[data-v0='1'][data-layout='a'] .ds-overline,
+html[data-v0='1'][data-layout='a'] .ds-stepblock-label,
+html[data-v0='1'][data-layout='a'] .ds-badge { font-weight: 650; }
+html[data-v0='1'][data-layout='a'] body,
+html[data-v0='1'][data-layout='a'] .ds-body,
+html[data-v0='1'][data-layout='a'] .ds-lead { font-weight: 500; }
 
 /* Pastille-bouton (tempo de l’étape) */
 .ds-chipbtn {

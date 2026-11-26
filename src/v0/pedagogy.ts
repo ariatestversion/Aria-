@@ -12,6 +12,7 @@ import type {
 } from './model'
 import { OBJECTIVES } from './model'
 import { newId } from './store'
+import { BRAND_NAME } from './brand'
 
 /**
  * Moteur pédagogique ARIA — règles explicites et testables.
@@ -608,7 +609,7 @@ export function buildProgram(input: ProgramInput): WorkProgram {
 
   const notes: string[] = []
   if (family === 'other') {
-    notes.push('Instrument « Autre » : ARIA applique des règles générales, non spécifiques à ton instrument.')
+    notes.push(`Instrument « Autre » : ${BRAND_NAME} applique des règles générales, non spécifiques à ton instrument.`)
   }
   if (previous) {
     const parts: string[] = []
@@ -616,7 +617,7 @@ export function buildProgram(input: ProgramInput): WorkProgram {
     if (timed && previous.bpm && bpm !== previous.bpm) {
       parts.push(bpm > previous.bpm ? `un tempo de départ monté à ${bpm} BPM (${previous.bpm} la dernière fois)` : `un tempo de départ redescendu à ${bpm} BPM (${previous.bpm} la dernière fois)`)
     }
-    if (parts.length) notes.push(`Suite de ta séance du ${shortDate(previous.date)} : ${parts.join(' et ')}. Règle ARIA appliquée à tes observations.`)
+    if (parts.length) notes.push(`Suite de ta séance du ${shortDate(previous.date)} : ${parts.join(' et ')}. Règle ${BRAND_NAME} appliquée à tes observations.`)
   } else if (input.previous && input.previous.objective && input.previous.objective !== objective) {
     notes.push(`Nouvel objectif (« ${objective} » au lieu de « ${input.previous.objective} ») : la séance repart des réglages de base.`)
   }
@@ -807,13 +808,13 @@ export function buildReview(input: {
   // Le texte annonce exactement l’exercice qui ouvrira la séance suivante (même titre, même tempo).
   const next: ReviewItem = followup
     ? {
-        text: `Prochaine séance : ${followup.position === 'first' ? 'ARIA commence par' : 'après l’échauffement, ARIA reprend'} « ${followup.title} »${followup.bpm ? ` à ${followup.bpm} BPM (8 BPM plus lentement)` : ''} pendant ${followup.minutes} min, puis ${takeStep}.`,
+        text: `Prochaine séance : ${followup.position === 'first' ? `${BRAND_NAME} commence par` : `après l’échauffement, ${BRAND_NAME} reprend`} « ${followup.title} »${followup.bpm ? ` à ${followup.bpm} BPM (8 BPM plus lentement)` : ''} pendant ${followup.minutes} min, puis ${takeStep}.`,
         source: 'rules',
       }
     : {
         text: hasReference
           ? (focus === 'rhythm' || focus === 'tempo') && !okSteps.length
-            ? `Prochaine séance : garde l’objectif « ${objective} » au même tempo. Indique « Oui, réussi » sur les étapes réussies : ARIA montera alors le tempo de 4 BPM la séance suivante.`
+            ? `Prochaine séance : garde l’objectif « ${objective} » au même tempo. Indique « Oui, réussi » sur les étapes réussies : ${BRAND_NAME} montera alors le tempo de 4 BPM la séance suivante.`
             : `Prochaine séance : garde l’objectif « ${objective} » et ${continueAdvice[focus]}.`
           : `Prochaine séance : garde l’objectif « ${objective} » et enregistre une première prise de 30 secondes : elle servira de référence pour les prochaines comparaisons.`,
         source: 'rules',
@@ -830,7 +831,7 @@ export function buildReview(input: {
       }
     : {
         title: 'Pas d’exercice correctif',
-        text: 'Tu n’as rien noté à travailler et aucune étape n’est marquée « Pas encore ». Si quelque chose reste fragile, note-le ci-dessus ou marque l’étape : ARIA la reprendra en tête de la prochaine séance.',
+        text: `Tu n’as rien noté à travailler et aucune étape n’est marquée « Pas encore ». Si quelque chose reste fragile, note-le ci-dessus ou marque l’étape : ${BRAND_NAME} la reprendra en tête de la prochaine séance.`,
         success: '—',
         minutes: 0,
         source: 'rules',
@@ -859,7 +860,7 @@ export function buildReview(input: {
     next,
     facts,
     analysis:
-      'Analyse automatique de la prise : aucune. ARIA n’écoute pas encore le contenu de tes prises — aucune note, aucun score ni aucune erreur n’est détecté automatiquement.',
+      `Analyse automatique de la prise : aucune. ${BRAND_NAME} n’écoute pas encore le contenu de tes prises — aucune note, aucun score ni aucune erreur n’est détecté automatiquement.`,
     limits,
   }
 }

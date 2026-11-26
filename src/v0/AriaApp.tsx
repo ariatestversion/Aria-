@@ -47,12 +47,15 @@ import {
   setSessionEmail,
 } from './store'
 import { Badge, fmt, MetronomePanel, PieceThumb, RecordPanel, ResourceList, Section, SourceTag, StepTimer, TakePlayer } from './ui'
+import { BRAND_NAME, BRAND_SLOGAN } from './brand'
 
 type Tab = 'home' | 'library' | 'follow' | 'profile'
 type Tool = 'none' | 'metronome' | 'resources' | 'notes'
 
 /** Thèmes comparables sur la branche de prévisualisation de la direction visuelle. */
-type Theme = 'marine' | 'electrique' | 'espresso' | 'ivoire' | 'blanc'
+type Theme = 'marine' | 'electrique' | 'espresso' | 'ivoire' | 'blanc' | 'cuivre' | 'bleu'
+// Sprint 08 — famille DA A : même mise en page et mêmes composants, seule la palette change.
+const LAYOUT_A: readonly Theme[] = ['blanc', 'cuivre', 'bleu']
 const THEME_KEY = 'aria.v0.theme'
 const WHERE_KEY = 'aria.v0.where'
 
@@ -67,7 +70,13 @@ function pieceInProgressFor(email: string, p: Piece | null) {
   if (done.some((l) => l.sessionStartedAt === key)) return false
   return !done.some((l) => !l.sessionStartedAt && l.createdAt > key)
 }
-const isTheme = (v: string | null): v is Theme => v === 'marine' || v === 'electrique' || v === 'espresso' || v === 'ivoire' || v === 'blanc'
+const isTheme = (v: string | null): v is Theme =>
+  v === 'marine' || v === 'electrique' || v === 'espresso' || v === 'ivoire' || v === 'blanc' || v === 'cuivre' || v === 'bleu'
+function applyTheme(t: Theme) {
+  document.documentElement.dataset.brand = t
+  if (LAYOUT_A.includes(t)) document.documentElement.dataset.layout = 'a'
+  else delete document.documentElement.dataset.layout
+}
 
 const instLabel = (id: InstrumentId) => INSTRUMENTS.find((i) => i.id === id)?.label || id
 const levelLabel = (id: LevelId) => LEVELS.find((l) => l.id === id)?.label || id
@@ -173,7 +182,7 @@ export function AriaApp() {
       const params = new URLSearchParams(window.location.search)
       const fromUrl = params.get('theme') || params.get('brand')
       const chosen = isTheme(fromUrl) ? fromUrl : 'blanc'
-      document.documentElement.dataset.brand = chosen
+      applyTheme(chosen)
       return chosen
     } catch {
       return 'blanc'
@@ -193,7 +202,7 @@ export function AriaApp() {
   const numbers = useMemo(() => takeNumbers(allTakes), [allTakes])
 
   useEffect(() => {
-    document.documentElement.dataset.brand = brand
+    applyTheme(brand)
     try {
       localStorage.removeItem(THEME_KEY)
     } catch {
@@ -1089,8 +1098,8 @@ export function AriaApp() {
         <section className="v0-welcome">
           <div className="v0-welcome-bg" aria-hidden />
           <div className="v0-welcome-copy">
-            <p className="v0-brand">ARIA</p>
-            <p className="v0-slogan">Just Play Something.</p>
+            <p className="v0-brand">{BRAND_NAME}</p>
+            <p className="v0-slogan">{BRAND_SLOGAN}</p>
             <p className="v0-tag">Travaille et joue tes morceaux, sans professeur.</p>
             <div className="ds-stack">
               <button className="ds-btn ds-btn--light" type="button" onClick={startJourney}>
@@ -1156,7 +1165,7 @@ export function AriaApp() {
           {onboardStep === 2 ? (
             <>
               <h1 className="ds-h1">Quel est ton niveau ?</h1>
-              <p className="ds-lead">ARIA adapte le tempo de départ et la taille des passages.</p>
+              <p className="ds-lead">{BRAND_NAME} adapte le tempo de départ et la taille des passages.</p>
               <div className="ds-stack">
                 {LEVELS.map((item) => (
                   <button
@@ -1246,7 +1255,7 @@ export function AriaApp() {
       {screen === 'home' ? (
         <section className="v0-main">
           <div className="ds-topbar">
-            <p className="v0-home-brand">ARIA</p>
+            <p className="v0-home-brand">{BRAND_NAME}</p>
             <span />
             <button className="v0-avatar" type="button" aria-label="Ouvrir le profil" onClick={() => goTab('profile')}>
               {(firstName || 'A').slice(0, 1).toUpperCase()}
@@ -1255,7 +1264,7 @@ export function AriaApp() {
           {/* « Bonjour, » seulement si le prénom est connu (correction Sprint 03). */}
           {firstName ? <p className="ds-greeting">Bonjour {firstName},</p> : null}
           <h1 className="ds-h1 ds-h1--home">Envie de jouer ?</h1>
-          <p className="ds-lead v0-slogan">Just Play Something.</p>
+          <p className="ds-lead v0-slogan">{BRAND_SLOGAN}</p>
           {inProgressPiece ? (
             <div className="ds-stack">
             <button className="v0-resume" type="button" onClick={() => resumePracticeFor(inProgressPiece.id, inProgressPiece.program?.phase === 'review' ? 'review' : 'session')}>
@@ -1648,7 +1657,7 @@ export function AriaApp() {
             {piece.resources.length ? (
               <ResourceList resources={piece.resources} />
             ) : (
-              <p className="ds-hint">Aucune ressource. Tu peux travailler sans partition : ARIA adapte la séance.</p>
+              <p className="ds-hint">Aucune ressource. Tu peux travailler sans partition : {BRAND_NAME} adapte la séance.</p>
             )}
             <label className="ds-label" htmlFor="pc-res">
               Ajouter une ressource (texte ou lien)

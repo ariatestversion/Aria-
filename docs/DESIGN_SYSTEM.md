@@ -1,3 +1,4 @@
+> **Sprint 08 (26/11/2026)** : couleurs entièrement centralisées dans `src/design/tokens.css`, sans aucune couleur en dur dans les écrans. La famille DA A (`data-layout='a'`) partage mise en page et composants ; une palette = un bloc `[data-brand='…']` de couleurs, séance immersive comprise (jetons `--imm-*`). Palettes candidates provisoires : `?theme=cuivre`, `?theme=bleu`. Nom de marque : `src/v0/brand.ts`. Procédure d’intégration d’une palette validée : `docs/sprint08/FAISABILITE.md`.
 > **Sprint 07 (25/11/2026)** : thème par défaut **DA A Blanc & marine** (`data-brand='blanc'`, bloc en fin de `src/design/tokens.css`), séance immersive marine (`.v0-app.is-immersive`, `src/v0/aria-v0.css`), témoin clair `?seance=clair`. Références : Design System Phase 3 et addendum 4.2 (dossier Drive « Sprint 07 »). Les thèmes antérieurs restent consultables par `?theme=`.
 
 # ARIA — Design System (Sprint 04)

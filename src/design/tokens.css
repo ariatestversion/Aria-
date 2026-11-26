@@ -149,6 +149,39 @@ html[data-v0='1'] {
   /* —— Mouvement —— */
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   --dur: 160ms;
+
+  /* Sprint 08 — jetons centralisés (auparavant écrits en dur dans les écrans). */
+  --on-strong: #ffffff; /* texte sur aplat fonctionnel foncé */
+  --fn-warning-on: #2b1d00;
+  --fn-warning-text: #5c3c00;
+  --rec-pulse: rgba(217, 45, 32, 0.45);
+  --dock-shadow: 0 -8px 24px rgba(60, 42, 33, 0.06);
+  --welcome-ink: #f7f1e8;
+  --welcome-ink-soft: rgba(247, 241, 232, 0.92);
+  --welcome-shadow: 0 2px 16px rgba(0, 0, 0, 0.32);
+  --welcome-btn-bg: rgba(247, 241, 232, 0.95);
+  --welcome-btn-ink: #3c2a21;
+  --welcome-photo: none; /* Sprint 08 : url(…) d’une photographie validée et documentée (docs/LICENCES.md), sinon aucune */
+
+  /* Séance immersive (S7-01) : une palette = un jeu --imm-*. Valeurs par défaut : marine DA A. */
+  --imm-bg: #101d35;
+  --imm-ink: #ffffff; /* 16,81:1 sur --imm-bg */
+  --imm-muted: #c9d4e3; /* 11,6:1 */
+  --imm-accent: #a8c9eb; /* fond des pastilles, texte --imm-accent-ink : 9,78:1 */
+  --imm-accent-ink: #101d35;
+  --imm-line: rgba(255, 255, 255, 0.22);
+  --imm-line-strong: #8fa3bf;
+  --imm-outline: rgba(255, 255, 255, 0.7);
+  --imm-surface: rgba(255, 255, 255, 0.06);
+  --imm-surface-2: rgba(255, 255, 255, 0.1);
+  --imm-block: rgba(255, 255, 255, 0.04);
+  --imm-card-border: rgba(255, 255, 255, 0.28);
+  --imm-field-bg: #ffffff;
+  --imm-field-ink: #202124;
+  --imm-success: #9be3b5;
+  --imm-success-soft: rgba(155, 227, 181, 0.14);
+  --imm-warning: #f2c46b;
+  --imm-warning-soft: rgba(242, 196, 107, 0.14);
 }
 
 @media (max-width: 359px) {
@@ -403,7 +436,9 @@ html[data-v0='1'][data-brand='ivoire'] {
  * Contrastes (DS Phase 3) : blanc sur marine 16,81:1 ; marine sur bleu ciel 9,78:1 ; blanc sur rouge 5,62:1.
  * Manrope : titres et actions 800, repères 650, texte courant 500. Cibles principales 48 px.
  */
-html[data-v0='1'][data-brand='blanc'] {
+/* ———— Famille DA A (Sprint 07, S7-01) : mise en page, typographie et valeurs par défaut de la palette Blanc & marine.
+ * Toute palette de la famille (data-layout='a') hérite de ce bloc ; ses blocs [data-brand='…'] ne redéfinissent que les couleurs. */
+html[data-v0='1'][data-layout='a'] {
   --id-bg: #f7f8fa; /* Blanc doux */
   --id-surface: #ffffff; /* Blanc pur */
   --id-surface-sunken: #f0f1f3; /* Gris */
@@ -484,4 +519,121 @@ html[data-v0='1'][data-brand='blanc'] {
   --focus-ring: 0 0 0 2px #ffffff, 0 0 0 4px #101d35;
   --page-x: 20px;
   --dock-h: calc(70px + env(safe-area-inset-bottom));
+}
+
+/* ———————————— Sprint 08 · palettes candidates (famille DA A) — PROVISOIRES ————————————
+ * Préparées par l’Ingénierie pour comparaison, à partir des pistes de la fondatrice (26/11/2026) :
+ *   - [data-brand='cuivre'] : brun chaud tirant vers le cuivre / l’orange ;
+ *   - [data-brand='bleu']   : alternative bleue capitalisant sur la DA A.
+ * Ce ne sont PAS des décisions de marque : valeurs à remplacer par celles validées par le Product Design
+ * et la fondatrice. Seules les couleurs changent ; mise en page, composants et règles fonctionnelles sont communs.
+ * Le rouge de prise (#C62828) reste réservé à l’enregistrement dans toutes les palettes.
+ * Contrastes vérifiés (WCAG AA) : voir docs/sprint08/FAISABILITE.md.
+ */
+html[data-v0='1'][data-brand='cuivre'] {
+  --id-bg: #f6f0e8; /* crème chaude */
+  --id-surface: #fffcf8;
+  --id-surface-sunken: #efe5d8;
+  --id-ink: #231914; /* 15,2:1 */
+  --id-primary: #3a2219; /* brun torréfié */
+  --id-on-primary: #ffffff;
+  --id-accent: #e7a46f; /* cuivre clair */
+  --id-accent-soft: #f7e6d6;
+  --id-accent-ink: #3a2219; /* 6,98:1 sur cuivre */
+  --ink-muted: #5a4a3f;
+  --ink-faint: #5a4a3f;
+  --line: #dccfc0;
+  --line-strong: #7c6654;
+  --fn-info: #3a2219;
+  --fn-info-soft: #f7e6d6;
+  --fn-error: #231914;
+  --fn-error-soft: #efe5d8;
+  --hero-bg: #3a2219;
+  --hero-ink: #ffffff;
+  --hero-label: #e7a46f;
+  --hero-btn-bg: #e7a46f;
+  --hero-btn-ink: #3a2219;
+  --hero-visual: linear-gradient(135deg, #5a3524 0%, #3a2219 100%);
+  --welcome-top: #5a3524;
+  --welcome-bottom: #2a1812;
+  --welcome-btn-ink: #3a2219;
+  --staff-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='112' viewBox='0 0 220 112'%3E%3Cg fill='none' stroke='%23e7a46f' stroke-opacity='.45' stroke-width='2'%3E%3Cpath d='M0 40c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 56c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 72c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3C/g%3E%3C/svg%3E");
+  --block-bg: #3a2219;
+  --block-ink: #ffffff;
+  --block-label: #e7a46f;
+  --rec-idle-bg: #3a2219;
+  --rec-idle-ink: #ffffff;
+  --card-bg: #fffcf8;
+  --card-border: #dccfc0;
+  --field-bg: #fffcf8;
+  --field-border: #7c6654;
+  --dock-bg: #fffcf8;
+  --dock-active-bg: #e7a46f;
+  --dock-active-ink: #3a2219;
+  --thumb-1: #e7a46f;
+  --thumb-2: #efe5d8;
+  --thumb-3: #f7e6d6;
+  --thumb-ink: #3a2219;
+  --shadow-2: 0 10px 28px rgba(58, 34, 25, 0.12);
+  --focus-ring: 0 0 0 2px #ffffff, 0 0 0 4px #3a2219;
+  --imm-bg: #2a1812; /* blanc 16,97:1 */
+  --imm-muted: #e6d5c7; /* 11,88:1 */
+  --imm-accent: #e7a46f; /* texte --imm-accent-ink 8,03:1 */
+  --imm-accent-ink: #2a1812;
+  --imm-line-strong: #b39885;
+  --imm-field-ink: #231914;
+}
+
+html[data-v0='1'][data-brand='bleu'] {
+  --id-bg: #f3f6fb;
+  --id-surface: #ffffff;
+  --id-surface-sunken: #e8eef7;
+  --id-ink: #121a26; /* 16,1:1 */
+  --id-primary: #0f2a5c; /* bleu outremer nuit */
+  --id-on-primary: #ffffff;
+  --id-accent: #9cc2f5; /* bleu ciel lumineux */
+  --id-accent-soft: #e2ecfb;
+  --id-accent-ink: #0f2a5c; /* 7,6:1 */
+  --ink-muted: #4a5568;
+  --ink-faint: #4a5568;
+  --line: #c9d3e1;
+  --line-strong: #61708a;
+  --fn-info: #0f2a5c;
+  --fn-info-soft: #e2ecfb;
+  --fn-error: #121a26;
+  --fn-error-soft: #e8eef7;
+  --hero-bg: #0f2a5c;
+  --hero-ink: #ffffff;
+  --hero-label: #9cc2f5;
+  --hero-btn-bg: #9cc2f5;
+  --hero-btn-ink: #0f2a5c;
+  --hero-visual: linear-gradient(135deg, #1d3d7a 0%, #0f2a5c 100%);
+  --welcome-top: #1d3d7a;
+  --welcome-bottom: #0b1f45;
+  --welcome-btn-ink: #0f2a5c;
+  --staff-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='112' viewBox='0 0 220 112'%3E%3Cg fill='none' stroke='%239cc2f5' stroke-opacity='.45' stroke-width='2'%3E%3Cpath d='M0 40c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 56c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 72c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3C/g%3E%3C/svg%3E");
+  --block-bg: #0f2a5c;
+  --block-ink: #ffffff;
+  --block-label: #9cc2f5;
+  --rec-idle-bg: #0f2a5c;
+  --rec-idle-ink: #ffffff;
+  --card-bg: #ffffff;
+  --card-border: #c9d3e1;
+  --field-bg: #ffffff;
+  --field-border: #61708a;
+  --dock-bg: #ffffff;
+  --dock-active-bg: #9cc2f5;
+  --dock-active-ink: #0f2a5c;
+  --thumb-1: #9cc2f5;
+  --thumb-2: #e8eef7;
+  --thumb-3: #e2ecfb;
+  --thumb-ink: #0f2a5c;
+  --shadow-2: 0 10px 28px rgba(15, 42, 92, 0.12);
+  --focus-ring: 0 0 0 2px #ffffff, 0 0 0 4px #0f2a5c;
+  --imm-bg: #0b1f45; /* blanc 16,2:1 */
+  --imm-muted: #cdd9ec; /* 11,37:1 */
+  --imm-accent: #9cc2f5; /* texte --imm-accent-ink 8,83:1 */
+  --imm-accent-ink: #0b1f45;
+  --imm-line-strong: #8ea3c4;
+  --imm-field-ink: #121a26;
 }
