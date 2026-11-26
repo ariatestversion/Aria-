@@ -2,7 +2,7 @@
 
 ## [Sprint 08] — Identité visuelle Nuit & cuivre (clôture technique sous réserves, 2026-11-26)
 
-**Statut : clôture technique sous réserves (Head of Product, 26/11/2026).**
+**Statut : clôture technique sous réserves, effective (Head of Product, puis autorisation de la fondatrice, 26/11/2026).**
 - Référence figée : `975e9ea`, prévisualisation 3 (application identique à `cf3d2c9`).
 - Inscrits au Sprint 09 : S08-QA-REG-01, « non reproduit, en attente de preuve », dont le contrôle Safari / iPhone est ajouté à R09-02 ; les corrections S08-ENG-01 et S08-QA-01.
 - Réserves R09-01 à R09-04 maintenues.
