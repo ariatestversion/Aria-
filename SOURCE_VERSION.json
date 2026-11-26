@@ -1,16 +1,16 @@
 {
-  "version": "Sonique — Sprint 08 · référence figée 975e9ea (clôture technique sous réserves, 26/11/2026), prévisualisation 3",
-  "commit": "975e9ea01ca3c810e3e3eec9c4cd2d4ef41cb528",
-  "short": "975e9ea",
-  "netlifyDeployId": "6b084f388ee01180268c44f2",
-  "netlifyPreview": "https://6b084f388ee01180268c44f2--ariafirstversion.netlify.app",
-  "netlifyPreviewClair": "https://6b084f388ee01180268c44f2--ariafirstversion.netlify.app/?seance=clair",
-  "previous": "Sprint 08 prévisualisation 2 : 6b081146e39e7cb1bbd3e2d5, cf3d2c9 ; prévisualisation 1 : 6b0804d87e195655f192fa0d, beae6f9 ; Sprint 07, référence d5e4a7a : 6b06f9934ca1d2e7fb6e60b2",
-  "branch": "claude/sprint08-identite",
+  "version": "Sonique — Sprint 09 · candidate n° 1 (corrections S08-ENG-01 et S08-QA-01 ; Nuit & cuivre)",
+  "commit": "22dbdc2b6ab54f92aa6e14e8e6d4c765fb42df4f",
+  "short": "22dbdc2",
+  "netlifyDeployId": "6b085b5efaedcc23d9d0dea3",
+  "netlifyPreview": "https://6b085b5efaedcc23d9d0dea3--ariafirstversion.netlify.app",
+  "netlifyPreviewClair": "https://6b085b5efaedcc23d9d0dea3--ariafirstversion.netlify.app/?seance=clair",
+  "previous": "Sprint 08, référence 975e9ea : 6b084f388ee01180268c44f2 ; Sprint 07, référence d5e4a7a : 6b06f9934ca1d2e7fb6e60b2",
+  "branch": "claude/sprint09-validation",
   "reference": "Alpha V0.6 : 67aa241, prévisualisation 6b05c4864a41ea883858ac80 (conservée)",
   "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813) — vérifié le 25/11 : locked true",
-  "verification": "Déploiement ready, published_at null, expires_at null, aucun secret détecté. version.json envoyé = 975e9ea. Unitaires 44/44 ; e2e 297/297 (micro simulé). Production 6aff204b… locked true. Aucun test sur appareil physique.",
-  "status": "Sprint 08 clôturé techniquement sous réserves (Head of Product). S08-QA-REG-01 non reproduit, en attente de preuve (contrôle Safari/iPhone dans R09-02). S08-ENG-01 et S08-QA-01 inscrits au Sprint 09. Réserves R09-01 à R09-04 maintenues. Aucune fusion, aucune publication.",
-  "netlifyPreviewPapier": "https://6b084f388ee01180268c44f2--ariafirstversion.netlify.app/?accueil=papier",
-  "netlifyPreviewDAA": "https://6b084f388ee01180268c44f2--ariafirstversion.netlify.app/?theme=blanc"
+  "verification": "Déploiement ready, published_at null, expires_at null, aucun secret détecté. version.json envoyé = 22dbdc2. Unitaires 44/44 ; e2e 300/300 (Nuit & cuivre) et 280/280 (DA A), micro simulé. Aucun test sur appareil physique.",
+  "status": "Sprint 09 en cours : candidate n° 1, à contre-recetter (QA) et à tester sur appareils (R09-01 à R09-04). REG-01 ouverte. Aucune fusion, aucune publication.",
+  "netlifyPreviewPapier": "https://6b085b5efaedcc23d9d0dea3--ariafirstversion.netlify.app/?accueil=papier",
+  "netlifyPreviewDAA": "https://6b085b5efaedcc23d9d0dea3--ariafirstversion.netlify.app/?theme=blanc"
 }

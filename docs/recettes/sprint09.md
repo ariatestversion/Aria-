@@ -107,3 +107,5 @@ Pertinence des programmes : 6 instruments × 3 niveaux × 5 objectifs, à 15 min
 - candidate n° 1 livrée le 26/11 ;
 - corrections arbitrées : environ 1 h par lot, recette comprise ;
 - la validation finale dépend des tests physiques (iPhone et Android), qui ne peuvent pas être réalisés depuis l’environnement de l’Ingénierie.
+
+Candidate n° 1 du Sprint 09 : https://6b085b5efaedcc23d9d0dea3--ariafirstversion.netlify.app (commit `22dbdc2`, déploiement `6b085b5efaedcc23d9d0dea3`, non publiée ; `/version.json` doit indiquer `22dbdc2`).

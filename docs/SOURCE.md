@@ -24,6 +24,13 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 `npm run build` génère `public/version.json` (commit, branche, date) : c’est la preuve de correspondance entre le commit GitHub et le déploiement Netlify. `SOURCE_VERSION.json` enregistre le dernier couple commit / déploiement de prévisualisation.
 
+## État Sprint 09 — Validation finale et stabilisation du MVP (en cours, 26/11/2026)
+
+- Branche `claude/sprint09-validation` depuis `claude/sprint08-identite` (application = `975e9ea` au départ). Non fusionnée.
+- **Candidate n° 1** (`22dbdc2`, déploiement `6b085b5efaedcc23d9d0dea3`, non publiée) : https://6b085b5efaedcc23d9d0dea3--ariafirstversion.netlify.app — corrections S08-ENG-01 et S08-QA-01.
+- Diagnostic, constats S09-D-01 à D-05, plan et estimation : `docs/recettes/sprint09.md`.
+- **Lien public** : verrouillé sur le Sprint 02 (`d86e813`), non modifié.
+
 ## État Sprint 08 — Identité visuelle Nuit & cuivre (clôture technique sous réserves, 26/11/2026)
 
 - **Référence figée : `975e9ea`** (prévisualisation 3, application identique à `cf3d2c9`). Branche `claude/sprint08-identite` conservée, non fusionnée. S08-QA-REG-01 : non reproduit, en attente de preuve (contrôle Safari / iPhone ajouté à R09-02). S08-ENG-01 et S08-QA-01 inscrits au Sprint 09.
