@@ -250,6 +250,8 @@ html[data-v0='1'][data-brand='marine'] .v0-dock button.on .v0-dock-icon { backgr
   padding: var(--sp-8) var(--sp-5) calc(var(--sp-8) + env(safe-area-inset-bottom));
   color: var(--welcome-ink);
   overflow: hidden;
+  /* Sprint 08 — fond de repli uni (si le dégradé n’est pas pris en charge, ex. iOS < 16.2) : le texte reste lisible. */
+  background-color: var(--welcome-bottom);
 }
 .v0-welcome-bg {
   position: absolute;
@@ -258,8 +260,8 @@ html[data-v0='1'][data-brand='marine'] .v0-dock button.on .v0-dock-icon { backgr
   /* Sprint 08 — --welcome-photo : emplacement prévu pour une photographie musicale aux droits documentés (aucune par défaut). */
   background:
     var(--welcome-photo),
-    radial-gradient(70% 45% at 22% 18%, color-mix(in srgb, var(--id-accent) 38%, transparent), transparent 62%),
-    radial-gradient(60% 40% at 88% 78%, color-mix(in srgb, var(--id-accent) 20%, transparent), transparent 64%),
+    radial-gradient(70% 45% at 22% 18%, color-mix(in srgb, var(--welcome-glow, var(--id-accent)) 38%, transparent), transparent 62%),
+    radial-gradient(60% 40% at 88% 78%, color-mix(in srgb, var(--welcome-glow, var(--id-accent)) 20%, transparent), transparent 64%),
     var(--staff-lines),
     linear-gradient(180deg, var(--welcome-top) 0%, var(--welcome-bottom) 100%);
   transform: scale(1.02);
@@ -454,4 +456,34 @@ html[data-v0='1'] .v0-app.is-immersive .ds-recorder-status.is-on { color: var(--
 .v0-focus-target:focus-visible {
   box-shadow: var(--focus-ring);
   border-radius: 4px;
+}
+
+/* ———————————— Sprint 08 · Nuit & cuivre — logotype, filets cuivre, variante papier de l’Accueil ————————————
+ * Logotype provisoire « Sonique » : Fraunces 650, casse titre (texte réel, nom issu de BRAND_NAME).
+ * Cuivre décoratif uniquement (filets aria-hidden) : aucune information portée par la couleur.
+ */
+html[data-v0='1'][data-brand='nuit'] .v0-welcome .v0-brand,
+html[data-v0='1'][data-brand='nuit'] .v0-home-brand {
+  font-family: var(--font-logo);
+  font-weight: var(--fw-logo);
+  letter-spacing: 0;
+}
+html[data-v0='1'][data-brand='nuit'] .v0-home-brand { font-size: 1.35rem; }
+html[data-v0='1'][data-brand='nuit'] .v0-welcome .v0-slogan { font-family: var(--font-title); font-weight: 800; }
+html[data-v0='1'][data-brand='nuit'] .v0-welcome .v0-brand::after,
+html[data-v0='1'][data-brand='nuit'] .ds-h1--home::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 3px;
+  margin: var(--sp-3) auto var(--sp-1);
+  border-radius: 2px;
+  background: var(--brand-copper);
+}
+html[data-v0='1'][data-brand='nuit'] .ds-h1--home::after { margin: var(--sp-2) 0 var(--sp-1); }
+/* Variante papier chaud de l’Accueil (comparaison demandée, ?accueil=papier) : seul le fond de l’écran change. */
+html[data-v0='1'][data-brand='nuit'][data-accueil='papier'] .v0-app.is-home {
+  --id-bg: var(--brand-paper);
+  --dock-bg: var(--brand-paper);
+  background: var(--brand-paper);
 }

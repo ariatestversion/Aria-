@@ -6,6 +6,7 @@ import './design/tokens.css'
 import './design/components.css'
 import './v0/aria-v0.css'
 import { AriaApp } from './v0/AriaApp'
+import { BRAND_NAME } from './v0/brand'
 
 const params = new URLSearchParams(window.location.search)
 if (params.has('reset')) {
@@ -23,7 +24,7 @@ if (params.has('reset')) {
 }
 
 document.documentElement.lang = 'fr'
-document.title = 'Aria'
+document.title = BRAND_NAME
 document.documentElement.dataset.v0 = '1'
 
 createRoot(document.getElementById('root')!).render(

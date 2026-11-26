@@ -53,9 +53,11 @@ type Tab = 'home' | 'library' | 'follow' | 'profile'
 type Tool = 'none' | 'metronome' | 'resources' | 'notes'
 
 /** Thèmes comparables sur la branche de prévisualisation de la direction visuelle. */
-type Theme = 'marine' | 'electrique' | 'espresso' | 'ivoire' | 'blanc' | 'cuivre' | 'bleu'
+type Theme = 'marine' | 'electrique' | 'espresso' | 'ivoire' | 'blanc' | 'nuit'
 // Sprint 08 — famille DA A : même mise en page et mêmes composants, seule la palette change.
-const LAYOUT_A: readonly Theme[] = ['blanc', 'cuivre', 'bleu']
+const LAYOUT_A: readonly Theme[] = ['blanc', 'nuit']
+// Sprint 08 — Nuit & cuivre par défaut ; la DA A reste consultable avec ?theme=blanc.
+const DEFAULT_THEME: Theme = 'nuit'
 const THEME_KEY = 'aria.v0.theme'
 const WHERE_KEY = 'aria.v0.where'
 
@@ -71,7 +73,7 @@ function pieceInProgressFor(email: string, p: Piece | null) {
   return !done.some((l) => !l.sessionStartedAt && l.createdAt > key)
 }
 const isTheme = (v: string | null): v is Theme =>
-  v === 'marine' || v === 'electrique' || v === 'espresso' || v === 'ivoire' || v === 'blanc' || v === 'cuivre' || v === 'bleu'
+  v === 'marine' || v === 'electrique' || v === 'espresso' || v === 'ivoire' || v === 'blanc' || v === 'nuit'
 function applyTheme(t: Theme) {
   document.documentElement.dataset.brand = t
   if (LAYOUT_A.includes(t)) document.documentElement.dataset.layout = 'a'
@@ -181,11 +183,14 @@ export function AriaApp() {
     try {
       const params = new URLSearchParams(window.location.search)
       const fromUrl = params.get('theme') || params.get('brand')
-      const chosen = isTheme(fromUrl) ? fromUrl : 'blanc'
+      const chosen = isTheme(fromUrl) ? fromUrl : DEFAULT_THEME
+      // Sprint 08 — comparaison papier chaud / blanc doux sur l’Accueil, par l’adresse uniquement.
+      if (params.get('accueil') === 'papier') document.documentElement.dataset.accueil = 'papier'
+      else delete document.documentElement.dataset.accueil
       applyTheme(chosen)
       return chosen
     } catch {
-      return 'blanc'
+      return DEFAULT_THEME
     }
   })
   const recorder = useMediaRecorder({
@@ -1028,7 +1033,7 @@ export function AriaApp() {
     return (
       <div className="v0-app nodock">
         <div className="v0-main">
-          <p className="ds-lead">Chargement d’Aria…</p>
+          <p className="ds-lead">Chargement de {BRAND_NAME}…</p>
         </div>
       </div>
     )
@@ -1084,7 +1089,7 @@ export function AriaApp() {
     piece?.program?.steps[Math.min(piece.program.stepIndex, piece.program.steps.length - 1)] || null
 
   return (
-    <div className={`v0-app${docked ? '' : ' nodock'}${capturing ? ' is-capturing' : ''}${screen === 'session' && !seanceClaire ? ' is-immersive' : ''}`}>
+    <div className={`v0-app${docked ? '' : ' nodock'}${capturing ? ' is-capturing' : ''}${screen === 'session' && !seanceClaire ? ' is-immersive' : ''}${screen === 'home' ? ' is-home' : ''}`}>
       {authMode !== 'cloud' && screen !== 'welcome' ? (
         <div className="ds-statusbar" role="status">
           <Icon name="info" size={16} />
@@ -1244,7 +1249,7 @@ export function AriaApp() {
                   Retour
                 </button>
                 <button className="ds-btn ds-btn--primary" type="button" onClick={finishOnboarding}>
-                  Entrer dans Aria
+                  Entrer dans {BRAND_NAME}
                 </button>
               </div>
             </>

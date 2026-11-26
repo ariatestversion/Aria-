@@ -521,119 +521,31 @@ html[data-v0='1'][data-layout='a'] {
   --dock-h: calc(70px + env(safe-area-inset-bottom));
 }
 
-/* ———————————— Sprint 08 · palettes candidates (famille DA A) — PROVISOIRES ————————————
- * Préparées par l’Ingénierie pour comparaison, à partir des pistes de la fondatrice (26/11/2026) :
- *   - [data-brand='cuivre'] : brun chaud tirant vers le cuivre / l’orange ;
- *   - [data-brand='bleu']   : alternative bleue capitalisant sur la DA A.
- * Ce ne sont PAS des décisions de marque : valeurs à remplacer par celles validées par le Product Design
- * et la fondatrice. Seules les couleurs changent ; mise en page, composants et règles fonctionnelles sont communs.
- * Le rouge de prise (#C62828) reste réservé à l’enregistrement dans toutes les palettes.
- * Contrastes vérifiés (WCAG AA) : voir docs/sprint08/FAISABILITE.md.
+/* ———————————— Sprint 08 · Nuit & cuivre (direction retenue, avis Head of Product et GO fondatrice du 26/11/2026) ————————————
+ * Spécifications Product Design consolidées par le PM (registre des sprints, 26/11, 11 h 45).
+ * Marine #101D35 : Bienvenue et Séance. Blanc doux #F7F8FA : fond de référence (Accueil, Bibliothèque…).
+ * Papier chaud #F5F1EA : variante d’Accueil à comparer (?accueil=papier). Surfaces #FFFFFF, texte #1B1F2A.
+ * Cuivre #D9662B : filets, motifs et accents éditoriaux UNIQUEMENT — jamais en petit texte (3,36:1 sur blanc doux,
+ * 3,17:1 sur papier), jamais de texte blanc dessus (3,57:1), jamais près de la capture (1,58:1 avec le rouge de prise).
+ * Bleu ciel #A8C9EB : sélections et états interactifs hérités. Rouge #C62828 : prise active uniquement.
+ * Contrastes : encre sur blanc doux 15,9:1, sur papier 14,6:1 ; blanc sur marine 16,8:1 ; cuivre sur marine 4,71:1.
  */
-html[data-v0='1'][data-brand='cuivre'] {
-  --id-bg: #f6f0e8; /* crème chaude */
-  --id-surface: #fffcf8;
-  --id-surface-sunken: #efe5d8;
-  --id-ink: #231914; /* 15,2:1 */
-  --id-primary: #3a2219; /* brun torréfié */
-  --id-on-primary: #ffffff;
-  --id-accent: #e7a46f; /* cuivre clair */
-  --id-accent-soft: #f7e6d6;
-  --id-accent-ink: #3a2219; /* 6,98:1 sur cuivre */
-  --ink-muted: #5a4a3f;
-  --ink-faint: #5a4a3f;
-  --line: #dccfc0;
-  --line-strong: #7c6654;
-  --fn-info: #3a2219;
-  --fn-info-soft: #f7e6d6;
-  --fn-error: #231914;
-  --fn-error-soft: #efe5d8;
-  --hero-bg: #3a2219;
-  --hero-ink: #ffffff;
-  --hero-label: #e7a46f;
-  --hero-btn-bg: #e7a46f;
-  --hero-btn-ink: #3a2219;
-  --hero-visual: linear-gradient(135deg, #5a3524 0%, #3a2219 100%);
-  --welcome-top: #5a3524;
-  --welcome-bottom: #2a1812;
-  --welcome-btn-ink: #3a2219;
-  --staff-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='112' viewBox='0 0 220 112'%3E%3Cg fill='none' stroke='%23e7a46f' stroke-opacity='.45' stroke-width='2'%3E%3Cpath d='M0 40c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 56c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 72c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3C/g%3E%3C/svg%3E");
-  --block-bg: #3a2219;
-  --block-ink: #ffffff;
-  --block-label: #e7a46f;
-  --rec-idle-bg: #3a2219;
-  --rec-idle-ink: #ffffff;
-  --card-bg: #fffcf8;
-  --card-border: #dccfc0;
-  --field-bg: #fffcf8;
-  --field-border: #7c6654;
-  --dock-bg: #fffcf8;
-  --dock-active-bg: #e7a46f;
-  --dock-active-ink: #3a2219;
-  --thumb-1: #e7a46f;
-  --thumb-2: #efe5d8;
-  --thumb-3: #f7e6d6;
-  --thumb-ink: #3a2219;
-  --shadow-2: 0 10px 28px rgba(58, 34, 25, 0.12);
-  --focus-ring: 0 0 0 2px #ffffff, 0 0 0 4px #3a2219;
-  --imm-bg: #2a1812; /* blanc 16,97:1 */
-  --imm-muted: #e6d5c7; /* 11,88:1 */
-  --imm-accent: #e7a46f; /* texte --imm-accent-ink 8,03:1 */
-  --imm-accent-ink: #2a1812;
-  --imm-line-strong: #b39885;
-  --imm-field-ink: #231914;
-}
-
-html[data-v0='1'][data-brand='bleu'] {
-  --id-bg: #f3f6fb;
-  --id-surface: #ffffff;
-  --id-surface-sunken: #e8eef7;
-  --id-ink: #121a26; /* 16,1:1 */
-  --id-primary: #0f2a5c; /* bleu outremer nuit */
-  --id-on-primary: #ffffff;
-  --id-accent: #9cc2f5; /* bleu ciel lumineux */
-  --id-accent-soft: #e2ecfb;
-  --id-accent-ink: #0f2a5c; /* 7,6:1 */
-  --ink-muted: #4a5568;
-  --ink-faint: #4a5568;
-  --line: #c9d3e1;
-  --line-strong: #61708a;
-  --fn-info: #0f2a5c;
-  --fn-info-soft: #e2ecfb;
-  --fn-error: #121a26;
-  --fn-error-soft: #e8eef7;
-  --hero-bg: #0f2a5c;
-  --hero-ink: #ffffff;
-  --hero-label: #9cc2f5;
-  --hero-btn-bg: #9cc2f5;
-  --hero-btn-ink: #0f2a5c;
-  --hero-visual: linear-gradient(135deg, #1d3d7a 0%, #0f2a5c 100%);
-  --welcome-top: #1d3d7a;
-  --welcome-bottom: #0b1f45;
-  --welcome-btn-ink: #0f2a5c;
-  --staff-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='112' viewBox='0 0 220 112'%3E%3Cg fill='none' stroke='%239cc2f5' stroke-opacity='.45' stroke-width='2'%3E%3Cpath d='M0 40c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 56c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 72c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3C/g%3E%3C/svg%3E");
-  --block-bg: #0f2a5c;
-  --block-ink: #ffffff;
-  --block-label: #9cc2f5;
-  --rec-idle-bg: #0f2a5c;
-  --rec-idle-ink: #ffffff;
-  --card-bg: #ffffff;
-  --card-border: #c9d3e1;
-  --field-bg: #ffffff;
-  --field-border: #61708a;
-  --dock-bg: #ffffff;
-  --dock-active-bg: #9cc2f5;
-  --dock-active-ink: #0f2a5c;
-  --thumb-1: #9cc2f5;
-  --thumb-2: #e8eef7;
-  --thumb-3: #e2ecfb;
-  --thumb-ink: #0f2a5c;
-  --shadow-2: 0 10px 28px rgba(15, 42, 92, 0.12);
-  --focus-ring: 0 0 0 2px #ffffff, 0 0 0 4px #0f2a5c;
-  --imm-bg: #0b1f45; /* blanc 16,2:1 */
-  --imm-muted: #cdd9ec; /* 11,37:1 */
-  --imm-accent: #9cc2f5; /* texte --imm-accent-ink 8,83:1 */
-  --imm-accent-ink: #0b1f45;
-  --imm-line-strong: #8ea3c4;
-  --imm-field-ink: #121a26;
+html[data-v0='1'][data-brand='nuit'] {
+  --id-ink: #1b1f2a; /* Encre */
+  --brand-copper: #d9662b; /* Cuivre — filets et motifs seulement */
+  --brand-paper: #f5f1ea; /* Papier chaud — variante d’Accueil */
+  --font-logo: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --fw-logo: 650;
+  --hero-visual: linear-gradient(135deg, #16284a 0%, #101d35 100%);
+  --staff-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='112' viewBox='0 0 220 112'%3E%3Cg fill='none' stroke='%23d9662b' stroke-opacity='.55' stroke-width='2'%3E%3Cpath d='M0 40c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 56c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3Cpath d='M0 72c27-14 55-14 82 0s55 14 82 0 37-10 56-6'/%3E%3C/g%3E%3C/svg%3E");
+  /* Bienvenue : fond marine uni, lumière latérale chaude très discrète (repli sans photographie). */
+  --welcome-top: #101d35;
+  --welcome-bottom: #101d35;
+  --welcome-glow: rgba(217, 102, 43, 0.5);
+  --welcome-ink: #ffffff;
+  --welcome-ink-soft: #e4e9f1;
+  --welcome-shadow: none;
+  --welcome-btn-bg: #ffffff;
+  --welcome-btn-ink: #101d35;
+  --staff-lines: none;
 }

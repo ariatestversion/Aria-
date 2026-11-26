@@ -18,7 +18,9 @@ const { chromium: chromiumBase } = require('playwright')
 // Sprint 08 — THEME=cuivre|bleu rejoue toute la recette dans une palette candidate :
 // le paramètre ?theme= est ajouté à chaque page avant le démarrage de l’application.
 const THEME = process.env.THEME || ''
-const DEFAULT_THEME = THEME || 'blanc'
+const DEFAULT_THEME = THEME || 'nuit'
+// Sprint 08 — nom de travail provisoire (src/v0/brand.ts).
+const BRAND = 'Sonique'
 const chromium = {
   async launch(opts) {
     const browser = await chromiumBase.launch(opts)
@@ -166,8 +168,49 @@ async function contrastAudit(page, label) {
   check(`${label} : contraste du texte ≥ 4,5:1 (3:1 grands textes)`, bad.length === 0, bad.join(' | '))
 }
 
+/** Sprint 08 — règles Nuit & cuivre (recette QA V-01, V-10, A-03, A-04, R-14) sur l’écran affiché. */
+async function brandAudit(page, label) {
+  const r = await page.evaluate(() => {
+    const COPPER = 'rgb(217, 102, 43)'
+    const smallCopper = []
+    const whiteOnCopper = []
+    for (const el of document.querySelectorAll('body *')) {
+      const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())
+      if (!own) continue
+      const cs = getComputedStyle(el)
+      if (cs.visibility === 'hidden' || cs.display === 'none') continue
+      const size = parseFloat(cs.fontSize)
+      const bold = Number(cs.fontWeight) >= 700
+      if (cs.color === COPPER && !(size >= 24 || (bold && size >= 18.66))) smallCopper.push(el.textContent.trim().slice(0, 30))
+      if (cs.backgroundColor === COPPER && /rgb\(255, 255, 255/.test(cs.color)) whiteOnCopper.push(el.textContent.trim().slice(0, 30))
+    }
+    return { aria: /\bARIA\b/.test(document.body.innerText), title: document.title, smallCopper, whiteOnCopper }
+  })
+  check(`S08 · ${label} : aucun « ARIA » affiché, titre d’onglet « Sonique » (V-10, R-14)`, !r.aria && r.title === 'Sonique', r.title)
+  check(`S08 · ${label} : aucun petit texte cuivre (A-03)`, r.smallCopper.length === 0, r.smallCopper.join(' | '))
+  check(`S08 · ${label} : aucun texte blanc sur cuivre (A-04)`, r.whiteOnCopper.length === 0, r.whiteOnCopper.join(' | '))
+}
+
 async function onboardGuitar(page) {
   await page.goto(`${BASE}?reset`)
+  if (!onboardGuitar.welcomeChecked && DEFAULT_THEME === 'nuit') {
+    onboardGuitar.welcomeChecked = true
+    const w = await page.evaluate(() => {
+      const bg = getComputedStyle(document.querySelector('.v0-welcome-bg')).backgroundImage
+      const brand = document.querySelector('.v0-welcome .v0-brand')
+      const bs = getComputedStyle(brand)
+      const rule = getComputedStyle(brand, '::after')
+      return { bg, text: brand.textContent, font: bs.fontFamily, weight: bs.fontWeight, rule: rule.backgroundColor, slogan: document.querySelector('.v0-welcome .v0-slogan').textContent, imgs: document.querySelectorAll('.v0-welcome img').length }
+    })
+    check('S08 · V-01 · Bienvenue : logotype « Sonique » en Fraunces 650, slogan exact', w.text === BRAND && /Fraunces/.test(w.font) && w.weight === '650' && w.slogan === 'Just Play Something.', `${w.font} ${w.weight}`)
+    check('S08 · V-01 · Bienvenue : fond marine #101D35 et filet cuivre', /rgb\(16, 29, 53\)/.test(w.bg) && w.rule === 'rgb(217, 102, 43)', w.rule)
+    check('S08 · V-02 · Bienvenue : aucune photographie sans droits documentés (repli marine)', w.imgs === 0 && !/url\(/.test(w.bg.replace(/url\("data:image\/svg[^)]*\)/g, '')))
+    check('S08 · Bienvenue : bouton « Commencer » présent', await page.getByRole('button', { name: 'Commencer' }).isVisible())
+    await shot(page, '00-bienvenue')
+    await contrastAudit(page, 'Bienvenue')
+    await brandAudit(page, 'Bienvenue')
+    await layoutAudit(page, 'Bienvenue')
+  }
   await page.getByRole('button', { name: 'Commencer' }).click()
   await page.getByRole('button', { name: /Guitare/ }).click()
   await shot(page, '01-onboarding-instruments')
@@ -178,7 +221,7 @@ async function onboardGuitar(page) {
   await shot(page, '02-onboarding-objectifs')
   await page.getByRole('button', { name: 'Continuer' }).click()
   await page.getByRole('button', { name: '15 min' }).click()
-  await page.getByRole('button', { name: 'Entrer dans Aria' }).click()
+  await page.getByRole('button', { name: /^Entrer dans / }).click()
 }
 
 async function addPiece(page, title) {
@@ -221,8 +264,43 @@ async function main() {
   await onboardGuitar(page)
   await page.getByText('Envie de jouer ?').waitFor()
   await shot(page, '03-accueil')
-  await contrastAudit(page, 'Accueil DA A')
+  await contrastAudit(page, `Accueil (${DEFAULT_THEME})`)
   await layoutAudit(page, 'Accueil')
+  await brandAudit(page, 'Accueil')
+  if (DEFAULT_THEME === 'nuit') {
+    const home = await page.evaluate(() => ({
+      bg: getComputedStyle(document.querySelector('.v0-app')).backgroundColor,
+      rule: getComputedStyle(document.querySelector('.ds-h1--home'), '::after').backgroundColor,
+      logo: getComputedStyle(document.querySelector('.v0-home-brand')).fontFamily,
+      tabs: document.querySelectorAll('nav button').length,
+    }))
+    check('S08 · V-03 · Accueil : blanc doux #F7F8FA par défaut, titre avec filet cuivre', home.bg === 'rgb(247, 248, 250)' && home.rule === 'rgb(217, 102, 43)', home.bg)
+    check('S08 · V-04 / V-10 · Accueil : logotype Fraunces, quatre onglets', /Fraunces/.test(home.logo) && home.tabs === 4)
+    // Variante papier chaud (comparaison demandée par la fondatrice), même Accueil : contexte séparé,
+    // pour ne pas recharger la page au milieu du parcours principal.
+    const pc = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: SHOTS ? 2 : 1, locale: 'fr-FR' })
+    const pp = await pc.newPage()
+    await pp.goto(`${BASE}?reset`)
+    await pp.getByRole('button', { name: 'Commencer' }).click()
+    await pp.getByRole('button', { name: /Guitare/ }).click()
+    await pp.getByRole('button', { name: 'Continuer' }).click()
+    await pp.getByRole('button', { name: /Je débute/ }).click()
+    await pp.getByRole('button', { name: 'Continuer' }).click()
+    await pp.getByRole('button', { name: /^Rythme/ }).click()
+    await pp.getByRole('button', { name: 'Continuer' }).click()
+    await pp.getByRole('button', { name: '15 min' }).click()
+    await pp.getByRole('button', { name: /^Entrer dans / }).click()
+    await pp.goto(`${BASE}?accueil=papier`)
+    await pp.getByText('Envie de jouer ?').waitFor()
+    const paper = await pp.evaluate(() => getComputedStyle(document.querySelector('.v0-app')).backgroundColor)
+    check('S08 · V-03 · Accueil, variante papier chaud #F5F1EA par l’adresse', paper === 'rgb(245, 241, 234)', paper)
+    await shot(pp, '03b-accueil-papier')
+    await contrastAudit(pp, 'Accueil (papier chaud)')
+    await brandAudit(pp, 'Accueil (papier chaud)')
+    await pp.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
+    check('S08 · Papier chaud limité à l’Accueil', (await pp.evaluate(() => getComputedStyle(document.querySelector('.v0-app')).backgroundColor)) === 'rgb(247, 248, 250)')
+    await pc.close()
+  }
 
   await addPiece(page, 'Ma chanson')
   await page.getByRole('button', { name: 'Préparer une séance' }).click()
@@ -253,6 +331,7 @@ async function main() {
   await shot(page, '04-preparation')
   await contrastAudit(page, 'Préparation DA A')
   await layoutAudit(page, 'Préparation')
+  await brandAudit(page, 'Préparation')
   await page.getByRole('button', { name: 'Commencer la séance' }).click()
 
   // 2. Séance : consigne, durée, critère ; métronome ; enregistrement accessible
@@ -264,7 +343,7 @@ async function main() {
   check('Séance : bouton d’enregistrement présent pendant le travail', await page.getByRole('button', { name: 'Démarrer l’enregistrement' }).isVisible())
   check('S05 · Séance : tempo de l’étape affiché avec accès direct au métronome', await page.getByRole('button', { name: /^Métronome · \d+ BPM$/ }).isVisible())
   check(`S7-01 · Palette par défaut appliquée (${DEFAULT_THEME})`, (await page.evaluate(() => document.documentElement.dataset.brand)) === DEFAULT_THEME)
-  check(`S7-01 · Séance immersive par défaut (fond --imm-bg de la palette ${DEFAULT_THEME})`, (await page.evaluate(() => getComputedStyle(document.querySelector('.v0-app')).backgroundColor)) === ({ blanc: 'rgb(16, 29, 53)', cuivre: 'rgb(42, 24, 18)', bleu: 'rgb(11, 31, 69)' }[DEFAULT_THEME] || 'rgb(16, 29, 53)'))
+  check(`S7-01 · Séance immersive par défaut (fond --imm-bg de la palette ${DEFAULT_THEME})`, (await page.evaluate(() => getComputedStyle(document.querySelector('.v0-app')).backgroundColor)) === 'rgb(16, 29, 53)')
   await page.getByRole('button', { name: 'Métronome', exact: true }).click()
   await page.getByTestId('metronome').getByRole('button', { name: 'Démarrer' }).click()
   await page.waitForTimeout(1200)
@@ -272,6 +351,7 @@ async function main() {
   await contrastAudit(page, 'Séance marine')
   await page.getByTestId('metronome').getByRole('button', { name: 'Arrêter' }).click()
   await layoutAudit(page, 'Séance')
+  await brandAudit(page, 'Séance')
 
   await record(page, 2200)
   await record(page, 1600)
@@ -290,7 +370,7 @@ async function main() {
   check('Bilan : comparaison A/B de deux prises', (await page.getByTestId('compare').locator('.ds-take').count()) === 2)
   check('Bilan : 4 rubriques', (await page.locator('.ds-feed').count()) === 4)
   check('Bilan : analyse automatique déclarée absente', await page.getByText(/Analyse automatique de la prise : aucune/).first().isVisible())
-  check('Bilan : sources distinguées (observation / règle)', (await page.getByText('Conseil pédagogique ARIA').count()) >= 2 && (await page.getByText('Ta propre observation').count()) >= 1)
+  check('Bilan : sources distinguées (observation / règle)', (await page.getByText(`Conseil pédagogique ${BRAND}`).count()) >= 2 && (await page.getByText('Ta propre observation').count()) >= 1)
   await page.getByLabel('Ce qui fonctionne').fill('La main droite reste régulière sur un seul accord.')
   await page.getByLabel('Ce qui mérite d’être travaillé').fill('Le rythme décroche au changement d’accord.')
   await page.getByLabel('Ta comparaison (facultatif)').fill('La prise 2 est plus régulière.')
@@ -301,6 +381,7 @@ async function main() {
   await shot(page, '07-bilan')
   await contrastAudit(page, 'Bilan DA A')
   await layoutAudit(page, 'Bilan')
+  await brandAudit(page, 'Bilan')
   await page.getByRole('button', { name: 'Terminer la séance' }).click()
   await page.getByRole('heading', { name: 'Suivi' }).waitFor()
   check('Séance terminée visible dans le Suivi', await page.getByText('Terminée', { exact: true }).first().isVisible())
@@ -321,6 +402,7 @@ async function main() {
   check('Lecteur : bouton « Pause » explicite pendant la lecture', await followTakes.first().getByRole('button', { name: /^Pause/ }).isVisible())
   await shot(page, '08-suivi')
   await layoutAudit(page, 'Suivi')
+  await brandAudit(page, 'Suivi')
   await followTakes.first().getByRole('button', { name: /^Pause/ }).click()
   await followTakes.first().getByRole('button', { name: 'Supprimer' }).click()
   await followTakes.first().getByRole('button', { name: 'Oui, supprimer' }).click()
@@ -413,18 +495,20 @@ async function main() {
   await page.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
   await shot(page, '09-bibliotheque')
   await layoutAudit(page, 'Bibliothèque')
+  await brandAudit(page, 'Bibliothèque')
   await page.getByRole('navigation').getByRole('button', { name: 'Profil' }).click()
   await shot(page, '10-profil')
   await layoutAudit(page, 'Profil')
+  await brandAudit(page, 'Profil')
   // Direction visuelle : DA 4 par défaut ; plus de sélecteur dans le Profil. Les autres thèmes
   // restent consultables avec ?theme=… (comparaison), sans être mémorisés.
   const theme = () => page.evaluate(() => document.documentElement.dataset.brand)
   check('S05 · Profil : plus de sélecteur de direction visuelle', (await page.getByText('Direction visuelle (aperçu)').count()) === 0)
-  for (const id of ['marine', 'electrique', 'espresso', 'cuivre', 'bleu']) {
+  for (const id of ['marine', 'electrique', 'espresso', 'blanc']) {
     await page.goto(`${BASE}?theme=${id}`)
     await page.getByText('Envie de jouer ?').waitFor()
     check(`Comparaison : thème ${id} accessible par l’adresse`, (await theme()) === id)
-    if (id === 'cuivre' || id === 'bleu') check(`S08 · Palette candidate ${id} : mise en page DA A conservée`, (await page.evaluate(() => document.documentElement.dataset.layout)) === 'a' && (await page.locator('.ds-btn').first().evaluate((e) => e.getBoundingClientRect().height)) >= 47.5)
+    if (id === 'blanc') check('S08 · R-14 · DA A consultable par ?theme=blanc, mise en page conservée', (await page.evaluate(() => document.documentElement.dataset.layout)) === 'a' && (await page.locator('.ds-btn').first().evaluate((e) => e.getBoundingClientRect().height)) >= 47.5)
   }
   await page.goto(BASE)
   await page.getByText('Envie de jouer ?').waitFor()
@@ -546,7 +630,7 @@ async function main() {
   const corr1 = await p3.getByTestId('corrective').innerText()
   const next1 = await p3.locator('.ds-feed').nth(3).innerText()
   check('QA P0 · Bilan : l’exercice correctif est l’étape marquée « Pas encore », à 52 BPM', /Main droite seule, cordes étouffées/.test(corr1) && /52 BPM/.test(corr1), corr1.split('\n').slice(0, 3).join(' / '))
-  check('QA P0 · Bilan : la prochaine séance annonce ce même exercice et ce tempo', /ARIA commence par « Main droite seule, cordes étouffées » à 52 BPM/.test(next1), next1.split('\n').pop())
+  check('QA P0 · Bilan : la prochaine séance annonce ce même exercice et ce tempo', new RegExp(`${BRAND} commence par « Main droite seule, cordes étouffées » à 52 BPM`).test(next1), next1.split('\n').pop())
   await shot(p3, '17-qa-bilan-work')
   await p3.getByRole('button', { name: 'Terminer la séance' }).click()
   await p3.getByRole('heading', { name: 'Suivi' }).waitFor({ timeout: 5000 }).catch(() => undefined)
@@ -619,7 +703,7 @@ async function main() {
     await p4.getByRole('button', { name: new RegExp(`^${goal}`) }).click()
     await p4.getByRole('button', { name: 'Continuer' }).click()
     await p4.getByRole('button', { name: '20 min' }).click()
-    await p4.getByRole('button', { name: 'Entrer dans Aria' }).click()
+    await p4.getByRole('button', { name: /^Entrer dans / }).click()
     await p4.getByText('Envie de jouer ?').waitFor()
   }
   const addPiece4 = async (title) => {
@@ -845,7 +929,7 @@ async function main() {
   await p5.waitForTimeout(500)
   check('S7-07 · Une seule lecture active à la fois', (await p5.evaluate(() => [...document.querySelectorAll('audio')].filter((a) => !a.paused).length)) === 1)
   await shot(p5, '23-s7-bilan-comparaison')
-  check('S7-08 · Bilan : trois repères de source', (await p5.getByText('Ta propre observation').count()) >= 1 && (await p5.getByText('Conseil pédagogique ARIA').count()) >= 1 && (await p5.getByText('Analyse automatique de la prise : aucune').count()) >= 1)
+  check('S7-08 · Bilan : trois repères de source', (await p5.getByText('Ta propre observation').count()) >= 1 && (await p5.getByText(`Conseil pédagogique ${BRAND}`).count()) >= 1 && (await p5.getByText('Analyse automatique de la prise : aucune').count()) >= 1)
   await p5.getByLabel('Ce qui fonctionne').fill('Le pouce tient.')
   await p5.getByRole('button', { name: 'Terminer la séance' }).click()
   await p5.getByRole('heading', { name: 'Suivi' }).waitFor()

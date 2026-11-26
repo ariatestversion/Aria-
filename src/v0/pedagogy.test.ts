@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { Piece, SessionLog } from './model'
 import { allocateMinutes, buildProgram, buildReview, continuedBpm, planFollowup, defaultResource, focusOf, passageLabel, prepGoalsFor, previousSessionFrom, resourceAvailable } from './pedagogy'
 import { canCompleteSession, dedupeSessionLogs } from './store'
+import { BRAND_NAME } from './brand'
 
 const piece = (patch: Partial<Piece> = {}): Piece => ({
   id: 'p1',
@@ -373,7 +374,7 @@ describe('Recette QA 24/11 — scénario Work : Blackbird, guitare, 15 min, ryth
     expect(review.corrective.text).toContain('52 BPM')
     expect(review.next.text).toContain('« Main droite seule, cordes étouffées » à 52 BPM')
     // L’étape reprise est l’échauffement : la séance suivante commence par elle, et le bilan le dit.
-    expect(review.next.text).toMatch(/^Prochaine séance : ARIA commence par/)
+    expect(review.next.text).toMatch(new RegExp(`^Prochaine séance : ${BRAND_NAME} commence par`))
   })
 
   it('la séance suivante reprend exactement cet exercice (titre, consigne, critère, tempo)', () => {
@@ -399,7 +400,7 @@ describe('Recette QA 24/11 — scénario Work : Blackbird, guitare, 15 min, ryth
     const titles = p.steps.map((s) => base(s.title))
     expect(new Set(titles).size).toBe(titles.length)
     expect(p.steps[1].title).toBe('Reprise · Motif rythmique sur un seul accord')
-    expect(r.next.text).toContain('après l’échauffement, ARIA reprend « Motif rythmique sur un seul accord » à 52 BPM')
+    expect(r.next.text).toContain(`après l’échauffement, ${BRAND_NAME} reprend « Motif rythmique sur un seul accord » à 52 BPM`)
     expect(p.steps[1].bpm).toBe(52)
   })
 

@@ -60,3 +60,10 @@ L’application V0.4 n’affiche plus aucune image matricielle. Le parcours e2e 
 ## Sprint 07 (25/11/2026) — photographies de la maquette 4.2
 
 Quatre JPEG (cuivre, guitare, piano, voix ; générés par ImageGen, statut « revue interne ») sont fournis par le Product Design. Conformément à l’arbitrage du Head of Product, ils ne sont autorisés que dans un environnement de revue **à accès restreint**. Les prévisualisations Netlify étant accessibles à toute personne disposant du lien, **ils ne sont pas intégrés** : l’application utilise ses visuels provisoires (vagues dessinées pour ARIA, icônes d’instruments). Avant toute intégration : validation du régime de droits du compte de génération, vérification image par image (marques, ressemblances), variantes WebP 240/480/750 px avec repli JPEG.
+
+
+## Sprint 08 — Nuit & cuivre (26/11/2026)
+
+- **Photographies : aucune intégrée.** Les candidats du pack Sprint 07 (cuivre.jpg, guitare.jpg, piano.jpg, voix.jpg) sont des images générées (OpenAI ImageGen) au statut « usage interne » ; la prévisualisation Netlify étant publique par lien, ils sont exclus. Replis : fond marine sur la Bienvenue, pictogrammes en Bibliothèque. Avant toute intégration : auteur ou provenance, licence ou autorisation, périmètre de diffusion à inscrire ici.
+- **Polices** : Fraunces (logotype, graisse 650) et Manrope (interface), servies par Google Fonts, licence SIL Open Font License 1.1.
+- **Motifs** : filets et vagues cuivre dessinés en CSS / SVG inline, création du projet, sans droits tiers.

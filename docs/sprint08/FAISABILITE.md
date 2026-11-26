@@ -1,5 +1,7 @@
 # Sprint 08 — Identité visuelle : faisabilité et préparation technique
 
+> **Mise à jour du 26/11 après le GO** : Nuit & cuivre a été intégrée et les palettes candidates cuivre et bleu ont été retirées. L’état livré, les écarts et la recette sont dans `docs/recettes/sprint08.md`. Ce document conserve l’analyse de faisabilité initiale.
+
 26 novembre 2026 · Ingénierie (Lead Developer) · Branche `claude/sprint08-identite`
 
 ## Point de départ

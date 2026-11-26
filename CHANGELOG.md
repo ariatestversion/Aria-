@@ -1,22 +1,39 @@
 # Changelog — ARIA
 
-## [Sprint 08] — Identité visuelle : préparation technique (en cours, 2026-11-26)
+## [Sprint 08] — Identité visuelle Nuit & cuivre (intégrée, à recetter, 2026-11-26)
+
+### Intégration Nuit & cuivre (GO fondatrice, dossier de transmission PM du 26/11)
+- **Palette Nuit & cuivre par défaut** (`data-brand='nuit'`) :
+  - marine `#101D35` pour la Bienvenue et la Séance ;
+  - blanc doux `#F7F8FA` comme fond de référence, surfaces blanches, encre `#1B1F2A` ;
+  - bleu ciel pour les sélections ; rouge réservé à la prise active.
+- **Cuivre `#D9662B` décoratif seulement** : filets sous le logotype et sous le titre de l’Accueil, vagues du visuel de reprise, lumière latérale de la Bienvenue. Jamais en texte, en contrôle ni en séance.
+- **Logotype « Sonique »** (nom de travail provisoire), en Fraunces 650 et casse titre, sur la Bienvenue et l’Accueil.
+  - Le nom vient de `BRAND_NAME` : titre de l’onglet, bilan (« Conseil pédagogique Sonique »), onboarding, écran d’erreur.
+  - Manrope reste la police de l’interface ; Fraunces est désormais chargée en graisse variable 500 à 700.
+- **Accueil** : papier chaud `#F5F1EA` en variante de comparaison (`?accueil=papier`), le blanc doux restant le fond par défaut.
+- **Bienvenue** : couleur de fond marine de repli, pour garder le texte lisible même sans prise en charge du dégradé (iOS < 16.2).
+- **Exploration close** : les palettes candidates cuivre et bleu sont retirées. La DA A reste consultable avec `?theme=blanc`.
+- **Photographies** : aucune intégrée, faute de statut autorisé ; replis marine et pictogrammes (`docs/LICENCES.md`).
+- **Aucune modification fonctionnelle.** Anomalie préexistante S08-ENG-01, consignée sans correction : l’instrument par défaut d’un nouveau morceau n’est pas restauré après un rechargement.
+- **Tests** :
+  - unitaires 44/44 ;
+  - e2e **283/283** en Nuit & cuivre, dont 39 contrôles Sprint 08 (règles du cuivre, logotype, nom, variante papier) ;
+  - e2e **263/263** en DA A.
+- Recette, correspondance avec les contrôles QA (V, A, R) et écarts : `docs/recettes/sprint08.md`. Captures : `docs/screenshots/sprint08/`.
+
+### Préparation technique (prévisualisation 1, `beae6f9`)
 
 Branche : `claude/sprint08-identite`, depuis `1276a2a`, dont le code applicatif est identique à la référence `d5e4a7a` du Sprint 07.
-**Statut : en cours.** Intégration de l’identité soumise à la validation de la fondatrice. Aucune publication.
 - **Couleurs centralisées** : séance immersive (`--imm-*`), écran de bienvenue, barre de navigation et états fonctionnels passent désormais par des jetons. Il ne reste plus aucune couleur en dur dans les écrans.
 - **Famille de palettes DA A** (`data-layout='a'`) : une palette se limite à un bloc de couleurs, et la mise en page comme les composants sont partagés.
-- **Deux palettes candidates provisoires**, pour comparaison avec la DA A :
-  - `?theme=cuivre` : brun chaud et cuivre ;
-  - `?theme=bleu` : bleu outremer et bleu ciel.
-
-  Contrastes AA vérifiés. Ce ne sont pas des décisions de marque.
+- Deux palettes candidates provisoires (cuivre, bleu), proposées pour comparaison avec la DA A, retirées depuis.
 - **Nom de marque centralisé** (`src/v0/brand.ts`). Le nom affiché reste « ARIA » et le slogan est inchangé.
 - **Emplacement photographique** `--welcome-photo` prêt, sans image (droits à documenter).
 - **Recette par palette** : `THEME=cuivre|bleu node scripts/e2e-sprint04.mjs`.
 - Acquis du Sprint 07 inchangés : la palette par défaut reste la DA A, et ses captures sont identiques à celles du Sprint 07, aux dates près.
 - Tests : unitaires 44/44 ; e2e **244/244** dans chacune des palettes DA A, cuivre et bleu.
-- Faisabilité, estimations et blocages : `docs/sprint08/FAISABILITE.md`. Préparation du Sprint 09 : `docs/recettes/sprint09.md`. Comparaisons : `docs/screenshots/sprint08/`.
+- Faisabilité, estimations et blocages : `docs/sprint08/FAISABILITE.md`. Préparation du Sprint 09 : `docs/recettes/sprint09.md`. Comparaisons de l’exploration : `docs/screenshots/sprint08/exploration/`.
 
 ## [Sprint 07] — Intégration et consolidation (clôture technique sous réserves, 2026-11-25)
 

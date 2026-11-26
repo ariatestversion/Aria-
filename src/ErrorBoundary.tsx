@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
+import { BRAND_NAME } from './v0/brand'
 
 type Props = { children: ReactNode }
 type State = { error: Error | null }
@@ -18,7 +19,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (!this.state.error) return this.props.children
     return (
       <section style={{ padding: '2.5rem 1.25rem', maxWidth: 420, margin: '0 auto' }}>
-        <p style={{ letterSpacing: '0.28em', textTransform: 'uppercase', fontSize: 12 }}>Aria</p>
+        <p style={{ letterSpacing: '0.28em', textTransform: 'uppercase', fontSize: 12 }}>{BRAND_NAME}</p>
         <h1 style={{ fontSize: '1.4rem' }}>Un souci a bloqué l’écran</h1>
         <p>Recharge la page. Si ça revient, ouvre le lien avec le slash final : /app/</p>
         <button type="button" onClick={() => window.location.reload()}>
