@@ -1,16 +1,16 @@
 {
-  "version": "Sonique — Sprint 08 · prévisualisation 2 : intégration Nuit & cuivre (à recetter par le QA et le Product Design)",
-  "commit": "cf3d2c9ab9c61ff1649a0fd35f5fa5bddbef8eed",
-  "short": "cf3d2c9",
-  "netlifyDeployId": "6b081146e39e7cb1bbd3e2d5",
-  "netlifyPreview": "https://6b081146e39e7cb1bbd3e2d5--ariafirstversion.netlify.app",
-  "netlifyPreviewClair": "https://6b081146e39e7cb1bbd3e2d5--ariafirstversion.netlify.app/?seance=clair",
-  "previous": "Sprint 08 prévisualisation 1 (préparation) : 6b0804d87e195655f192fa0d, beae6f9 ; Sprint 07, référence d5e4a7a : 6b06f9934ca1d2e7fb6e60b2",
+  "version": "Sonique — Sprint 08 · prévisualisation 3 : Nuit & cuivre, pour la contre-recette QA (application identique à cf3d2c9, test S08-QA-REG-01 ajouté)",
+  "commit": "975e9ea01ca3c810e3e3eec9c4cd2d4ef41cb528",
+  "short": "975e9ea",
+  "netlifyDeployId": "6b084f388ee01180268c44f2",
+  "netlifyPreview": "https://6b084f388ee01180268c44f2--ariafirstversion.netlify.app",
+  "netlifyPreviewClair": "https://6b084f388ee01180268c44f2--ariafirstversion.netlify.app/?seance=clair",
+  "previous": "Sprint 08 prévisualisation 2 : 6b081146e39e7cb1bbd3e2d5, cf3d2c9 ; prévisualisation 1 : 6b0804d87e195655f192fa0d, beae6f9 ; Sprint 07, référence d5e4a7a : 6b06f9934ca1d2e7fb6e60b2",
   "branch": "claude/sprint08-identite",
   "reference": "Alpha V0.6 : 67aa241, prévisualisation 6b05c4864a41ea883858ac80 (conservée)",
   "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813) — vérifié le 25/11 : locked true",
-  "verification": "Déploiement ready, published_at null, expires_at null, aucun secret détecté. version.json envoyé = cf3d2c9. Unitaires 44/44 ; e2e 283/283 (Nuit & cuivre) et 263/263 (DA A), micro simulé. Production 6aff204b… locked true. Aucun test sur appareil physique.",
-  "status": "Sprint 08 : Nuit & cuivre intégrée, à recetter (QA, Product Design). Aucune fusion, aucune publication.",
-  "netlifyPreviewPapier": "https://6b081146e39e7cb1bbd3e2d5--ariafirstversion.netlify.app/?accueil=papier",
-  "netlifyPreviewDAA": "https://6b081146e39e7cb1bbd3e2d5--ariafirstversion.netlify.app/?theme=blanc"
+  "verification": "Déploiement ready, published_at null, expires_at null, aucun secret détecté. version.json envoyé = 975e9ea. Unitaires 44/44 ; e2e 297/297 (micro simulé). Production 6aff204b… locked true. Aucun test sur appareil physique.",
+  "status": "Sprint 08 : contre-recette QA attendue sur cette prévisualisation. Régression S08-QA-REG-01 non reproduite. Aucune fusion, aucune publication.",
+  "netlifyPreviewPapier": "https://6b084f388ee01180268c44f2--ariafirstversion.netlify.app/?accueil=papier",
+  "netlifyPreviewDAA": "https://6b084f388ee01180268c44f2--ariafirstversion.netlify.app/?theme=blanc"
 }

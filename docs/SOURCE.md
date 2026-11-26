@@ -27,6 +27,7 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 ## État Sprint 08 — Identité visuelle Nuit & cuivre (intégrée, à recetter, 26/11/2026)
 
 - Branche `claude/sprint08-identite` depuis `1276a2a` (code applicatif = `d5e4a7a`). Non fusionnée.
+- **Prévisualisation 3** (`975e9ea`, déploiement `6b084f388ee01180268c44f2`, non publiée) : https://6b084f388ee01180268c44f2--ariafirstversion.netlify.app. Application identique à la prévisualisation 2 ; test S08-QA-REG-01 ajouté. Pour la contre-recette QA.
 - **Prévisualisation 2, Nuit & cuivre** (`cf3d2c9`, déploiement `6b081146e39e7cb1bbd3e2d5`, non publiée) : https://6b081146e39e7cb1bbd3e2d5--ariafirstversion.netlify.app · variante papier `?accueil=papier` · DA A `?theme=blanc`. Recette : `docs/recettes/sprint08.md`.
 - Prévisualisation 1 (`beae6f9`, déploiement `6b0804d87e195655f192fa0d`, non publiée) : https://6b0804d87e195655f192fa0d--ariafirstversion.netlify.app — palettes candidates `?theme=cuivre` et `?theme=bleu`, défaut DA A inchangé.
 - Faisabilité et blocages : `docs/sprint08/FAISABILITE.md`. Préparation du Sprint 09 : `docs/recettes/sprint09.md`.

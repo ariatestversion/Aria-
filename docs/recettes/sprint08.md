@@ -79,3 +79,5 @@ Analyse Ingénierie (26/11, Chromium automatisé, micro simulé) :
   - morceau utilisé ;
   - capture vidéo ou console au moment du clic ;
   - le clic a-t-il produit un effet visible ?
+
+Prévisualisation 3, déployée le 26/11 à la demande de la fondatrice pour la contre-recette : https://6b084f388ee01180268c44f2--ariafirstversion.netlify.app (commit `975e9ea`, déploiement `6b084f388ee01180268c44f2`, non publiée ; `/version.json` doit indiquer `975e9ea`). Application identique à la prévisualisation 2. Recette : 44/44 et 297/297.
