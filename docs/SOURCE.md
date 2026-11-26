@@ -28,6 +28,7 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 - Branche `claude/sprint09-validation` depuis `claude/sprint08-identite` (application = `975e9ea` au départ). Non fusionnée.
 - **Candidate n° 1** (`22dbdc2`, déploiement `6b085b5efaedcc23d9d0dea3`, non publiée) : https://6b085b5efaedcc23d9d0dea3--ariafirstversion.netlify.app — corrections S08-ENG-01 et S08-QA-01.
+- **Candidate n° 2** (`1aeaf8c`, déploiement `6b0864cbe55b19581e435a76`, non publiée) : https://6b0864cbe55b19581e435a76--ariafirstversion.netlify.app — S09-QA-01 et S09-D-01.
 - Diagnostic, constats S09-D-01 à D-05, plan et estimation : `docs/recettes/sprint09.md`.
 - **Lien public** : verrouillé sur le Sprint 02 (`d86e813`), non modifié.
 

@@ -122,3 +122,5 @@ Contre-recette Claude QA de la candidate n° 1 : 9/10, corrections validées, au
 Le passage par défaut est un choix du PM, sous réserve de l’arbitrage du Head of Product et du Product Design. Le libellé se change en une ligne.
 
 S09-D-02 à D-05 : priorités maintenues ; D-02 sera arbitré après les tests physiques. REG-01 reste ouverte.
+
+Candidate n° 2 : https://6b0864cbe55b19581e435a76--ariafirstversion.netlify.app (commit `1aeaf8c`, déploiement `6b0864cbe55b19581e435a76`, non publiée ; `/version.json` doit indiquer `1aeaf8c`). Recette : 47/47, 307/307 (Nuit & cuivre), 287/287 (DA A).

@@ -1,16 +1,16 @@
 {
-  "version": "Sonique — Sprint 09 · candidate n° 1 (corrections S08-ENG-01 et S08-QA-01 ; Nuit & cuivre)",
-  "commit": "22dbdc2b6ab54f92aa6e14e8e6d4c765fb42df4f",
-  "short": "22dbdc2",
-  "netlifyDeployId": "6b085b5efaedcc23d9d0dea3",
-  "netlifyPreview": "https://6b085b5efaedcc23d9d0dea3--ariafirstversion.netlify.app",
-  "netlifyPreviewClair": "https://6b085b5efaedcc23d9d0dea3--ariafirstversion.netlify.app/?seance=clair",
-  "previous": "Sprint 08, référence 975e9ea : 6b084f388ee01180268c44f2 ; Sprint 07, référence d5e4a7a : 6b06f9934ca1d2e7fb6e60b2",
+  "version": "Sonique — Sprint 09 · candidate n° 2 (S09-QA-01, S09-D-01 ; Nuit & cuivre)",
+  "commit": "1aeaf8c235104d143392ccde16a429b51e461f81",
+  "short": "1aeaf8c",
+  "netlifyDeployId": "6b0864cbe55b19581e435a76",
+  "netlifyPreview": "https://6b0864cbe55b19581e435a76--ariafirstversion.netlify.app",
+  "netlifyPreviewClair": "https://6b0864cbe55b19581e435a76--ariafirstversion.netlify.app/?seance=clair",
+  "previous": "Sprint 09 candidate n° 1 : 6b085b5efaedcc23d9d0dea3, 22dbdc2 ; Sprint 08, référence 975e9ea : 6b084f388ee01180268c44f2",
   "branch": "claude/sprint09-validation",
   "reference": "Alpha V0.6 : 67aa241, prévisualisation 6b05c4864a41ea883858ac80 (conservée)",
   "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813) — vérifié le 25/11 : locked true",
-  "verification": "Déploiement ready, published_at null, expires_at null, aucun secret détecté. version.json envoyé = 22dbdc2. Unitaires 44/44 ; e2e 300/300 (Nuit & cuivre) et 280/280 (DA A), micro simulé. Aucun test sur appareil physique.",
-  "status": "Sprint 09 en cours : candidate n° 1, à contre-recetter (QA) et à tester sur appareils (R09-01 à R09-04). REG-01 ouverte. Aucune fusion, aucune publication.",
-  "netlifyPreviewPapier": "https://6b085b5efaedcc23d9d0dea3--ariafirstversion.netlify.app/?accueil=papier",
-  "netlifyPreviewDAA": "https://6b085b5efaedcc23d9d0dea3--ariafirstversion.netlify.app/?theme=blanc"
+  "verification": "Déploiement ready, published_at null, expires_at null, aucun secret détecté. version.json envoyé = 1aeaf8c. Unitaires 47/47 ; e2e 307/307 (Nuit & cuivre) et 287/287 (DA A), micro simulé. Aucun test sur appareil physique.",
+  "status": "Sprint 09 en cours : candidate n° 2, à contre-recetter par Claude QA et ChatGPT QA et à tester sur appareils (R09-01 à R09-04). REG-01 ouverte. Aucune fusion, aucune publication.",
+  "netlifyPreviewPapier": "https://6b0864cbe55b19581e435a76--ariafirstversion.netlify.app/?accueil=papier",
+  "netlifyPreviewDAA": "https://6b0864cbe55b19581e435a76--ariafirstversion.netlify.app/?theme=blanc"
 }
