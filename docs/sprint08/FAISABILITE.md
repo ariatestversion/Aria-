@@ -56,3 +56,19 @@ L’audit automatique de contraste des parcours passe sur les trois palettes.
 4. **Cuivre et rouge de prise.** L’accent cuivre est proche du rouge réservé à l’enregistrement : 2,66:1 entre eux. L’état de prise reste identifiable par son libellé, son temps écoulé et son point, jamais par la couleur seule. Le Product Design devra confirmer cette distinction.
 5. **Références.** Brume, San Roch et Dynamo Cycling servent de références d’intention uniquement : aucune reprise de leurs logos, couleurs exactes ou visuels.
 6. **iOS.** Le style requiert iOS 16.2 ou plus (`color-mix`, `dvh`). Ce constat est déjà transmis pour R09-02.
+
+## Arbitrage créatif du 26/11 (registre, 11 h 08) : avis de faisabilité
+
+Le comparatif est piloté par le Product Design à partir de ses propositions. L’Ingénierie ne produit pas de maquettes concurrentes. Les palettes candidates de la prévisualisation 1 sont seulement des preuves techniques : la proche de « Terre & cuivre » (`?theme=cuivre`) montre que l’application se recolore entièrement, séance comprise.
+
+| Option | Faisabilité | Travail après GO |
+| --- | --- | --- |
+| **Terre & cuivre** | Immédiate : même famille de jetons que la palette candidate `cuivre` | Remplacer les valeurs par celles du Product Design (bloc unique), puis contrôler les contrastes : 1 à 2 h |
+| **Nuit & cuivre** | Immédiate : fond nuit (proche de la séance marine actuelle) et accent cuivre | Même travail. Point d’attention : l’accent cuivre ne doit pas se confondre avec le rouge de prise, qui reste identifiable par son libellé, son temps et son point |
+| **Manrope (titres)** | En place (DA A, police variable 200 à 800) | Aucun |
+| **Fraunces (titres, logotype)** | Déjà chargée : elle sert au mot « ARIA » et aux titres de l’ancienne V0.4. Bascule par un jeton (`--font-title`) | 30 min à 1 h : adapter les graisses (Fraunces est chargée en 500, 600 et 700 ; la DA A titre en 800) et vérifier la lisibilité des titres longs à 320 px et avec le texte agrandi |
+| **Logotype « Sonique »** (nom de travail) | Possible en texte, en Fraunces ou Manrope, via `BRAND_NAME` ; un SVG du Product Design est préférable | 15 min en texte, 1 h en SVG. Seulement après validation du nom |
+
+Les deux palettes et les deux polices sont compatibles avec l’architecture actuelle, sans aucune modification fonctionnelle. Une fois l’arbitrage et le GO donnés, l’intégration complète prend environ 3 à 4 h, recette et déploiement compris. Pour une prévisualisation à 00 h, le GO doit donc arriver vers 20 h au plus tard.
+
+Sur demande, l’Ingénierie peut ajouter les deux options du Product Design à la prévisualisation (`?theme=…`, `?titres=fraunces`), pour une comparaison dans l’application réelle (environ 1 h).
