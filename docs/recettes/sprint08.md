@@ -4,6 +4,8 @@
 
 Cette recette n’est pas la recette QA : le QA et le Product Design contrôlent la même version de leur côté.
 
+Prévisualisation 2 (non publiée) : https://6b081146e39e7cb1bbd3e2d5--ariafirstversion.netlify.app · commit `cf3d2c9` · déploiement `6b081146e39e7cb1bbd3e2d5`. Le fichier `/version.json` doit indiquer `cf3d2c9`.
+
 ## Ce qui a été intégré
 
 | Élément | Intégration |
