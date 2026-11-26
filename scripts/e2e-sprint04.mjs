@@ -1093,6 +1093,57 @@ async function main() {
   check('S7 · Aucune erreur JavaScript (lot B)', p5errors.length === 0, p5errors.join(' | '))
   await b5.close()
 
+  // Sprint 08 · S08-QA-REG-01 — scénario de la contre-recette QA (prévisualisation 2, cf3d2c9) :
+  // Piano, débutant, Rythme, 15 min, sans prise ; bilan à l’étape 4 gardé en brouillon ; Accueil ; rechargement ;
+  // « Reprendre mon bilan » puis « Reprendre la séance » → retour à la séance, à l’étape mémorisée, brouillon conservé.
+  // Rejoué à 390 × 844 et à 1348 × 936 (environnement du QA).
+  for (const vp of [VIEWPORT, { width: 1348, height: 936 }]) {
+    const b6 = await chromium.launch()
+    const p6 = await (await b6.newContext({ viewport: vp, locale: 'fr-FR' })).newPage()
+    const p6errors = []
+    p6.on('pageerror', (e) => p6errors.push(e.message))
+    const tag = `${vp.width}×${vp.height}`
+    await p6.goto(`${BASE}?reset`)
+    await p6.getByRole('button', { name: 'Commencer' }).click()
+    await p6.getByRole('button', { name: /Piano/ }).click()
+    await p6.getByRole('button', { name: 'Continuer' }).click()
+    await p6.getByRole('button', { name: /Je débute/ }).click()
+    await p6.getByRole('button', { name: 'Continuer' }).click()
+    await p6.getByRole('button', { name: /^Rythme/ }).click()
+    await p6.getByRole('button', { name: 'Continuer' }).click()
+    await p6.getByRole('button', { name: '15 min' }).click()
+    await p6.getByRole('button', { name: /^Entrer dans / }).click()
+    await addPiece(p6, 'QA Reprise')
+    await p6.getByRole('button', { name: 'Préparer une séance' }).click()
+    await p6.getByRole('button', { name: 'Commencer la séance' }).click()
+    for (let i = 0; i < 6 && (await p6.getByRole('button', { name: 'Étape suivante' }).count()); i++) await p6.getByRole('button', { name: 'Étape suivante' }).click()
+    const stepBefore = await p6.getByText(/^Étape \d+ sur \d+$/).first().innerText()
+    await p6.getByRole('button', { name: 'Faire le bilan', exact: true }).click()
+    await p6.getByTestId('review-title').waitFor()
+    await p6.getByRole('button', { name: 'Garder en brouillon' }).click()
+    await p6.getByRole('navigation').getByRole('button', { name: 'Accueil' }).click()
+    await p6.reload()
+    await p6.getByText('Envie de jouer ?').waitFor()
+    const card6 = await p6.locator('.v0-resume').innerText()
+    check(`S08 · REG-01 (${tag}) : après rechargement, l’Accueil propose « Reprendre mon bilan »`, /Reprendre mon bilan/.test(card6), card6.replace(/\n/g, ' / '))
+    await p6.locator('.v0-resume').click()
+    await p6.getByTestId('review-title').waitFor({ timeout: 3000 }).catch(() => undefined)
+    check(`S08 · REG-01 (${tag}) : « Reprendre mon bilan » ouvre le bilan sans travail évalué`, (await p6.getByTestId('review-nowork').count()) === 1)
+    await p6.getByRole('button', { name: 'Reprendre la séance' }).click()
+    await p6.getByTestId('step-card').waitFor({ timeout: 3000 }).catch(() => undefined)
+    const stepAfter = await p6.getByText(/^Étape \d+ sur \d+$/).first().innerText().catch(() => '')
+    check(`S08 · REG-01 (${tag}) : « Reprendre la séance » quitte le bilan et rouvre la séance`, (await p6.getByTestId('review-title').count()) === 0 && (await p6.getByTestId('step-card').count()) === 1)
+    check(`S08 · REG-01 (${tag}) : séance reprise à l’étape mémorisée`, stepAfter === stepBefore, `${stepBefore} → ${stepAfter}`)
+    await p6.reload()
+    await p6.getByTestId('step-card').waitFor({ timeout: 5000 }).catch(() => undefined)
+    check(`S08 · REG-01 (${tag}) : la séance reprise survit à un rechargement`, (await p6.getByTestId('step-card').count()) === 1)
+    await p6.getByRole('navigation').getByRole('button', { name: 'Suivi' }).click()
+    const drafts6 = await p6.getByTestId('drafts').innerText().catch(() => '')
+    check(`S08 · REG-01 (${tag}) : brouillon conservé dans le Suivi`, /QA Reprise/.test(drafts6) && /Brouillon de pratique/.test(drafts6), drafts6.replace(/\n/g, ' / '))
+    check(`S08 · REG-01 (${tag}) : aucune erreur JavaScript`, p6errors.length === 0, p6errors.join(' | '))
+    await b6.close()
+  }
+
   const failed = results.filter((r) => !r.ok)
   console.log(`\n${results.length - failed.length}/${results.length} vérifications réussies`)
   process.exit(failed.length ? 1 : 0)

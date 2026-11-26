@@ -59,3 +59,23 @@ Captures :
 | S08-ENG-06 | « Sonique » est un nom de travail ; le nom commercial reste soumis à un arbitrage distinct | Une ligne à changer dans `src/v0/brand.ts` |
 
 Aucun test sur appareil physique n’a été réalisé. Réserves R09-01 à R09-04 maintenues ; pour R09-02, à vérifier sur la version Nuit & cuivre.
+
+## Contre-recette QA de la prévisualisation 2 : régression signalée « Reprendre la séance » (S08-QA-REG-01)
+
+Signalement (ChatGPT QA, `cf3d2c9`) :
+- scénario : Piano, débutant, Rythme, 15 min, sans prise ; bilan ouvert à l’étape 4 et gardé en brouillon ; retour à l’Accueil ; rechargement ; « Reprendre mon bilan », puis « Reprendre la séance » ;
+- constat : le bilan reste affiché ;
+- attendu : la séance à l’étape mémorisée.
+
+Analyse Ingénierie (26/11, Chromium automatisé, micro simulé) :
+- **Non reproduit** sur `cf3d2c9`, à 390 × 844 et à 1348 × 936. Variantes essayées : morceau ajouté ou démo « Gymnopédie n°1 », minuteur lancé, rechargement depuis le bilan, double clic. Dans tous les cas, « Reprendre la séance » rouvre la séance à l’étape 4, et le brouillon reste listé dans le Suivi.
+- Même comportement sur la référence `d5e4a7a` (Sprint 07) : aucun écart observé entre les deux versions.
+- Le code de ce bouton est identique depuis le Sprint 07 ; l’intégration Nuit & cuivre n’a modifié aucune logique de navigation.
+- Test automatisé dédié ajouté (`S08 · REG-01`, 7 contrôles par taille d’écran, 14 au total) : il échoue si le bilan reste affiché, si l’étape change, si la séance ne survit pas à un rechargement ou si le brouillon disparaît. Recette complète : **297/297**.
+- Aucune correction appliquée : sans reproduction, toute modification serait à l’aveugle et sortirait du périmètre (« ne traiter aucune autre anomalie »).
+- Éléments demandés au QA pour reproduire :
+  - navigateur et taille de fenêtre ;
+  - profil vierge ou déjà utilisé (autres morceaux ou brouillons) ;
+  - morceau utilisé ;
+  - capture vidéo ou console au moment du clic ;
+  - le clic a-t-il produit un effet visible ?
