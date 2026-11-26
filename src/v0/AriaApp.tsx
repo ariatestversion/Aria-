@@ -236,6 +236,8 @@ export function AriaApp() {
   function applyMusical(musical: MusicalProfile | null) {
     if (!musical) return
     setInstruments(musical.instruments.length ? musical.instruments : ['piano'])
+    // Sprint 09 · S08-ENG-01 — un nouveau morceau reprend l’instrument du profil, y compris après un rechargement.
+    setNewPiece((p) => ({ ...p, instrument: musical.instruments[0] || 'piano' }))
     setLevel(musical.level)
     setHabits(musical.habits.length ? musical.habits : ['score'])
     setGoals(musical.goals?.length ? musical.goals : [])
@@ -1263,7 +1265,8 @@ export function AriaApp() {
             <p className="v0-home-brand">{BRAND_NAME}</p>
             <span />
             <button className="v0-avatar" type="button" aria-label="Ouvrir le profil" onClick={() => goTab('profile')}>
-              {(firstName || 'A').slice(0, 1).toUpperCase()}
+              {/* Sprint 09 · S08-QA-01 — sans prénom, icône neutre (plus de « A » hérité d’ARIA). */}
+              {firstName ? firstName.slice(0, 1).toUpperCase() : <Icon name="profile" size={20} />}
             </button>
           </div>
           {/* « Bonjour, » seulement si le prénom est connu (correction Sprint 03). */}

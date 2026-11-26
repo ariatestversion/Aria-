@@ -6,8 +6,8 @@ Référence Sprint 08 : `975e9ea`, prévisualisation 3 (application identique à
 
 | # | Type | Contenu | Critère de levée |
 | --- | --- | --- | --- |
-| S08-ENG-01 | Correction, préexistante (Sprint 07) | Après un rechargement, un nouveau morceau reçoit l’instrument « Piano » au lieu de celui du profil. Cause : l’instrument par défaut n’est fixé qu’à la fin de l’onboarding | Correction ciblée et test automatisé : onboarding Guitare, rechargement, ajout d’un morceau, préparation avec Guitare présélectionnée |
-| S08-QA-01 | Correction, cosmétique | Avatar de l’Accueil : « A » affiché quand aucun prénom n’est saisi (vestige d’ARIA) | Initiale de `BRAND_NAME` ou icône neutre ; contrôle automatisé |
+| S08-ENG-01 | **Corrigé au Sprint 09** (test dédié) · préexistante (Sprint 07) | Après un rechargement, un nouveau morceau reçoit l’instrument « Piano » au lieu de celui du profil. Cause : l’instrument par défaut n’est fixé qu’à la fin de l’onboarding | Correction ciblée et test automatisé : onboarding Guitare, rechargement, ajout d’un morceau, préparation avec Guitare présélectionnée |
+| S08-QA-01 | **Corrigé au Sprint 09** (icône neutre, test dédié) · cosmétique | Avatar de l’Accueil : « A » affiché quand aucun prénom n’est saisi (vestige d’ARIA) | Initiale de `BRAND_NAME` ou icône neutre ; contrôle automatisé |
 | S08-QA-REG-01 | Non reproduit, en attente de preuve | « Reprendre la séance » laisserait le bilan affiché après rechargement (signalé par le QA ChatGPT sur `cf3d2c9`). Non reproduit par l’Ingénierie, ni par Claude QA (9 variantes) | Contrôle ajouté à R09-02 sur Safari et iPhone physique. Si reproduit avec preuve : correction et contre-recette avant toute validation finale. Test automatisé `S08 · REG-01` en place |
 
 ## Sprint 09 — réserves transférées par la clôture technique du Sprint 07 (25/11/2026)

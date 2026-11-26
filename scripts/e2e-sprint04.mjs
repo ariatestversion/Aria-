@@ -195,6 +195,9 @@ async function onboardGuitar(page) {
   await page.goto(`${BASE}?reset`)
   if (!onboardGuitar.welcomeChecked && DEFAULT_THEME === 'nuit') {
     onboardGuitar.welcomeChecked = true
+    // Sprint 09 · S08-QA-02 — attendre l’écran avant de lire ses styles (fiabilité de la recette).
+    await page.locator('.v0-welcome-bg').waitFor()
+    await page.locator('.v0-welcome .v0-brand').waitFor()
     const w = await page.evaluate(() => {
       const bg = getComputedStyle(document.querySelector('.v0-welcome-bg')).backgroundImage
       const brand = document.querySelector('.v0-welcome .v0-brand')
@@ -1142,6 +1145,34 @@ async function main() {
     check(`S08 · REG-01 (${tag}) : brouillon conservé dans le Suivi`, /QA Reprise/.test(drafts6) && /Brouillon de pratique/.test(drafts6), drafts6.replace(/\n/g, ' / '))
     check(`S08 · REG-01 (${tag}) : aucune erreur JavaScript`, p6errors.length === 0, p6errors.join(' | '))
     await b6.close()
+  }
+
+  // Sprint 09 · S08-ENG-01 et S08-QA-01 — tests dédiés.
+  {
+    const b7 = await chromium.launch()
+    const p7 = await (await b7.newContext({ viewport: VIEWPORT, locale: 'fr-FR' })).newPage()
+    const p7errors = []
+    p7.on('pageerror', (e) => p7errors.push(e.message))
+    await p7.goto(`${BASE}?reset`)
+    await p7.getByRole('button', { name: 'Commencer' }).click()
+    await p7.getByRole('button', { name: /Guitare/ }).click()
+    await p7.getByRole('button', { name: 'Continuer' }).click()
+    await p7.getByRole('button', { name: /Je débute/ }).click()
+    await p7.getByRole('button', { name: 'Continuer' }).click()
+    await p7.getByRole('button', { name: /^Rythme/ }).click()
+    await p7.getByRole('button', { name: 'Continuer' }).click()
+    await p7.getByRole('button', { name: '15 min' }).click()
+    await p7.getByRole('button', { name: /^Entrer dans / }).click()
+    await p7.getByText('Envie de jouer ?').waitFor()
+    const avatar = await p7.locator('.v0-avatar').evaluate((e) => ({ text: e.textContent.trim(), svg: !!e.querySelector('svg'), label: e.getAttribute('aria-label') }))
+    check('S09 · S08-QA-01 : sans prénom, l’avatar n’affiche plus « A » (icône neutre, libellé conservé)', avatar.text === '' && avatar.svg && avatar.label === 'Ouvrir le profil', JSON.stringify(avatar))
+    await p7.reload()
+    await p7.getByText('Envie de jouer ?').waitFor()
+    await addPiece(p7, 'Après rechargement')
+    await p7.getByRole('button', { name: 'Préparer une séance' }).click()
+    check('S09 · S08-ENG-01 : après rechargement, un nouveau morceau reprend l’instrument du profil (Guitare)', (await p7.getByRole('button', { name: 'Guitare' }).getAttribute('aria-pressed').catch(() => null)) === 'true')
+    check('S09 · S08-ENG-01 : aucune erreur JavaScript', p7errors.length === 0, p7errors.join(' | '))
+    await b7.close()
   }
 
   const failed = results.filter((r) => !r.ok)

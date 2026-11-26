@@ -1,5 +1,15 @@
 # Changelog — ARIA
 
+## [Sprint 09] — Validation finale de l’expérience et stabilisation du MVP (en cours, 2026-11-26)
+
+Branche : `claude/sprint09-validation`, depuis `claude/sprint08-identite` (application identique à `975e9ea`, référence du Sprint 08). Nuit & cuivre conservée.
+- **S08-ENG-01 corrigé** : un nouveau morceau reprend l’instrument du profil, y compris après un rechargement de la page.
+- **S08-QA-01 corrigé** : sans prénom, l’avatar de l’Accueil affiche une icône neutre au lieu de « A ».
+- **S08-QA-02 (outillage)** : la recette attend l’affichage de la Bienvenue avant d’en lire les styles.
+- **S08-QA-REG-01** : toujours ouverte (non reproduite, en attente de preuve).
+- Audit du parcours et des programmes, constats S09-D-01 à D-05 à arbitrer : `docs/recettes/sprint09.md`.
+- Tests : unitaires 44/44 ; e2e **300/300** (3 contrôles dédiés ajoutés).
+
 ## [Sprint 08] — Identité visuelle Nuit & cuivre (clôture technique sous réserves, 2026-11-26)
 
 **Statut : clôture technique sous réserves, effective (Head of Product, puis autorisation de la fondatrice, 26/11/2026).**
