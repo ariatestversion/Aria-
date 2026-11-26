@@ -1,14 +1,16 @@
 {
-  "version": "ARIA — Sprint 07 · clôture technique sous réserves (25/11/2026) · référence applicative d5e4a7a, prévisualisation 4",
-  "commit": "d5e4a7a8eed38e28ce9d4e3722136239d0e82da7",
-  "short": "d5e4a7a",
-  "netlifyDeployId": "6b06f9934ca1d2e7fb6e60b2",
-  "netlifyPreview": "https://6b06f9934ca1d2e7fb6e60b2--ariafirstversion.netlify.app",
-  "netlifyPreviewClair": "https://6b06f9934ca1d2e7fb6e60b2--ariafirstversion.netlify.app/?seance=clair",
-  "previous": "Prévisualisation 3 (lots B, C, D) : 6b06e995ea0d5e04915ab8ef, a7d1690 ; prévisualisation 2 : 6b06e4629842048fae789a15, 8a109c3 ; prévisualisation 1 : 6b06c8dd206fa1088b916525, 397d6d5",
-  "branch": "claude/sprint07-integration",
+  "version": "ARIA — Sprint 08 · prévisualisation 1 : préparation de l’identité visuelle (couleurs centralisées, palettes candidates provisoires cuivre et bleu ; défaut inchangé DA A)",
+  "commit": "beae6f961b4bcd792349386df99962db1db2877e",
+  "short": "beae6f9",
+  "netlifyDeployId": "6b0804d87e195655f192fa0d",
+  "netlifyPreview": "https://6b0804d87e195655f192fa0d--ariafirstversion.netlify.app",
+  "netlifyPreviewClair": "https://6b0804d87e195655f192fa0d--ariafirstversion.netlify.app/?seance=clair",
+  "previous": "Sprint 07, référence d5e4a7a : prévisualisation 4 6b06f9934ca1d2e7fb6e60b2 (conservée)",
+  "branch": "claude/sprint08-identite",
   "reference": "Alpha V0.6 : 67aa241, prévisualisation 6b05c4864a41ea883858ac80 (conservée)",
   "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813) — vérifié le 25/11 : locked true",
-  "verification": "Prévisualisation 4 vérifiée le 25/11 : ready, published_at null, expires_at null. Production 6aff204b… locked true. Unitaires 44/44, e2e 240/240 sur d5e4a7a (micro simulé). Aucun test sur appareil physique ni sur Safari/WebKit par l’Ingénierie.",
-  "status": "Clôture technique sous réserves (Product Management). Développements gelés. Branche non fusionnée ; réserves R09-01 à R09-04 transférées au Sprint 09. Aucune publication."
+  "verification": "Déploiement ready, published_at null, expires_at null. version.json envoyé = beae6f9. Unitaires 44/44 ; e2e 244/244 en palettes DA A, cuivre et bleu (micro simulé). Aucun test sur appareil physique.",
+  "status": "Sprint 08 en cours : intégration de l’identité soumise à validation de la fondatrice. Aucune publication.",
+  "netlifyPreviewCuivre": "https://6b0804d87e195655f192fa0d--ariafirstversion.netlify.app/?theme=cuivre",
+  "netlifyPreviewBleu": "https://6b0804d87e195655f192fa0d--ariafirstversion.netlify.app/?theme=bleu"
 }
