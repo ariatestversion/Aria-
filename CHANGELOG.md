@@ -1,6 +1,17 @@
 # Changelog — ARIA
 
-## [Sprint 08] — Identité visuelle Nuit & cuivre (intégrée, à recetter, 2026-11-26)
+## [Sprint 08] — Identité visuelle Nuit & cuivre (clôture technique sous réserves, 2026-11-26)
+
+**Statut : clôture technique sous réserves (Head of Product, 26/11/2026).**
+- Référence figée : `975e9ea`, prévisualisation 3 (application identique à `cf3d2c9`).
+- Inscrits au Sprint 09 : S08-QA-REG-01, « non reproduit, en attente de preuve », dont le contrôle Safari / iPhone est ajouté à R09-02 ; les corrections S08-ENG-01 et S08-QA-01.
+- Réserves R09-01 à R09-04 maintenues.
+- Aucune fusion, aucune publication.
+
+### Contre-recette : test S08-QA-REG-01 et prévisualisation 3
+- Régression signalée (« Reprendre la séance » laisserait le bilan affiché) non reproduite sur `cf3d2c9` ni sur `d5e4a7a`.
+- Test automatisé dédié ajouté (14 contrôles, 390 × 844 et 1348 × 936). Recette : 44/44 et **297/297**.
+- Prévisualisation 3 (`975e9ea`) : application inchangée, pour la contre-recette.
 
 ### Intégration Nuit & cuivre (GO fondatrice, dossier de transmission PM du 26/11)
 - **Palette Nuit & cuivre par défaut** (`data-brand='nuit'`) :

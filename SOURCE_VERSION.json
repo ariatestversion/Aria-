@@ -1,5 +1,5 @@
 {
-  "version": "Sonique — Sprint 08 · prévisualisation 3 : Nuit & cuivre, pour la contre-recette QA (application identique à cf3d2c9, test S08-QA-REG-01 ajouté)",
+  "version": "Sonique — Sprint 08 · référence figée 975e9ea (clôture technique sous réserves, 26/11/2026), prévisualisation 3",
   "commit": "975e9ea01ca3c810e3e3eec9c4cd2d4ef41cb528",
   "short": "975e9ea",
   "netlifyDeployId": "6b084f388ee01180268c44f2",
@@ -10,7 +10,7 @@
   "reference": "Alpha V0.6 : 67aa241, prévisualisation 6b05c4864a41ea883858ac80 (conservée)",
   "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813) — vérifié le 25/11 : locked true",
   "verification": "Déploiement ready, published_at null, expires_at null, aucun secret détecté. version.json envoyé = 975e9ea. Unitaires 44/44 ; e2e 297/297 (micro simulé). Production 6aff204b… locked true. Aucun test sur appareil physique.",
-  "status": "Sprint 08 : contre-recette QA attendue sur cette prévisualisation. Régression S08-QA-REG-01 non reproduite. Aucune fusion, aucune publication.",
+  "status": "Sprint 08 clôturé techniquement sous réserves (Head of Product). S08-QA-REG-01 non reproduit, en attente de preuve (contrôle Safari/iPhone dans R09-02). S08-ENG-01 et S08-QA-01 inscrits au Sprint 09. Réserves R09-01 à R09-04 maintenues. Aucune fusion, aucune publication.",
   "netlifyPreviewPapier": "https://6b084f388ee01180268c44f2--ariafirstversion.netlify.app/?accueil=papier",
   "netlifyPreviewDAA": "https://6b084f388ee01180268c44f2--ariafirstversion.netlify.app/?theme=blanc"
 }

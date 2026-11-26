@@ -1,5 +1,15 @@
 # Backlog ARIA
 
+## Sprint 09 — entrées issues de la clôture technique du Sprint 08 (Head of Product, 26/11/2026)
+
+Référence Sprint 08 : `975e9ea`, prévisualisation 3 (application identique à `cf3d2c9`).
+
+| # | Type | Contenu | Critère de levée |
+| --- | --- | --- | --- |
+| S08-ENG-01 | Correction, préexistante (Sprint 07) | Après un rechargement, un nouveau morceau reçoit l’instrument « Piano » au lieu de celui du profil. Cause : l’instrument par défaut n’est fixé qu’à la fin de l’onboarding | Correction ciblée et test automatisé : onboarding Guitare, rechargement, ajout d’un morceau, préparation avec Guitare présélectionnée |
+| S08-QA-01 | Correction, cosmétique | Avatar de l’Accueil : « A » affiché quand aucun prénom n’est saisi (vestige d’ARIA) | Initiale de `BRAND_NAME` ou icône neutre ; contrôle automatisé |
+| S08-QA-REG-01 | Non reproduit, en attente de preuve | « Reprendre la séance » laisserait le bilan affiché après rechargement (signalé par le QA ChatGPT sur `cf3d2c9`). Non reproduit par l’Ingénierie, ni par Claude QA (9 variantes) | Contrôle ajouté à R09-02 sur Safari et iPhone physique. Si reproduit avec preuve : correction et contre-recette avant toute validation finale. Test automatisé `S08 · REG-01` en place |
+
 ## Sprint 09 — réserves transférées par la clôture technique du Sprint 07 (25/11/2026)
 
 Source : registre des sprints & décisions produit (Product Management) ; détail dans `docs/recettes/sprint07.md`. Référence testée : `d5e4a7a`, prévisualisation 4.
@@ -7,7 +17,7 @@ Source : registre des sprints & décisions produit (Product Management) ; détai
 | # | Responsable | Contenu |
 | --- | --- | --- |
 | R09-01 | QA | Audio réel, refus et interruption, comparaison et isolation des prises, réécoute et persistance après fermeture de Safari |
-| R09-02 | QA / PD | VoiceOver, focus, ergonomie de la séance marine instrument en main, texte agrandi, reprise du bilan depuis l’Accueil, visibilité du bilan final (iOS ≥ 16.2 requis par le style) |
+| R09-02 | QA / PD | VoiceOver, focus, ergonomie de la séance marine instrument en main, texte agrandi, reprise du bilan depuis l’Accueil, visibilité du bilan final (iOS ≥ 16.2 requis par le style). **À faire sur la version Nuit & cuivre**, avec en plus le scénario S08-QA-REG-01 sur Safari et iPhone physique |
 | R09-03 | QA | Cadence, accent, arrêt du clic, métadonnées de tempo |
 | R09-04 | QA | Android, cas d’erreur non couverts, parcours physiques résiduels T01 à T11 |
 

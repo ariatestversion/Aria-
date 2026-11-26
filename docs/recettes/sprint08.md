@@ -81,3 +81,10 @@ Analyse Ingénierie (26/11, Chromium automatisé, micro simulé) :
   - le clic a-t-il produit un effet visible ?
 
 Prévisualisation 3, déployée le 26/11 à la demande de la fondatrice pour la contre-recette : https://6b084f388ee01180268c44f2--ariafirstversion.netlify.app (commit `975e9ea`, déploiement `6b084f388ee01180268c44f2`, non publiée ; `/version.json` doit indiquer `975e9ea`). Application identique à la prévisualisation 2. Recette : 44/44 et 297/297.
+
+## Clôture technique sous réserves (Head of Product, 26/11/2026)
+
+- **Référence Sprint 08 figée : `975e9ea`**, prévisualisation 3 (application identique à `cf3d2c9`). La contre-recette de Claude QA sur la prévisualisation 3 la juge conforme.
+- **S08-QA-REG-01 : « non reproduit, en attente de preuve ».** Le contrôle sur Safari et iPhone physique est ajouté à R09-02 (`docs/recettes/sprint09.md`). Si l’écart est reproduit avec preuve, il est corrigé et contre-recetté avant toute validation finale.
+- **Inscrits au Sprint 09** : S08-ENG-01 (instrument par défaut après rechargement) et S08-QA-01 (avatar « A »). Réserves R09-01 à R09-04 maintenues.
+- Aucune fusion, aucune publication. La clôture documentaire est à régulariser par le Product Management.
