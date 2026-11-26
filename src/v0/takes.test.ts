@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Take } from './model'
-import { comparability, comparableGroup, takeMeta, takesOfSession } from './takes'
+import { DEFAULT_PASSAGE, comparability, comparableGroup, sessionTakePassage, takeMeta, takesOfSession } from './takes'
 
 const t = (patch: Partial<Take>): Take => ({
   id: 'x',
@@ -52,5 +52,26 @@ describe('Sprint 07 · S7-07 — comparaison des prises (règles Phase 5)', () =
     ]
     expect(takesOfSession(takes, '2026-11-20T10:00:00.000Z', '2026-11-21T10:00:00.000Z').map((x) => x.id)).toEqual(['old1'])
     expect(takesOfSession(takes, 'S3').map((x) => x.id)).toEqual(['new'])
+  })
+})
+
+describe('Sprint 09 · S09-D-01 — passage par défaut « Morceau entier »', () => {
+  it('prise de séance sans passage saisi : « Morceau entier » ; passage saisi conservé ; hors séance : rien', () => {
+    expect(sessionTakePassage('', true)).toBe(DEFAULT_PASSAGE)
+    expect(sessionTakePassage('   ', true)).toBe(DEFAULT_PASSAGE)
+    expect(sessionTakePassage(undefined, true)).toBe(DEFAULT_PASSAGE)
+    expect(sessionTakePassage('Refrain', true)).toBe('Refrain')
+    expect(sessionTakePassage('', false)).toBe('')
+  })
+  it('deux prises « Morceau entier » de la même séance et du même tempo : comparables ; métadonnées explicites', () => {
+    const a = t({ id: 'a', passage: DEFAULT_PASSAGE })
+    const b = t({ id: 'b', passage: DEFAULT_PASSAGE })
+    expect(comparability(a, b).ok).toBe(true)
+    expect(comparableGroup([a, b]).length).toBe(2)
+    expect(takeMeta(a, fmt)).toBe('Morceau entier · 64 BPM · 00:20')
+  })
+  it('« Morceau entier » et un passage saisi : non comparables ; anciennes prises sans passage : toujours non comparables', () => {
+    expect(comparability(t({ id: 'a', passage: DEFAULT_PASSAGE }), t({ id: 'b', passage: 'Intro' }))).toEqual({ ok: false, reason: 'Le passage diffère.' })
+    expect(comparability(t({ id: 'a', passage: '' }), t({ id: 'b', passage: '' })).ok).toBe(false)
   })
 })

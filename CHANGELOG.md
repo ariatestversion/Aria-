@@ -10,6 +10,18 @@ Branche : `claude/sprint09-validation`, depuis `claude/sprint08-identite` (appli
 - Audit du parcours et des programmes, constats S09-D-01 à D-05 à arbitrer : `docs/recettes/sprint09.md`.
 - Tests : unitaires 44/44 ; e2e **300/300** (3 contrôles dédiés ajoutés).
 
+### Candidate n° 2 (GO PM du 26/11, après la contre-recette Claude QA de la candidate n° 1 : 9/10)
+- **S09-QA-01 corrigé** : après une modification des instruments dans le Profil, l’ajout d’un morceau propose aussitôt le premier instrument du profil, sans rechargement.
+- **S09-D-01 confirmé et corrigé** :
+  - constat : une prise de séance enregistrée sans passage saisi recevait un passage vide, et la comparaison A/B, qui exige un passage identifié, n’était jamais proposée ;
+  - correction : sans passage saisi, une prise de séance porte « Morceau entier » ; deux prises d’une même séance au même tempo deviennent comparables ;
+  - le champ reste facultatif, aucun champ obligatoire n’est ajouté ;
+  - les anciennes prises sans passage restent non comparables et les prises hors séance ne changent pas ;
+  - choix retenu par le PM, sous réserve de l’arbitrage du Head of Product et du Product Design (une constante `DEFAULT_PASSAGE`).
+- S09-D-02 à D-05 : inchangés, en attente des tests physiques et des arbitrages.
+- REG-01 : ouverte.
+- Tests : unitaires **47/47** (3 ajoutés) ; e2e **307/307** (7 contrôles ajoutés).
+
 ## [Sprint 08] — Identité visuelle Nuit & cuivre (clôture technique sous réserves, 2026-11-26)
 
 **Statut : clôture technique sous réserves, effective (Head of Product, puis autorisation de la fondatrice, 26/11/2026).**

@@ -9,6 +9,20 @@ import { passageLabel } from './pedagogy'
  * rend la comparaison impossible (écoute séparée). La durée est informative seulement.
  */
 
+/**
+ * Sprint 09 · S09-D-01 — passage retenu pour une prise de séance quand aucun passage n’est saisi.
+ * C’est un choix explicite (le morceau entier est travaillé), pas une valeur déduite : les prises
+ * d’une même séance sans passage saisi deviennent comparables entre elles. Les anciennes prises
+ * sans passage restent non comparables.
+ */
+export const DEFAULT_PASSAGE = 'Morceau entier'
+
+/** Passage enregistré avec une prise : celui saisi, sinon « Morceau entier » pour une prise de séance. */
+export function sessionTakePassage(saisi: string | undefined, inSession: boolean) {
+  const p = (saisi || '').trim()
+  return p || (inSession ? DEFAULT_PASSAGE : '')
+}
+
 export function takePassage(t: Pick<Take, 'passage'>) {
   return passageLabel(t.passage)
 }

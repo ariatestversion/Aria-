@@ -1175,6 +1175,57 @@ async function main() {
     await b7.close()
   }
 
+  // Sprint 09 · S09-QA-01 — instrument proposé à l’ajout d’un morceau après modification du profil, sans rechargement.
+  {
+    const b8 = await chromium.launch()
+    const p8 = await (await b8.newContext({ viewport: VIEWPORT, locale: 'fr-FR' })).newPage()
+    const p8errors = []
+    p8.on('pageerror', (e) => p8errors.push(e.message))
+    await onboardGuitar(p8)
+    await p8.getByText('Envie de jouer ?').waitFor()
+    await p8.getByRole('navigation').getByRole('button', { name: 'Profil' }).click()
+    const instruments = p8.locator('section').filter({ has: p8.getByRole('heading', { name: 'Instruments' }) })
+    await instruments.getByRole('button', { name: 'Guitare' }).click()
+    await instruments.getByRole('button', { name: 'Batterie' }).click()
+    await p8.getByRole('button', { name: 'Enregistrer le profil' }).click()
+    await p8.getByText(/Profil enregistré/).waitFor()
+    await p8.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
+    await p8.getByRole('button', { name: 'Ajouter un morceau' }).click()
+    const proposed = await p8.getByLabel('Instrument').inputValue()
+    check('S09 · S09-QA-01 : après modification du profil (Batterie), l’ajout propose Batterie sans rechargement', proposed === 'drums', proposed)
+    await p8.getByLabel('Titre').fill('Profil modifié')
+    await p8.getByRole('button', { name: 'Enregistrer le morceau' }).click()
+    await p8.getByRole('button', { name: 'Préparer une séance' }).click()
+    check('S09 · S09-QA-01 : la préparation présélectionne Batterie', (await p8.getByRole('button', { name: 'Batterie' }).getAttribute('aria-pressed').catch(() => null)) === 'true')
+    check('S09 · S09-QA-01 : aucune erreur JavaScript', p8errors.length === 0, p8errors.join(' | '))
+    await b8.close()
+  }
+
+  // Sprint 09 · S09-D-01 — sans passage saisi, deux prises de la même séance au même tempo sont comparables (« Morceau entier »).
+  {
+    const b9 = await chromium.launch({ args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream', '--autoplay-policy=no-user-gesture-required'] })
+    const c9 = await b9.newContext({ viewport: VIEWPORT, locale: 'fr-FR' })
+    await c9.grantPermissions(['microphone'])
+    const p9 = await c9.newPage()
+    const p9errors = []
+    p9.on('pageerror', (e) => p9errors.push(e.message))
+    await onboardGuitar(p9)
+    await p9.getByText('Envie de jouer ?').waitFor()
+    await addPiece(p9, 'Sans passage')
+    await p9.getByRole('button', { name: 'Préparer une séance' }).click()
+    check('S09 · S09-D-01 : le champ « Passage travaillé » reste facultatif (vide accepté)', (await p9.getByLabel('Passage travaillé').inputValue()) === '' && (await p9.getByRole('button', { name: 'Commencer la séance' }).isEnabled()))
+    await p9.getByRole('button', { name: 'Commencer la séance' }).click()
+    await record(p9, 1200)
+    await record(p9, 1200)
+    const meta9 = await p9.locator('.ds-take').first().innerText()
+    check('S09 · S09-D-01 : la prise porte « Morceau entier » (plus « passage non renseigné »)', /Morceau entier/.test(meta9) && !/passage non renseigné/.test(meta9), meta9.split('\n').slice(0, 2).join(' / '))
+    await p9.getByRole('button', { name: 'Faire le bilan maintenant' }).click()
+    await p9.getByTestId('review-title').waitFor()
+    check('S09 · S09-D-01 : le bilan propose la comparaison A/B des deux prises', (await p9.getByTestId('compare').locator('.ds-take').count()) === 2)
+    check('S09 · S09-D-01 : aucune erreur JavaScript', p9errors.length === 0, p9errors.join(' | '))
+    await b9.close()
+  }
+
   const failed = results.filter((r) => !r.ok)
   console.log(`\n${results.length - failed.length}/${results.length} vérifications réussies`)
   process.exit(failed.length ? 1 : 0)

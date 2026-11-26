@@ -109,3 +109,16 @@ Pertinence des programmes : 6 instruments × 3 niveaux × 5 objectifs, à 15 min
 - la validation finale dépend des tests physiques (iPhone et Android), qui ne peuvent pas être réalisés depuis l’environnement de l’Ingénierie.
 
 Candidate n° 1 du Sprint 09 : https://6b085b5efaedcc23d9d0dea3--ariafirstversion.netlify.app (commit `22dbdc2`, déploiement `6b085b5efaedcc23d9d0dea3`, non publiée ; `/version.json` doit indiquer `22dbdc2`).
+
+## Candidate n° 2 — corrections ciblées (GO PM du 26/11/2026)
+
+Contre-recette Claude QA de la candidate n° 1 : 9/10, corrections validées, aucune régression.
+
+| ID | Correction | Test dédié |
+| --- | --- | --- |
+| S09-QA-01 | À l’enregistrement du Profil, l’instrument proposé pour un nouveau morceau devient le premier instrument du profil, sans rechargement | e2e : profil Guitare → Batterie ; l’ajout propose Batterie ; la préparation présélectionne Batterie |
+| S09-D-01 | Constat confirmé dans le code : une prise reprenait le passage du morceau ou du programme, sinon une valeur vide, et la règle de comparaison exige un passage identifié. Correction : une prise de séance sans passage saisi porte « Morceau entier » (`DEFAULT_PASSAGE`, `src/v0/takes.ts`). Le champ reste facultatif, les anciennes prises sans passage restent non comparables, les prises hors séance sont inchangées | Unitaires : passage par défaut, comparabilité, métadonnées. e2e : séance sans passage, deux prises, comparaison A/B proposée au bilan |
+
+Le passage par défaut est un choix du PM, sous réserve de l’arbitrage du Head of Product et du Product Design. Le libellé se change en une ligne.
+
+S09-D-02 à D-05 : priorités maintenues ; D-02 sera arbitré après les tests physiques. REG-01 reste ouverte.

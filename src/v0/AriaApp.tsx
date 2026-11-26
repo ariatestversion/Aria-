@@ -5,7 +5,7 @@ import { useMediaRecorder } from '../lib/recorder'
 import { isGuestEmail, probeAuthMode, restoreSession, signOutV0, type AuthMode } from './auth'
 import type { UserProfile } from '../types'
 import { playableDuration } from './media'
-import { comparability, comparableGroup, nonComparableReason, takeMeta, takesOfSession } from './takes'
+import { comparability, comparableGroup, nonComparableReason, takeMeta, takesOfSession, sessionTakePassage } from './takes'
 import { buildProgram, buildReview, defaultResource, prepGoalsFor, previousSessionFrom, resourceAvailable } from './pedagogy'
 import {
   DEMO_GENRES,
@@ -643,6 +643,8 @@ export function AriaApp() {
       updatedAt: new Date().toISOString(),
     })
     setPieces(listPieces(email))
+    // Sprint 09 · S09-QA-01 — l’ajout d’un morceau propose aussitôt le premier instrument du profil modifié.
+    setNewPiece((p) => ({ ...p, instrument: instruments[0] }))
     setProfileHint('Profil enregistré. Tes prochaines préparations de séance en tiendront compte.')
   }
 
@@ -853,8 +855,9 @@ export function AriaApp() {
         id: takeId,
         email,
         pieceId: current.id,
-        // Seul un passage réellement saisi est enregistré (jamais l’objectif à sa place).
-        passage: current.passages || current.program?.passage || '',
+        // Seul un passage réellement saisi est enregistré (jamais l’objectif à sa place) ;
+        // sans passage saisi, une prise de séance porte « Morceau entier » (Sprint 09 · S09-D-01).
+        passage: sessionTakePassage(current.passages || current.program?.passage, inSession),
         createdAt: new Date().toISOString(),
         seconds: duration && duration > 0 ? Math.max(1, Math.round(duration)) : Math.max(0, seconds),
         mime: blob.type || 'audio/webm',
