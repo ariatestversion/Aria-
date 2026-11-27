@@ -364,10 +364,11 @@ html[data-v0='1'][data-brand='marine'] .v0-dock button.on .v0-dock-icon { backgr
   position: fixed;
   left: 0;
   right: 0;
-  bottom: var(--dock-h);
-  z-index: 41;
+  /* S09-QA-03 — posé sur la hauteur réelle de la barre ; la marge basse laisse la place au repère REC. */
+  bottom: var(--dock-live-h, var(--dock-h));
+  z-index: 39;
   margin: 0;
-  padding: var(--sp-3) var(--page-x);
+  padding: var(--sp-3) var(--page-x) calc(var(--sp-3) + 14px);
   background: var(--id-surface-sunken);
   color: var(--ink);
   border-top: var(--bw) solid var(--line);
@@ -377,7 +378,12 @@ html[data-v0='1'][data-brand='marine'] .v0-dock button.on .v0-dock-icon { backgr
 }
 .v0-dock button[aria-disabled='true'] { opacity: 0.45; cursor: not-allowed; }
 /* Pendant une prise, le message de navigation occupe une ligne de plus au-dessus de la barre. */
-.v0-app.is-capturing:not(.nodock) { padding-bottom: calc(var(--dock-h) + var(--dock-gap) + 80px); }
+.v0-app.is-capturing:not(.nodock) { padding-bottom: calc(var(--dock-live-h, var(--dock-h)) + var(--navlock-live-h, 94px) + var(--dock-gap)); }
+/* S09-QA-03 — la commande d’arrêt et le chrono s’arrêtent au-dessus du message et de la barre quand on les ramène à l’écran. */
+.v0-app.is-capturing .ds-recorder.is-recording {
+  scroll-margin-top: var(--sp-4);
+  scroll-margin-bottom: calc(var(--dock-live-h, var(--dock-h)) + var(--navlock-live-h, 94px) + var(--sp-3));
+}
 
 /* ———————————— Sprint 07 · S7-01 / S7-04 — séance immersive marine (DA A, privilégiée) ————————————
  * Appliquée à l’écran Séance. Le fond clair reste disponible comme témoin QA (?seance=clair),

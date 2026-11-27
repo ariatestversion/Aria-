@@ -263,3 +263,55 @@ Android, si un appareil est disponible : tests 1a, 2 et 4 dans Chrome.
 - ChatGPT QA : environ 15 min pour confirmer, sur la candidate n° 3, le test 1a et le script de diagnostic.
 - Fondatrice : environ 35 min pour le protocole définitif.
 - La clôture du Sprint 09 est possible dans la journée si ces tests sont conformes et si « Morceau entier » est arbitré.
+
+## Candidate n° 4 — dernier lot correctif (GO PM du 27/11/2026)
+
+Source : rapport définitif de recette physique de Claude QA (iPhone 12 Pro Max, iOS 18.6.2, candidate n° 3). Le lot se limite aux deux anomalies majeures relevées. Les observations O-S09-4 à O-S09-7 sont documentées sans correction.
+
+### S09-QA-02 — comparaison A/B à l’étape « Prise de contrôle » sans métronome
+
+- **Cause** : sans métronome, une prise prenait le tempo de la consigne de l’étape. L’étape « Prise de contrôle » n’a pas de consigne de tempo, et les objectifs sans tempo (Justesse, Mémoire, Expression…) n’en ont à aucune étape. Les prises étaient donc « tempo inconnu » et jamais comparables.
+- **Correction** : le tempo de référence et le tempo réellement joué sont distingués (`src/v0/takes.ts`, `model.ts`).
+  - Avec le métronome en marche, la prise porte le **tempo joué** : « 60 BPM ».
+  - Sans métronome, elle porte le **tempo de référence de la séance** : la consigne de l’étape, sinon le tempo de travail des autres étapes. Libellé : « réf. 60 BPM, sans métronome ». Ce tempo est conseillé, jamais présenté comme mesuré.
+  - Dans une séance sans tempo et sans métronome, le libellé est « tempo libre ».
+- **Règles de comparabilité préservées** : même séance, même passage, et un tempo de **même origine et de même valeur**. Métronome à 60 avec métronome à 60, référence 60 avec référence 60, libre avec libre.
+  - Une prise au métronome n’est donc pas comparée à une prise sans métronome. Motif affiché : « Une seule des deux prises a été faite avec le métronome. », ou « Le tempo diffère. » si les valeurs diffèrent.
+  - Le reste ne change pas : séances différentes, passages différents et prises illisibles ne sont toujours pas comparés.
+- **Données historiques** : aucune migration ni réécriture. Les prises antérieures, sans le nouveau champ `tempoSource`, gardent leur tempo et leur comparabilité d’avant. Sans tempo, elles restent non comparables.
+- Changement visible voulu : une prise faite sans métronome à une étape qui a une consigne de tempo affiche « réf. 60 BPM, sans métronome » au lieu de « 60 BPM ». Le contrôle S7-07 est mis à jour en conséquence, et la comparaison des deux prises éligibles est conservée.
+
+### S09-QA-03 — « Arrêter » et repère REC visibles pendant toute la prise
+
+- **Cause** : le message « Navigation indisponible » est fixé au-dessus de la barre, sur une hauteur théorique de 70 px. Avec l’affichage agrandi, la barre est plus haute et le message la recouvre, y compris le repère REC. Au démarrage, rien ne ramène « Arrêter » au-dessus du message. Le repère REC, posé à cheval sur la barre, était recouvert même à 100 %.
+- **Correction** (`src/v0/AriaApp.tsx`, `aria-v0.css`), sans changement de couleur ni de composant :
+  - le message est posé sur la hauteur **réelle** de la barre, mesurée pendant la prise ;
+  - sa marge basse laisse la place au repère REC, qui passe au premier plan ;
+  - au démarrage de la prise, et en cas de redimensionnement ou de zoom, « Arrêter » et le chrono sont ramenés au-dessus du message s’ils sont dessous ;
+  - la marge de fin de page pendant la prise suit les hauteurs réelles.
+
+### Tests de non-régression dédiés
+
+| Test | Contrôles |
+| --- | --- |
+| Unitaires `takes.test.ts` (6 ajoutés, 53 au total) | Tempo de référence de « Prise de contrôle » ; tempo joué, de référence ou libre ; deux prises sans métronome comparables ; règles préservées (origine, valeur, séance, passage) ; anciennes prises inchangées |
+| e2e S09-QA-02 (12 contrôles) | Piano · Je débute · Rythme, puis Mémoire : deux prises à « Prise de contrôle » sans métronome ; libellés ; A/B proposée ; prise au métronome écoutée à part avec son motif |
+| e2e S09-QA-03 (20 contrôles) | 390 × 844, 260 × 563 (150 %), zoom de page 150 %, 320 × 568 : bouton « Enregistrer » près du bas de l’écran au démarrage. « Arrêter », chrono et REC entièrement visibles au démarrage et pendant la prise ; message lisible au-dessus de la barre ; arrêt fonctionnel |
+
+Preuve de détection : sur `aa83a42`, 19 de ces contrôles échouent, plus le libellé S7-07 mis à jour (327/347). Avec les correctifs : **347/347** en Nuit & cuivre et **327/327** en DA A ; 53/53 unitaires. Tests faits en Chromium avec un micro simulé, ce qui ne remplace pas l’essai physique.
+
+Captures : `docs/screenshots/sprint09/` (prise à 390 px et à 150 %, bilan avec comparaison à « Prise de contrôle »).
+
+### Contre-recette physique ciblée (environ 15 minutes, iPhone, Safari)
+
+1. Ouvrir `/version.json` de la candidate n° 4 et vérifier le commit annoncé.
+2. **S09-QA-02** : Piano · Je débute · Rythme · 15 min ; nouveau morceau sans passage ; aller à « Prise de contrôle » ; deux prises **sans métronome** ; « Faire le bilan ».
+   - Attendu : prises « Morceau entier · réf. 60 BPM, sans métronome » ; « Comparer les prises · A / B ».
+3. **S09-QA-03** : affichage agrandi (menu de page Safari « aA », 150 %) ; nouvelle séance ; à « Prise de contrôle », démarrer une prise avec le bouton près du bas de l’écran.
+   - Attendu : « Arrêter », le chrono et REC restent entièrement visibles pendant toute la prise ; le message « Navigation indisponible » est au-dessus de la barre ; « Arrêter » fonctionne.
+4. Facultatif : une prise avec le métronome, puis le bilan.
+   - Attendu : elle est écoutée à part, avec la mention « Une seule des deux prises a été faite avec le métronome ».
+
+### Observations documentées, non corrigées (hors périmètre)
+
+O-S09-4 (chemin Réglages → Safari → Micro dans le message de refus), O-S09-5 (décalage du métronome au basculement micro / haut-parleur), O-S09-6 et O-S09-7 (comportements de Safari) : voir `docs/BACKLOG.md`.

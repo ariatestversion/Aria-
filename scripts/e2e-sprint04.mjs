@@ -924,7 +924,7 @@ async function main() {
   await p5.getByRole('button', { name: 'Faire le bilan maintenant' }).click()
   const cmp = await p5.getByTestId('takes-compare').innerText().catch(() => '')
   check('S7-07 · Bilan : comparaison des deux prises éligibles (même séance, passage, tempo)', (await p5.getByTestId('compare').locator('.ds-take').count()) === 2 && /même séance, même passage, même tempo/.test(cmp))
-  check('S7-07 · Métadonnées « passage · tempo · durée » dans l’ordre', /Intro · 60 BPM · \d\d:\d\d/.test(cmp) && /Intro · 64 BPM · \d\d:\d\d/.test(cmp))
+  check('S7-07 · Métadonnées « passage · tempo · durée » dans l’ordre', /Intro · réf\. 60 BPM, sans métronome · \d\d:\d\d/.test(cmp) && /Intro · 64 BPM · \d\d:\d\d/.test(cmp))
   check('S7-07 · Prise à un autre tempo : hors comparaison, écoute séparée expliquée', /Autres prises de cette séance · écoute séparée \(Le tempo diffère\.\)/.test(cmp))
   await p5.getByTestId('compare').locator('.ds-take').first().getByRole('button', { name: /^Lecture/ }).click()
   await p5.waitForTimeout(500)
@@ -1274,6 +1274,107 @@ async function main() {
     check(`S09 · REG-01 : un nouvel appui volontaire sur Entrée ouvre bien le bilan (${origin})`, (await p10.getByTestId('review-title').count()) === 1)
     check(`S09 · REG-01 : aucune erreur JavaScript (${origin})`, p10errors.length === 0, p10errors.join(' | '))
     await b10.close()
+  }
+
+  // Sprint 09 · candidate n° 4 — scénario de la recette physique : Piano, débutant, 15 min, nouveau morceau sans passage.
+  async function toLastStep(page, goal, title) {
+    await page.goto(`${BASE}?reset`)
+    await page.getByRole('button', { name: 'Commencer' }).click()
+    await page.getByRole('button', { name: /Piano/ }).click()
+    await page.getByRole('button', { name: 'Continuer' }).click()
+    await page.getByRole('button', { name: /Je débute/ }).click()
+    await page.getByRole('button', { name: 'Continuer' }).click()
+    await page.getByRole('button', { name: new RegExp(`^${goal}`) }).click()
+    await page.getByRole('button', { name: 'Continuer' }).click()
+    await page.getByRole('button', { name: '15 min' }).click()
+    await page.getByRole('button', { name: /^Entrer dans / }).click()
+    await addPiece(page, title)
+    await page.getByRole('button', { name: 'Préparer une séance' }).click()
+    await page.getByRole('button', { name: 'Commencer la séance' }).click()
+    for (let i = 0; i < 6 && (await page.getByRole('button', { name: 'Étape suivante' }).count()); i++) await page.getByRole('button', { name: 'Étape suivante' }).click()
+  }
+
+  // Sprint 09 · S09-QA-02 — deux prises à « Prise de contrôle » sans métronome : comparaison A/B proposée.
+  for (const goal of ['Rythme', 'Mémoire']) {
+    const b11 = await chromium.launch({ args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream', '--autoplay-policy=no-user-gesture-required'] })
+    const c11 = await b11.newContext({ viewport: VIEWPORT, locale: 'fr-FR' })
+    await c11.grantPermissions(['microphone'])
+    const p11 = await c11.newPage()
+    const p11errors = []
+    p11.on('pageerror', (e) => p11errors.push(e.message))
+    await toLastStep(p11, goal, `Contrôle ${goal}`)
+    check(`S09 · S09-QA-02 (${goal}) : étape « Prise de contrôle »`, (await p11.getByRole('heading', { name: 'Prise de contrôle' }).count()) === 1)
+    await record(p11, 1200)
+    await record(p11, 1200)
+    const meta11 = await p11.locator('.ds-take').first().innerText()
+    const expected = goal === 'Rythme' ? /réf\. 60 BPM, sans métronome/ : /tempo libre/
+    check(`S09 · S09-QA-02 (${goal}) : tempo de la prise sans métronome distinct d’un tempo joué`, expected.test(meta11) && !/tempo inconnu/.test(meta11), meta11.split('\n').slice(0, 2).join(' / '))
+    if (goal === 'Rythme') {
+      await p11.getByRole('button', { name: 'Métronome' }).click()
+      await p11.getByRole('button', { name: 'Démarrer', exact: true }).click()
+      await record(p11, 1200)
+      await p11.getByRole('button', { name: 'Arrêter', exact: true }).click()
+      const meta11m = await p11.locator('.ds-take').first().innerText()
+      check('S09 · S09-QA-02 : avec le métronome, la prise porte le tempo joué', /· 60 BPM ·/.test(meta11m) && !/réf\./.test(meta11m.split('\n')[1] || meta11m), meta11m.split('\n').slice(0, 2).join(' / '))
+    }
+    await p11.getByRole('button', { name: 'Faire le bilan', exact: true }).click()
+    await p11.getByTestId('review-title').waitFor()
+    check(`S09 · S09-QA-02 (${goal}) : le bilan propose la comparaison A/B des deux prises sans métronome`, (await p11.getByTestId('compare').locator('.ds-take').count()) === 2)
+    const review11 = await p11.locator('main, .v0-main').first().innerText()
+    check(`S09 · S09-QA-02 (${goal}) : plus de « Le tempo n’est pas connu »`, !/Le tempo n’est pas connu/.test(review11))
+    if (goal === 'Rythme') check('S09 · S09-QA-02 : la prise au métronome est écoutée à part (origine du tempo différente)', /Une seule des deux prises a été faite avec le métronome/.test(review11), review11.match(/Autres prises[^\n]*/)?.[0] || '')
+    check(`S09 · S09-QA-02 (${goal}) : aucune erreur JavaScript`, p11errors.length === 0, p11errors.join(' | '))
+    await b11.close()
+  }
+
+  // Sprint 09 · S09-QA-03 — pendant toute la prise, « Arrêter », le chrono et le repère REC restent visibles,
+  // y compris avec l’affichage agrandi (150 % : 260 × 563 px CSS sur un écran de 390 × 844, ou zoom de la page).
+  for (const [w, h, zoom] of [[390, 844, 0], [260, 563, 0], [390, 844, 1.5], [320, 568, 0]]) {
+    const tag = `${w}×${h}${zoom ? ` zoom ${zoom * 100} %` : ''}`
+    const b12 = await chromium.launch({ args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'] })
+    const c12 = await b12.newContext({ viewport: { width: w, height: h }, locale: 'fr-FR' })
+    await c12.grantPermissions(['microphone'])
+    if (zoom) await c12.addInitScript((z) => document.addEventListener('DOMContentLoaded', () => { document.documentElement.style.zoom = String(z) }), zoom)
+    const p12 = await c12.newPage()
+    const p12errors = []
+    p12.on('pageerror', (e) => p12errors.push(e.message))
+    await toLastStep(p12, 'Rythme', 'Arrêt visible')
+    // Cas de la recette physique : le bouton « Enregistrer une prise » est près du bas de l’écran au démarrage.
+    await p12.evaluate(() => {
+      const b = document.querySelector('.ds-recbtn').getBoundingClientRect()
+      document.scrollingElement.scrollTop += b.bottom - innerHeight + 80
+    })
+    await p12.locator('.ds-recbtn').evaluate((b) => b.click())
+    await p12.locator('.v0-navlock').waitFor()
+    const visibleAll = async () => p12.evaluate(() => {
+      const seen = (el) => {
+        if (!el) return false
+        const b = el.getBoundingClientRect()
+        const pts = [[b.left + b.width / 2, b.top + b.height / 2], [b.left + 16, b.top + b.height / 2], [b.right - 16, b.top + b.height / 2], [b.left + b.width / 2, b.top + 3], [b.left + b.width / 2, b.bottom - 3]]
+        return pts.every(([x, y]) => y >= 0 && y <= innerHeight && el.contains(document.elementFromPoint(x, y)))
+      }
+      const lock = document.querySelector('.v0-navlock').getBoundingClientRect()
+      const dock = document.querySelector('.v0-dock').getBoundingClientRect()
+      return { stop: seen(document.querySelector('.ds-recbtn.is-on')), chrono: seen(document.querySelector('.ds-recorder-status.is-on')), rec: seen(document.querySelector('.v0-dock-rec .ds-badge')), lockAboveDock: lock.bottom <= dock.top + 1, msg: (() => {
+        // Zone du texte du message (la marge basse accueille le repère REC, par construction).
+        const el = document.querySelector('.v0-navlock')
+        const range = document.createRange()
+        range.selectNodeContents(el)
+        return [...range.getClientRects()].every((r) => [[r.left + 2, r.top + r.height / 2], [r.right - 2, r.top + r.height / 2]].every(([x, y]) => el.contains(document.elementFromPoint(x, y))))
+      })() }
+    })
+    await p12.waitForTimeout(400)
+    const v1 = await visibleAll()
+    check(`S09 · S09-QA-03 (${tag}) : au démarrage, « Arrêter », chrono et REC entièrement visibles`, v1.stop && v1.chrono && v1.rec, JSON.stringify(v1))
+    check(`S09 · S09-QA-03 (${tag}) : le message de navigation reste lisible, posé au-dessus de la barre`, v1.msg && v1.lockAboveDock, JSON.stringify(v1))
+    await p12.waitForTimeout(1500)
+    const v2 = await visibleAll()
+    check(`S09 · S09-QA-03 (${tag}) : toujours visibles pendant la prise`, v2.stop && v2.chrono && v2.rec, JSON.stringify(v2))
+    await p12.locator('.ds-recbtn.is-on').click()
+    await p12.getByText(/Prise sauvegardée sur cet appareil/).waitFor()
+    check(`S09 · S09-QA-03 (${tag}) : « Arrêter » fonctionne, message et repère retirés`, (await p12.locator('.v0-navlock').count()) === 0 && (await p12.locator('.v0-dock-rec').count()) === 0)
+    check(`S09 · S09-QA-03 (${tag}) : aucune erreur JavaScript`, p12errors.length === 0, p12errors.join(' | '))
+    await b12.close()
   }
 
   const failed = results.filter((r) => !r.ok)

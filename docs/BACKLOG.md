@@ -68,6 +68,18 @@ Consigné sans correction le 23/11. Mise à jour Sprint 05 : C1 traité ; les au
 | C11 | Branche inutile | Supprimer `claude/sprint04-access-check` sur GitHub (action manuelle : la session Claude ne peut pas supprimer de branche). | Basse |
 | C12 | Registre des liens | Ajouter le lien de la copie Google Drive dans `CLAUDE.md`, pour que les futures sessions la tiennent à jour. | Basse |
 
+## D. Observations de la recette physique du Sprint 09 (27/11/2026), non corrigées
+
+Documentées sans extension du périmètre (dernier lot correctif limité à S09-QA-02 et S09-QA-03).
+
+| ID | Observation | Piste |
+| --- | --- | --- |
+| O-S09-3 | Une commande peut être partiellement recouverte par la barre de navigation tant que la page n’a pas défilé (divergence « pointeur » REG-01) | Product Design, après le MVP |
+| O-S09-4 | Le message « Micro refusé » ne cite que le réglage du site ; un refus fait dans Réglages → Safari → Micro demande ce chemin | Ajouter « ou Réglages → Safari → Micro » |
+| O-S09-5 | Le clic du métronome se décale de 0,1 à 0,34 s au démarrage et à l’arrêt d’une prise (bascule micro / haut-parleur de l’iPhone) | À étudier (session audio) |
+| O-S09-6 | Safari redemande l’accès au micro dans une même visite | Comportement de Safari, aucune action |
+| O-S09-7 | Le zoom réglé dans Réglages → Safari ne s’applique qu’après un passage par le menu de page | Préciser dans les protocoles de test |
+
 ## C. Tests restant à effectuer
 
 Voir `docs/recettes/da-preview.md`, section « Restant à vérifier ».

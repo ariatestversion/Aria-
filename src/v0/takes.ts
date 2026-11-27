@@ -1,4 +1,4 @@
-import type { Take } from './model'
+import type { Take, WorkProgram } from './model'
 import { passageLabel } from './pedagogy'
 
 /**
@@ -7,6 +7,8 @@ import { passageLabel } from './pedagogy'
  * Deux prises ne sont comparables que si elles sont distinctes, lisibles, de la même séance,
  * du même passage identifié et du même tempo connu. Rien n’est déduit : une valeur absente
  * rend la comparaison impossible (écoute séparée). La durée est informative seulement.
+ * Sprint 09 · S09-QA-02 : le tempo joué (métronome) et le tempo de référence (consigne) sont distingués ;
+ * deux prises ne se comparent qu’avec un tempo de même origine et de même valeur.
  */
 
 /**
@@ -23,14 +25,59 @@ export function sessionTakePassage(saisi: string | undefined, inSession: boolean
   return p || (inSession ? DEFAULT_PASSAGE : '')
 }
 
+/**
+ * Sprint 09 · S09-QA-02 — tempo de référence de la séance pour l’étape en cours : celui de sa consigne,
+ * sinon le tempo de travail des étapes précédentes, sinon celui des étapes suivantes. Absent si la séance
+ * ne travaille aucun tempo. C’est un tempo conseillé, jamais une mesure de ce qui a été joué.
+ */
+export function sessionReferenceBpm(program: Pick<WorkProgram, 'steps'> | null | undefined, stepIndex: number) {
+  const steps = program?.steps || []
+  if (!steps.length) return undefined
+  const i = Math.max(0, Math.min(stepIndex, steps.length - 1))
+  const ok = (b?: number) => typeof b === 'number' && b > 0
+  if (ok(steps[i].bpm)) return steps[i].bpm
+  for (let j = i - 1; j >= 0; j--) if (ok(steps[j].bpm)) return steps[j].bpm
+  for (let j = i + 1; j < steps.length; j++) if (ok(steps[j].bpm)) return steps[j].bpm
+  return undefined
+}
+
+/** Tempo enregistré avec une prise : tempo joué (métronome) ou, à défaut, tempo de référence ou libre. */
+export function takeTempo(metronomeBpm: number | undefined, refBpm: number | undefined, inSession: boolean): Pick<Take, 'bpm' | 'refBpm' | 'tempoSource'> {
+  if (typeof metronomeBpm === 'number' && metronomeBpm > 0) return { bpm: metronomeBpm, refBpm, tempoSource: 'metronome' }
+  if (inSession && typeof refBpm === 'number' && refBpm > 0) return { bpm: undefined, refBpm, tempoSource: 'reference' }
+  return { bpm: undefined, refBpm: undefined, tempoSource: inSession ? 'free' : undefined }
+}
+
+/**
+ * Clé de tempo utilisée pour comparer : deux prises ne se comparent que si leur tempo a la même origine
+ * et la même valeur (métronome à 60 avec métronome à 60, référence 60 avec référence 60, libre avec libre).
+ * Prises antérieures au Sprint 09 : leur tempo enregistré, comme avant. Inconnu : `null`.
+ */
+export function tempoKey(t: Pick<Take, 'bpm' | 'refBpm' | 'tempoSource'>): string | null {
+  const ok = (b?: number) => typeof b === 'number' && b > 0
+  if (t.tempoSource === 'metronome') return ok(t.bpm) ? `metronome:${t.bpm}` : null
+  if (t.tempoSource === 'reference') return ok(t.refBpm) ? `reference:${t.refBpm}` : null
+  if (t.tempoSource === 'free') return 'free'
+  return ok(t.bpm) ? `legacy:${t.bpm}` : null
+}
+
+/** Libellé du tempo d’une prise, qui distingue le tempo joué au métronome du tempo de référence. */
+export function tempoLabel(t: Pick<Take, 'bpm' | 'refBpm' | 'tempoSource'>) {
+  const key = tempoKey(t)
+  if (!key) return 'tempo inconnu'
+  if (t.tempoSource === 'reference') return `réf. ${t.refBpm} BPM, sans métronome`
+  if (t.tempoSource === 'free') return 'tempo libre'
+  return `${t.bpm} BPM`
+}
+
 export function takePassage(t: Pick<Take, 'passage'>) {
   return passageLabel(t.passage)
 }
 
 /** « passage · tempo · durée », toujours dans cet ordre, avec des valeurs inconnues explicites. */
-export function takeMeta(t: Pick<Take, 'passage' | 'bpm' | 'seconds'>, fmt: (s: number) => string) {
+export function takeMeta(t: Pick<Take, 'passage' | 'bpm' | 'refBpm' | 'tempoSource' | 'seconds'>, fmt: (s: number) => string) {
   const passage = takePassage(t) || 'passage non renseigné'
-  const tempo = typeof t.bpm === 'number' && t.bpm > 0 ? `${t.bpm} BPM` : 'tempo inconnu'
+  const tempo = tempoLabel(t)
   const duration = t.seconds > 0 ? fmt(t.seconds) : 'durée inconnue'
   return `${passage} · ${tempo} · ${duration}`
 }
@@ -46,9 +93,16 @@ export function comparability(a: Take, b: Take): Comparability {
   const pb = takePassage(b)
   if (!pa || !pb) return { ok: false, reason: 'Le passage n’est pas renseigné.' }
   if (pa !== pb) return { ok: false, reason: 'Le passage diffère.' }
-  if (!(typeof a.bpm === 'number' && a.bpm > 0) || !(typeof b.bpm === 'number' && b.bpm > 0))
-    return { ok: false, reason: 'Le tempo n’est pas connu.' }
-  if (a.bpm !== b.bpm) return { ok: false, reason: 'Le tempo diffère.' }
+  const ka = tempoKey(a)
+  const kb = tempoKey(b)
+  if (!ka || !kb) return { ok: false, reason: 'Le tempo n’est pas connu.' }
+  if (ka !== kb) {
+    // Même valeur, origine différente : on le dit, plutôt que d’annoncer un tempo différent.
+    const value = (t: Take) => (t.tempoSource === 'reference' ? t.refBpm : t.bpm)
+    const oneMetronome = (a.tempoSource === 'metronome') !== (b.tempoSource === 'metronome')
+    if (oneMetronome && value(a) === value(b)) return { ok: false, reason: 'Une seule des deux prises a été faite avec le métronome.' }
+    return { ok: false, reason: 'Le tempo diffère.' }
+  }
   return { ok: true }
 }
 
@@ -57,8 +111,9 @@ export function comparableGroup(takes: Take[]): Take[] {
   const groups = new Map<string, Take[]>()
   for (const t of takes) {
     const p = takePassage(t)
-    if (t.unreadable || !t.sessionStartedAt || !p || !(typeof t.bpm === 'number' && t.bpm > 0)) continue
-    const key = `${t.sessionStartedAt}|${p}|${t.bpm}`
+    const k = tempoKey(t)
+    if (t.unreadable || !t.sessionStartedAt || !p || !k) continue
+    const key = `${t.sessionStartedAt}|${p}|${k}`
     groups.set(key, [...(groups.get(key) || []), t])
   }
   let best: Take[] = []

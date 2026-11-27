@@ -131,8 +131,18 @@ export type Take = {
   stepTitle?: string
   /** Sprint 07 — séance (début du programme) à laquelle la prise appartient. */
   sessionStartedAt?: string
-  /** Sprint 07 — tempo de travail au moment de la prise (métronome ou consigne). Absent = inconnu. */
+  /**
+   * Tempo réellement joué, connu seulement si le métronome tournait pendant la prise (Sprint 09 · S09-QA-02).
+   * Prises antérieures au Sprint 09 (sans `tempoSource`) : tempo du métronome ou de la consigne, sans distinction.
+   */
   bpm?: number
+  /** Sprint 09 · S09-QA-02 — tempo de référence de la séance au moment de la prise (consigne), sans métronome. */
+  refBpm?: number
+  /**
+   * Sprint 09 · S09-QA-02 — origine du tempo : métronome (joué), référence de la séance (conseillé, non mesuré)
+   * ou libre (séance sans tempo et sans métronome). Absent sur les prises antérieures.
+   */
+  tempoSource?: 'metronome' | 'reference' | 'free'
   /** Sprint 07 — média présent mais illisible sur cet appareil : conservé, jamais comparé. */
   unreadable?: boolean
 }

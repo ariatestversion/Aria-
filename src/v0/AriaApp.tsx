@@ -5,7 +5,7 @@ import { useMediaRecorder } from '../lib/recorder'
 import { isGuestEmail, probeAuthMode, restoreSession, signOutV0, type AuthMode } from './auth'
 import type { UserProfile } from '../types'
 import { playableDuration } from './media'
-import { comparability, comparableGroup, nonComparableReason, takeMeta, takesOfSession, sessionTakePassage } from './takes'
+import { comparability, comparableGroup, nonComparableReason, sessionReferenceBpm, takeMeta, takeTempo, takesOfSession, sessionTakePassage } from './takes'
 import { buildProgram, buildReview, defaultResource, prepGoalsFor, previousSessionFrom, resourceAvailable } from './pedagogy'
 import {
   DEMO_GENRES,
@@ -849,8 +849,13 @@ export function AriaApp() {
       }
       const step = current.program?.steps[Math.min(current.program.stepIndex, current.program.steps.length - 1)]
       const inSession = screen === 'session' && Boolean(current.program)
-      // Tempo réellement utilisé : métronome en marche, sinon tempo de la consigne ; sinon inconnu.
-      const bpm = metro.running && metro.bpm > 0 ? metro.bpm : inSession && step?.bpm ? step.bpm : undefined
+      // S09-QA-02 — tempo joué (métronome en marche) distinct du tempo de référence de la séance
+      // (consigne de l’étape, sinon tempo de travail des autres étapes) ; libre si la séance n’a pas de tempo.
+      const tempo = takeTempo(
+        metro.running && metro.bpm > 0 ? metro.bpm : undefined,
+        inSession ? sessionReferenceBpm(current.program, current.program?.stepIndex ?? 0) : undefined,
+        inSession,
+      )
       const take: Take = {
         id: takeId,
         email,
@@ -863,7 +868,7 @@ export function AriaApp() {
         mime: blob.type || 'audio/webm',
         stepTitle: inSession ? step?.title : undefined,
         sessionStartedAt: inSession ? sessionStart(current) || undefined : undefined,
-        bpm,
+        ...tempo,
         unreadable: unreadable || undefined,
       }
       saveTakeMeta(take)
@@ -1034,6 +1039,45 @@ export function AriaApp() {
     setScreen('welcome')
   }
 
+  // Sprint 09 · S09-QA-03 — pendant une prise, « Arrêter », le chrono et le repère REC restent visibles.
+  // Le message « Navigation indisponible » est posé sur la hauteur réelle de la barre (qui grandit avec
+  // le texte ou le zoom), et la commande d’arrêt est ramenée au-dessus du message si elle est dessous.
+  useEffect(() => {
+    if (recorder.status !== 'recording') return
+    const root = document.documentElement
+    const dock = document.querySelector<HTMLElement>('.v0-dock')
+    const lock = document.querySelector<HTMLElement>('.v0-navlock')
+    const sync = () => {
+      if (dock) root.style.setProperty('--dock-live-h', `${dock.offsetHeight}px`)
+      if (lock) root.style.setProperty('--navlock-live-h', `${lock.offsetHeight}px`)
+    }
+    const reveal = () => {
+      const rec = document.querySelector<HTMLElement>('.ds-recorder.is-recording')
+      if (!rec || !lock) return
+      const r = rec.getBoundingClientRect()
+      const limit = lock.getBoundingClientRect().top - 12
+      if (r.bottom > limit || r.top < 0) rec.scrollIntoView({ block: 'nearest' })
+    }
+    sync()
+    const frame = requestAnimationFrame(() => {
+      sync()
+      reveal()
+    })
+    const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(sync) : null
+    if (dock) ro?.observe(dock)
+    if (lock) ro?.observe(lock)
+    const onResize = () => {
+      sync()
+      reveal()
+    }
+    window.addEventListener('resize', onResize)
+    return () => {
+      cancelAnimationFrame(frame)
+      ro?.disconnect()
+      window.removeEventListener('resize', onResize)
+    }
+  }, [recorder.status, screen])
+
   if (boot) {
     return (
       <div className="v0-app nodock">
@@ -1054,6 +1098,7 @@ export function AriaApp() {
   const capturing = recorder.status === 'recording'
 
   const docked = ['home', 'library', 'follow', 'profile', 'piece', 'prepare', 'session', 'record', 'review', 'switch'].includes(screen)
+
 
   const toggleIn = <T,>(list: T[], value: T, max = 99) =>
     list.includes(value) ? list.filter((x) => x !== value) : list.length >= max ? [...list.slice(1), value] : [...list, value]

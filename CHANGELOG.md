@@ -10,6 +10,15 @@ Branche : `claude/sprint09-validation`, depuis `claude/sprint08-identite` (appli
 - Audit du parcours et des programmes, constats S09-D-01 à D-05 à arbitrer : `docs/recettes/sprint09.md`.
 - Tests : unitaires 44/44 ; e2e **300/300** (3 contrôles dédiés ajoutés).
 
+### Candidate n° 4 — dernier lot correctif (GO PM du 27/11, après la recette physique sur iPhone)
+- **S09-QA-02 corrigé** : deux prises faites à « Prise de contrôle » sans métronome sont maintenant comparables.
+  - Le tempo joué (métronome) et le tempo de référence de la séance sont distingués. Une prise sans métronome affiche « réf. 60 BPM, sans métronome » ; dans une séance sans tempo, elle affiche « tempo libre ».
+  - Règles conservées : même séance, même passage, tempo de même origine et de même valeur.
+  - Aucune migration : les anciennes prises restent lues comme avant.
+- **S09-QA-03 corrigé** : pendant toute la prise, « Arrêter », le chrono et le repère REC restent visibles, y compris avec l’affichage agrandi. Le message « Navigation indisponible » suit la hauteur réelle de la barre, et la commande d’arrêt est ramenée au-dessus de lui.
+- Tests : unitaires **53/53** (6 ajoutés) ; e2e **347/347** (32 contrôles ajoutés), 327/327 en DA A. Sur `aa83a42`, 19 de ces contrôles échouent.
+- Observations O-S09-4 à O-S09-7 : documentées (`docs/BACKLOG.md`), non corrigées.
+
 ### Investigation finale — divergence « pointeur » sur REG-01 (27/11)
 - Cause : sans défilement, « Reprendre la séance » peut n’être que partiellement visible au-dessus de la barre de navigation fixe (14 px à 1920 × 1080). Un clic placé juste sous la partie visible tombe sur la barre, et le bilan reste affiché.
 - Comportement identique sur `d5e4a7a`, `cf3d2c9` et `aa83a42` : ce n’est pas une anomalie applicative et ce n’est pas une régression. Pas de candidate n° 4 ; la candidate n° 3 reste la référence de clôture.
