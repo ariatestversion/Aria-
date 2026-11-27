@@ -124,3 +124,72 @@ Le passage par défaut est un choix du PM, sous réserve de l’arbitrage du Hea
 S09-D-02 à D-05 : priorités maintenues ; D-02 sera arbitré après les tests physiques. REG-01 reste ouverte.
 
 Candidate n° 2 : https://6b0864cbe55b19581e435a76--ariafirstversion.netlify.app (commit `1aeaf8c`, déploiement `6b0864cbe55b19581e435a76`, non publiée ; `/version.json` doit indiquer `1aeaf8c`). Recette : 47/47, 307/307 (Nuit & cuivre), 287/287 (DA A).
+
+## Phase de clôture — diagnostic du 27/11/2026 (avant toute modification applicative)
+
+Référence de travail : candidate n° 2, `1aeaf8c`. Avis lus :
+- contre-recette Claude QA de la candidate n° 2 (9/10, corrections validées, aucune régression, REG-01 non reproduite) ;
+- complément PM : ChatGPT QA a reproduit REG-01 de façon intermittente, au premier clic ; Product Design confirme Nuit & cuivre.
+
+### S08-QA-REG-01 : cause identifiée
+
+- **Reproduction systématique** en Chromium automatisé sur `1aeaf8c` : touche Entrée répétée (maintenue, ou deux appuis rapprochés) sur « Reprendre la séance ». 2 essais sur 2. Non reproduit au simple clic, au double clic, à la barre d’espace ni au toucher, y compris avec le processeur ralenti 6 et 20 fois.
+- **Mécanisme** :
+  1. Le premier appui ouvre la séance à la dernière étape.
+  2. La séance donne alors automatiquement le focus à « Faire le bilan » (règle S7-04 / T07).
+  3. L’appui répété suivant active ce bouton et rouvre le bilan aussitôt : l’utilisateur a l’impression que le bilan « reste affiché ».
+  4. Un appui ultérieur, bref, fonctionne : d’où le caractère intermittent.
+  5. Le même risque existe pour « Étape suivante » vers la dernière étape.
+- Le double clic est un déclencheur possible quand « Faire le bilan » apparaît sous le pointeur, selon la taille d’écran (non observé ici).
+- **Correctif proposé** (11 lignes, `docs/sprint09/REG-01-correctif-propose.patch`, non appliqué) :
+  - sur « Faire le bilan » uniquement, ignorer un appui clavier répété (`repeat`) et le second clic d’un double clic ;
+  - le focus de S7-04 / T07 et celui de QA-01 sont conservés.
+- Prototype vérifié localement : la reproduction disparaît (2 essais sur 2) ; recette complète 47/47 et 307/307.
+- Test à ajouter avec le correctif : Entrée répétée sur « Reprendre la séance » et sur « Étape suivante » vers la dernière étape ; le bilan ne doit pas se rouvrir.
+- À confirmer auprès de ChatGPT QA : le mode de clic utilisé (souris, clavier, outil d’automatisation).
+
+### Tableau consolidé des réserves
+
+| ID | Gravité | Nature | Responsable | Action nécessaire | Bloquant pour la clôture |
+| --- | --- | --- | --- | --- | --- |
+| S08-QA-REG-01 | Majeure (reproduite) | Technique | Ingénierie, puis QA | GO PM sur le correctif, candidate n° 3, contre-recette des deux QA, contrôle Safari iPhone (R09-02) | **Oui** |
+| R09-01 | Majeure (non testé) | Test physique | Fondatrice ou QA | Prises avec un vrai micro ; comparaison A/B sans passage saisi (« Morceau entier ») ; persistance après fermeture de Safari ; refus et interruption du micro | **Oui** |
+| R09-02 | Majeure (non testé) | Test physique | QA / PD / fondatrice | Séance marine instrument en main, texte agrandi, REG-01 sur Safari, VoiceOver si possible | **Oui** (au minimum REG-01 et l’ergonomie) |
+| R09-03 | Moyenne (non testé) | Test physique | Fondatrice ou QA | Métronome à l’oreille : cadence, arrêt en quittant l’écran, tempo associé à la prise | Oui pour la validation finale |
+| R09-04 | Moyenne (non testé) | Test physique | QA | Android si un appareil est disponible ; cas d’erreur selon fixtures | **À arbitrer** : report possible si aucun appareil Android n’est disponible |
+| S09-D-01 | Arbitrage | Produit | Head of Product / PD | Confirmer le libellé « Morceau entier » (déjà intégré) | Non (décision attendue) |
+| S09-D-02 | Mineure | Ergonomie | PM après tests physiques | Message « navigation indisponible » sur la barre pendant une prise | Non |
+| S09-D-03, D-04 | Mineure | Ergonomie | PM / PD | Onglet actif pendant la séance ; accès rapides redondants | Non |
+| S09-D-05, nom, logotype, icône, photographies | — | Lancement commercial | PD / Communication | Traités en parallèle, hors Sprint 09 | Non |
+| O-S09-1 | Observation | Données | — | Anciennes prises sans passage non comparables (voulu, données préservées) | Non |
+| O-S09-2 | Observation | Données | — | « morceau entier » saisi en minuscules ≠ « Morceau entier » : cas marginal, sans correction | Non |
+
+### Protocole simplifié des tests physiques (fondatrice, iPhone, environ 30 minutes)
+
+Préparation :
+- Safari ouvert directement, pas depuis une autre application, en navigation normale.
+- Lien de la candidate à tester (n° 3 si le correctif est validé, sinon n° 2). Ouvrir `/version.json` et noter le commit affiché.
+- Noter le modèle d’iPhone et la version d’iOS (16.2 minimum).
+- Un instrument, ou deux sons simples et différents.
+- Pour chaque test : « conforme » ou « écart », avec une courte vidéo de l’écran si possible.
+
+| Test | À faire | Attendu |
+| --- | --- | --- |
+| 1 · REG-01 (R09-02) | Mode local : Piano, « Je débute », Rythme, 15 min ; nouveau morceau ; aller à l’étape 4 avec « Étape suivante » ; « Faire le bilan » ; « Garder en brouillon » ; Accueil ; recharger la page ; « Reprendre mon bilan » ; « Reprendre la séance » | La séance s’affiche à l’étape 4 ; le brouillon reste dans le Suivi |
+| 2 · Prises et comparaison (R09-01) | Nouvelle séance sans remplir « Passage travaillé » ; à la même étape, deux prises de 5 à 8 s (deux motifs différents) ; « Faire le bilan maintenant » | Les deux prises portent « Morceau entier » ; le bilan propose de les comparer ; une seule joue à la fois ; les sons sont audibles |
+| 3 · Tempo différent (R09-01, R09-03) | Revenir à la séance ; ouvrir le Métronome, +4 BPM, démarrer ; troisième prise ; bilan | L’en-tête affiche le tempo du métronome ; la troisième prise n’est pas comparée aux deux autres ; le clic s’arrête quand on quitte l’écran |
+| 4 · Persistance (R09-01) | Fermer complètement Safari (balayage), rouvrir le même lien ; Suivi | Les prises sont toujours là et se réécoutent |
+| 5 · Micro refusé (R09-01) | Sur un autre morceau, refuser le micro puis l’autoriser dans les réglages du site et réessayer | Message clair, aucune prise fantôme ; la prise fonctionne ensuite |
+| 6 · Séance instrument en main (R09-02) | Téléphone posé, instrument en main : repérer tempo, consigne, « Arrêter la prise » et « Faire le bilan » ; refaire rapidement avec un texte plus grand (Réglages iOS) | Commandes repérables et utilisables sans gêne |
+| 7 · VoiceOver (R09-02, facultatif) | Activer VoiceOver, ouvrir un bilan | Le titre du bilan est annoncé |
+
+Android, si un appareil est disponible : tests 2 et 4 dans Chrome.
+
+### Corrections indispensables à la clôture et délai
+
+- **Indispensable** : REG-01 (correctif proposé). Aucune autre correction technique n’est requise par les avis reçus.
+- **Délai estimé après le GO PM** :
+  - environ 45 min pour le correctif, le test dédié, la recette complète et la candidate n° 3 ;
+  - puis environ 30 min de contre-recette par les QA ;
+  - et environ 30 min de tests physiques par la fondatrice.
+- La clôture dans la journée est possible si aucun nouvel écart n’apparaît.
