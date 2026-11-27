@@ -1,16 +1,16 @@
 {
-  "version": "Sonique — Sprint 09 · candidate n° 3 (correctif REG-01 ; Nuit & cuivre)",
-  "commit": "aa83a428188c303635c9be32317bf51ab6fec604",
-  "short": "aa83a42",
-  "netlifyDeployId": "6b095d84915d2ecd276a8f85",
-  "netlifyPreview": "https://6b095d84915d2ecd276a8f85--ariafirstversion.netlify.app",
-  "netlifyPreviewClair": "https://6b095d84915d2ecd276a8f85--ariafirstversion.netlify.app/?seance=clair",
-  "previous": "Sprint 09 candidate n° 2 : 6b0864cbe55b19581e435a76, 1aeaf8c ; candidate n° 1 : 6b085b5efaedcc23d9d0dea3, 22dbdc2 ; Sprint 08, référence 975e9ea : 6b084f388ee01180268c44f2",
+  "version": "Sonique — Sprint 09 · candidate n° 4 (S09-QA-02 comparaison sans métronome, S09-QA-03 arrêt visible ; Nuit & cuivre)",
+  "commit": "b41933949c15616fa316a8055fe31fe686ba32f1",
+  "short": "b419339",
+  "netlifyDeployId": "6b09a750acc212c565bc603f",
+  "netlifyPreview": "https://6b09a750acc212c565bc603f--ariafirstversion.netlify.app",
+  "netlifyPreviewClair": "https://6b09a750acc212c565bc603f--ariafirstversion.netlify.app/?seance=clair",
+  "previous": "Sprint 09 candidate n° 3 : 6b095d84915d2ecd276a8f85, aa83a42 ; candidate n° 2 : 6b0864cbe55b19581e435a76, 1aeaf8c ; candidate n° 1 : 6b085b5efaedcc23d9d0dea3, 22dbdc2 ; Sprint 08, référence 975e9ea : 6b084f388ee01180268c44f2",
   "branch": "claude/sprint09-validation",
   "reference": "Alpha V0.6 : 67aa241, prévisualisation 6b05c4864a41ea883858ac80 (conservée)",
   "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813) — vérifié le 25/11 : locked true",
-  "verification": "Déploiement ready, published_at null, expires_at null, aucun secret détecté. version.json envoyé = aa83a42. Unitaires 47/47 ; e2e 315/315 (Nuit & cuivre) et 295/295 (DA A), micro simulé. Aucun test sur appareil physique.",
-  "status": "Sprint 09 en cours : candidate n° 3 retenue comme référence de clôture (contre-recette Claude QA 9,5/10). Divergence « pointeur » REG-01 investiguée le 27/11 : clic tombé sur la barre de navigation qui recouvre en partie le bouton, comportement identique depuis d5e4a7a, aucune anomalie applicative, pas de candidate n° 4. Reste : confirmation ChatGPT QA, protocole définitif des tests physiques, arbitrage « Morceau entier ». Aucune fusion, aucune publication.",
-  "netlifyPreviewPapier": "https://6b095d84915d2ecd276a8f85--ariafirstversion.netlify.app/?accueil=papier",
-  "netlifyPreviewDAA": "https://6b095d84915d2ecd276a8f85--ariafirstversion.netlify.app/?theme=blanc"
+  "verification": "Déploiement ready, published_at null, expires_at null, aucun secret détecté. version.json construit = b419339. Unitaires 53/53 ; e2e 347/347 (Nuit & cuivre) et 327/327 (DA A), micro simulé. Aucun test sur appareil physique pour cette candidate.",
+  "status": "Sprint 09 : candidate n° 4 livrée (dernier lot correctif, GO PM du 27/11). À contre-recetter par Claude QA (automatisé) puis par un essai physique ciblé de 15 min. Aucune fusion, aucune publication.",
+  "netlifyPreviewPapier": "https://6b09a750acc212c565bc603f--ariafirstversion.netlify.app/?accueil=papier",
+  "netlifyPreviewDAA": "https://6b09a750acc212c565bc603f--ariafirstversion.netlify.app/?theme=blanc"
 }

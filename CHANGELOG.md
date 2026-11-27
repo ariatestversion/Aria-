@@ -18,6 +18,7 @@ Branche : `claude/sprint09-validation`, depuis `claude/sprint08-identite` (appli
 - **S09-QA-03 corrigé** : pendant toute la prise, « Arrêter », le chrono et le repère REC restent visibles, y compris avec l’affichage agrandi. Le message « Navigation indisponible » suit la hauteur réelle de la barre, et la commande d’arrêt est ramenée au-dessus de lui.
 - Tests : unitaires **53/53** (6 ajoutés) ; e2e **347/347** (32 contrôles ajoutés), 327/327 en DA A. Sur `aa83a42`, 19 de ces contrôles échouent.
 - Observations O-S09-4 à O-S09-7 : documentées (`docs/BACKLOG.md`), non corrigées.
+- Prévisualisation non publiée : https://6b09a750acc212c565bc603f--ariafirstversion.netlify.app (déploiement `6b09a750acc212c565bc603f`, `/version.json` = `b419339`).
 
 ### Investigation finale — divergence « pointeur » sur REG-01 (27/11)
 - Cause : sans défilement, « Reprendre la séance » peut n’être que partiellement visible au-dessus de la barre de navigation fixe (14 px à 1920 × 1080). Un clic placé juste sous la partie visible tombe sur la barre, et le bilan reste affiché.

@@ -302,9 +302,11 @@ Preuve de détection : sur `aa83a42`, 19 de ces contrôles échouent, plus le li
 
 Captures : `docs/screenshots/sprint09/` (prise à 390 px et à 150 %, bilan avec comparaison à « Prise de contrôle »).
 
+Candidate n° 4 : https://6b09a750acc212c565bc603f--ariafirstversion.netlify.app (commit `b419339`, déploiement `6b09a750acc212c565bc603f`, non publiée ; `/version.json` doit indiquer `b419339`).
+
 ### Contre-recette physique ciblée (environ 15 minutes, iPhone, Safari)
 
-1. Ouvrir `/version.json` de la candidate n° 4 et vérifier le commit annoncé.
+1. Ouvrir `/version.json` de la candidate n° 4 et vérifier `b419339`.
 2. **S09-QA-02** : Piano · Je débute · Rythme · 15 min ; nouveau morceau sans passage ; aller à « Prise de contrôle » ; deux prises **sans métronome** ; « Faire le bilan ».
    - Attendu : prises « Morceau entier · réf. 60 BPM, sans métronome » ; « Comparer les prises · A / B ».
 3. **S09-QA-03** : affichage agrandi (menu de page Safari « aA », 150 %) ; nouvelle séance ; à « Prise de contrôle », démarrer une prise avec le bouton près du bas de l’écran.
