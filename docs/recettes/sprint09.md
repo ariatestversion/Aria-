@@ -200,3 +200,5 @@ Android, si un appareil est disponible : tests 2 et 4 dans Chrome.
 - Tests dédiés (8 contrôles) : Entrée répétée sur « Reprendre la séance » (bilan repris après rechargement) et sur « Étape suivante » vers la dernière étape. Pour chacun : la séance reste affichée, le focus est sur « Faire le bilan », un nouvel appui volontaire ouvre bien le bilan, et aucune erreur JavaScript.
 - Preuve de détection : sans le correctif, les deux scénarios échouent (311/315) ; avec le correctif : **315/315**.
 - REG-01 passe au statut « corrigé, à contre-recetter » par les deux QA et sur Safari iPhone (protocole simplifié, test 1).
+
+Candidate n° 3 : https://6b095d84915d2ecd276a8f85--ariafirstversion.netlify.app (commit `aa83a42`, déploiement `6b095d84915d2ecd276a8f85`, non publiée ; `/version.json` doit indiquer `aa83a42`). Recette : 47/47, 315/315 (Nuit & cuivre), 295/295 (DA A). C’est la version à utiliser pour le protocole simplifié des tests physiques.
