@@ -202,3 +202,64 @@ Android, si un appareil est disponible : tests 2 et 4 dans Chrome.
 - REG-01 passe au statut « corrigé, à contre-recetter » par les deux QA et sur Safari iPhone (protocole simplifié, test 1).
 
 Candidate n° 3 : https://6b095d84915d2ecd276a8f85--ariafirstversion.netlify.app (commit `aa83a42`, déploiement `6b095d84915d2ecd276a8f85`, non publiée ; `/version.json` doit indiquer `aa83a42`). Recette : 47/47, 315/315 (Nuit & cuivre), 295/295 (DA A). C’est la version à utiliser pour le protocole simplifié des tests physiques.
+
+## Divergence « pointeur » sur REG-01 — investigation finale (27/11/2026)
+
+Demande du PM : investiguer uniquement l’écart entre ChatGPT QA (« le bilan reste affiché après un clic sur “Reprendre la séance” », Chrome cloud) et Claude QA (clic, double clic, toucher conformes sur la candidate n° 3). Référence de validation : candidate n° 3, `aa83a42`. Aucune modification applicative dans cette investigation.
+
+### Cause identifiée
+
+Le bouton « Reprendre la séance » est la dernière commande du bilan. La barre de navigation est fixée en bas de l’écran et recouvre le bas de la page tant qu’on n’a pas fait défiler. La marge de fin de page est suffisante : en bas de page, le bouton est entièrement dégagé et cliquable, à toutes les tailles mesurées.
+
+Le cas divergent est un état intermédiaire : le haut du bouton dépasse de quelques pixels au-dessus de la barre et le reste est caché dessous. Par exemple, à 1920 × 1080 sans défilement, seuls 14 px du bouton sont visibles. Le même état peut se produire à n’importe quelle taille d’écran, selon la position de défilement. Un clic placé à l’œil, par exemple par un agent de navigateur qui clique à des coordonnées, peut alors tomber :
+- sur la bande visible : la séance s’ouvre (conforme) ;
+- juste en dessous, sur la barre de navigation : selon l’endroit, rien ne se passe ou un onglet s’ouvre.
+
+Dans le cas où rien ne se passe, le bilan reste affiché et « Retour » ramène à la séance. C’est exactement le constat de ChatGPT QA, y compris le fait que ce soit « aucun blocage total » et intermittent.
+
+| Mesure (Chromium, `docs/sprint09/diag-REG-01-pointeur.cjs`) | `d5e4a7a` (Sprint 07) | `cf3d2c9` (Sprint 08) | `aa83a42` (candidate n° 3) |
+| --- | --- | --- | --- |
+| Position du bouton et de la barre (1920 × 1080, 1600 × 1000) | identique | identique | identique |
+| Clic sur la bande visible | séance | — | séance |
+| Clic juste sous la bande (sur la barre) | bilan reste affiché | — | bilan reste affiché |
+| Clic par rôle, ou après défilement | séance | séance | séance |
+
+Autres variantes au pointeur sur `aa83a42`, à 1348 × 936, 1280 × 720, 1280 × 800, 1024 × 768 et 1440 × 900 :
+- conformes (séance ouverte) : clic simple, clic lent (appui de 400 ms), double clic, deux clics à 150 ms, deux clics distincts à 800 ms ;
+- bilan rouvert : clic suivi d’un appui sur Entrée ou sur Espace. Après le clic, le focus est sur « Faire le bilan » (règle S7-04) ; un nouvel appui volontaire l’active, ce qui est le comportement normal du clavier, déjà accepté par les deux QA comme limite de REG-01.
+
+### Conclusions
+
+- **Ce n’est pas une anomalie applicative.** La géométrie de la page et le comportement au clic sont identiques depuis le Sprint 07 (`d5e4a7a`). La différence entre `d5e4a7a` et `cf3d2c9` rapportée au Sprint 08 vient de l’endroit où le clic est tombé, pas du code.
+- Le correctif clavier de la candidate n° 3 n’est pas en cause et reste nécessaire : l’Entrée répétée était une cause distincte, reproduite systématiquement.
+- **Aucune correction proposée, pas de candidate n° 4.** La candidate n° 3 (`aa83a42`) reste la référence de clôture.
+- Observation non bloquante, hors périmètre du Sprint 09 (aucune modification graphique autorisée) : **O-S09-3**. Une commande peut être partiellement recouverte par la barre de navigation tant que la page n’a pas défilé. C’est le comportement courant d’une barre fixe, et la commande reste atteignable par défilement. Une amélioration éventuelle (barre d’action collante dans le bilan, ou masquage de la barre de navigation sur le bilan) relève du Product Design, après le MVP.
+- Pour les QA : un clic doit viser une commande entièrement visible. Faire défiler jusqu’à voir le bouton en entier avant de cliquer ; avec un outil automatisé, cliquer par rôle ou par libellé plutôt qu’à des coordonnées. Le script de diagnostic rejoue les trois cas sur n’importe quelle prévisualisation : `node docs/sprint09/diag-REG-01-pointeur.cjs <URL>`.
+
+### Protocole définitif des tests physiques (candidate n° 3)
+
+Il remplace le protocole simplifié ci-dessus. Les tests 2 à 7 ne changent pas ; le test 1 est précisé.
+
+Préparation :
+- iPhone, Safari ouvert directement, en navigation normale.
+- Lien : https://6b095d84915d2ecd276a8f85--ariafirstversion.netlify.app. Ouvrir `/version.json` et vérifier `aa83a42`. Sinon, arrêter et signaler.
+- Noter le modèle d’iPhone et la version d’iOS (16.2 minimum).
+- Pour chaque test : « conforme » ou « écart », avec une vidéo d’écran si possible et l’heure.
+
+| Test | À faire | Attendu |
+| --- | --- | --- |
+| 1a · REG-01 au toucher (R09-02) | Mode local : Piano, « Je débute », Rythme, 15 min ; nouveau morceau ; aller à l’étape 4 avec « Étape suivante » ; « Faire le bilan » ; « Garder en brouillon » ; Accueil ; recharger la page ; « Reprendre mon bilan ». **Faire défiler jusqu’à voir « Reprendre la séance » en entier au-dessus de la barre**, puis toucher une fois | La séance s’affiche à l’étape 4 ; le brouillon reste dans le Suivi |
+| 1b · REG-01, double toucher | Recommencer le test 1a (« Faire le bilan », « Garder en brouillon », Accueil, « Reprendre mon bilan »), puis toucher deux fois rapidement « Reprendre la séance » | La séance reste affichée ; le bilan ne se rouvre pas |
+| 1c · REG-01 au clavier (facultatif, ordinateur avec Chrome ou Safari) | Même scénario ; placer le focus sur « Reprendre la séance » avec Tab et **maintenir** Entrée une seconde | La séance reste affichée, le focus est sur « Faire le bilan » ; un nouvel appui distinct sur Entrée ouvre le bilan (normal) |
+| 2 à 7 | Inchangés (protocole simplifié ci-dessus) | Inchangés |
+
+Un toucher sur la barre de navigation n’est pas un écart REG-01, même s’il recouvre en partie le bouton. Le noter comme observation O-S09-3, avec une capture.
+
+Android, si un appareil est disponible : tests 1a, 2 et 4 dans Chrome.
+
+### Délai
+
+- Ingénierie : aucun développement nécessaire. Diagnostic, script et documentation livrés (commit de documentation seulement, aucune nouvelle prévisualisation).
+- ChatGPT QA : environ 15 min pour confirmer, sur la candidate n° 3, le test 1a et le script de diagnostic.
+- Fondatrice : environ 35 min pour le protocole définitif.
+- La clôture du Sprint 09 est possible dans la journée si ces tests sont conformes et si « Morceau entier » est arbitré.

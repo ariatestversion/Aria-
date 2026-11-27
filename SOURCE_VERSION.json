@@ -10,7 +10,7 @@
   "reference": "Alpha V0.6 : 67aa241, prévisualisation 6b05c4864a41ea883858ac80 (conservée)",
   "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813) — vérifié le 25/11 : locked true",
   "verification": "Déploiement ready, published_at null, expires_at null, aucun secret détecté. version.json envoyé = aa83a42. Unitaires 47/47 ; e2e 315/315 (Nuit & cuivre) et 295/295 (DA A), micro simulé. Aucun test sur appareil physique.",
-  "status": "Sprint 09 en cours : candidate n° 3, à contre-recetter par les deux QA et à tester sur appareils (protocole simplifié). REG-01 corrigé, à contre-recetter. Aucune fusion, aucune publication.",
+  "status": "Sprint 09 en cours : candidate n° 3 retenue comme référence de clôture (contre-recette Claude QA 9,5/10). Divergence « pointeur » REG-01 investiguée le 27/11 : clic tombé sur la barre de navigation qui recouvre en partie le bouton, comportement identique depuis d5e4a7a, aucune anomalie applicative, pas de candidate n° 4. Reste : confirmation ChatGPT QA, protocole définitif des tests physiques, arbitrage « Morceau entier ». Aucune fusion, aucune publication.",
   "netlifyPreviewPapier": "https://6b095d84915d2ecd276a8f85--ariafirstversion.netlify.app/?accueil=papier",
   "netlifyPreviewDAA": "https://6b095d84915d2ecd276a8f85--ariafirstversion.netlify.app/?theme=blanc"
 }

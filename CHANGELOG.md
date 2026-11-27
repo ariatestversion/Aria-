@@ -10,6 +10,12 @@ Branche : `claude/sprint09-validation`, depuis `claude/sprint08-identite` (appli
 - Audit du parcours et des programmes, constats S09-D-01 à D-05 à arbitrer : `docs/recettes/sprint09.md`.
 - Tests : unitaires 44/44 ; e2e **300/300** (3 contrôles dédiés ajoutés).
 
+### Investigation finale — divergence « pointeur » sur REG-01 (27/11)
+- Cause : sans défilement, « Reprendre la séance » peut n’être que partiellement visible au-dessus de la barre de navigation fixe (14 px à 1920 × 1080). Un clic placé juste sous la partie visible tombe sur la barre, et le bilan reste affiché.
+- Comportement identique sur `d5e4a7a`, `cf3d2c9` et `aa83a42` : ce n’est pas une anomalie applicative et ce n’est pas une régression. Pas de candidate n° 4 ; la candidate n° 3 reste la référence de clôture.
+- Observation O-S09-3, non bloquante, pour le Product Design après le MVP.
+- Ajouts : script `docs/sprint09/diag-REG-01-pointeur.cjs` et protocole définitif des tests physiques (`docs/recettes/sprint09.md`). Aucune modification applicative.
+
 ### Candidate n° 3 — correctif REG-01 (GO PM du 27/11)
 - **S08-QA-REG-01 corrigé** :
   - cause : une touche Entrée répétée (maintenue, ou deux appuis rapprochés) sur « Reprendre la séance » ou « Étape suivante » activait aussitôt « Faire le bilan », qui reçoit le focus automatiquement à la dernière étape ; le bilan se rouvrait ;
