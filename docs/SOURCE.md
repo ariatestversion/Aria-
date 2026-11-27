@@ -24,7 +24,61 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 `npm run build` génère `public/version.json` (commit, branche, date) : c’est la preuve de correspondance entre le commit GitHub et le déploiement Netlify. `SOURCE_VERSION.json` enregistre le dernier couple commit / déploiement de prévisualisation.
 
-## État Sprint 09 — Validation finale et stabilisation du MVP (en cours, 26/11/2026)
+## Clôture technique consolidée des Sprints 07, 08 et 09 et sécurisation des versions (27/11/2026)
+
+Décision du Head of Product : clôture technique consolidée des Sprints 07, 08 et 09. **Référence technique de Sonique V2 : candidate n° 4, `b419339`.** À partir du 28/11 : finitions esthétiques et intégration des ressources validées seulement. Aucune modification fonctionnelle, aucun Sprint 10, aucune suppression de branche, aucune fusion dans `main`, aucune publication.
+
+### Filiation des branches (vérifiée le 27/11 sur `ariatestversion/Aria-`)
+
+`main` (`f0a61a0`, fusion du Sprint 06) → `claude/sprint07-integration` (`1276a2a`) → `claude/sprint08-identite` (`221b579`) → `claude/sprint09-validation` (`afcc746`, documentation au-dessus de `b419339`).
+
+- Chaque branche contient entièrement la précédente, sans réécriture. `main` est entièrement contenu dans `b419339`. Une fusion future de `claude/sprint09-validation` dans `main` serait donc une avance rapide, sans conflit.
+- Les branches antérieures sont toutes contenues dans `b419339` : `sprint04-experience-musicale`, `sprint04-access-check`, `da-preview`, `sprint05-pratique` et `sprint06-finalisation-v1`. `claude/sprint09-candidate4` pointe sur `b419339`. `gh-pages` (Sprint 03) est indépendante.
+- Acquis : la recette complète rejoue les contrôles des Sprints 04 à 09 sur `b419339`. Résultats : 53/53 unitaires, 347/347 parcours Nuit & cuivre, 327/327 DA A (Chromium, micro simulé).
+
+### Versions de référence
+
+| Version | Commit de référence | Où il se trouve | Prévisualisation (non publiée) | Tag |
+| --- | --- | --- | --- | --- |
+| MVP — Alpha V0.4 (Sprint 04) | `e3950e6` (clôture ; application déployée : `91441b1`) | `main` (fusion `5fead7f`) | https://6b0078bb87479237251ba188--ariafirstversion.netlify.app | `v0.4.0-alpha` existe déjà (pre-release GitHub) |
+| V1 — Alpha V0.6 (Sprint 06, « finalisation fonctionnelle V1 ») | `67aa241` (application déployée ; clôture `d4f326e`, fusion `f0a61a0`) | `main` | https://6b05c4864a41ea883858ac80--ariafirstversion.netlify.app | proposé : `v1.0.0-alpha` |
+| V2 technique — Sonique (Sprints 07 à 09) | `b419339` (candidate n° 4) | `claude/sprint09-validation`, `claude/sprint09-candidate4` (hors `main`) | https://6b09a750acc212c565bc603f--ariafirstversion.netlify.app | proposé : `v2.0.0-tech` |
+| Repères intermédiaires (facultatif) | Sprint 07 `d5e4a7a`, Sprint 08 `975e9ea` | branches des sprints | voir plus haut | proposés : `sprint07-ref`, `sprint08-ref` |
+| Production actuelle (Sprint 02) | `d86e813` | **absent de l’historique de ce dépôt** | https://ariafirstversion.netlify.app (déploiement `6aff204b188f1862668a1bab`, `locked: true`) | aucun possible |
+
+Note sur `d86e813` : ce commit n’existe dans aucune branche du dépôt. La version de production est conservée uniquement sous la forme du déploiement Netlify verrouillé, qui est immuable. Aucune action n’est requise : il ne faut simplement jamais supprimer ce déploiement.
+
+### Tags proposés (à créer par la porteuse du projet dans GitHub : la session ne peut pas pousser de tags)
+
+Releases → *Draft a new release* → *Choose a tag* (saisir le nom) → *Target* : le commit complet → cocher *Set as a pre-release*.
+
+| Tag | Commit complet | Titre proposé |
+| --- | --- | --- |
+| `v1.0.0-alpha` | `67aa2419b4285f258f5f95b2635f26a70a951f3b` | ARIA — V1 · Alpha V0.6 (Sprint 06) |
+| `v2.0.0-tech` | `b41933949c15616fa316a8055fe31fe686ba32f1` | Sonique — V2 technique (clôture Sprints 07-09, candidate n° 4) |
+| `sprint07-ref` (facultatif) | `d5e4a7a8eed38e28ce9d4e3722136239d0e82da7` | Sprint 07 — référence |
+| `sprint08-ref` (facultatif) | `975e9ea01ca3c810e3e3eec9c4cd2d4ef41cb528` | Sprint 08 — référence Nuit & cuivre |
+
+Le tag `v0.4.0-alpha` (MVP, `e3950e6`) existe déjà.
+
+### Déploiement Netlify en cas de fusion dans `main`
+
+Constats (outils Netlify en lecture, 27/11) :
+- tous les déploiements du projet `ariafirstversion` sont envoyés par l’outil en ligne de commande ou l’API (« Deploy triggered by upload »), sans référence Git (`commit_ref` et `branch` vides) ;
+- aucun déploiement n’a été déclenché par un push sur GitHub ;
+- la production est verrouillée sur `6aff204b188f1862668a1bab` (`locked: true`). La publication automatique est donc arrêtée : même un déploiement de branche ne remplacerait pas le lien public sans action manuelle ;
+- `netlify.toml` définit la construction (`npm run build`, `dist`, Node 22) mais ne lie aucun dépôt.
+
+Conclusion : en l’état observé, une fusion dans `main` ne déclencherait ni construction ni publication. Limite : l’outil disponible n’affiche pas la section « Continuous deployment » du projet. La porteuse du projet doit vérifier dans Netlify (*Project configuration → Build & deploy → Continuous deployment*) qu’aucun dépôt n’est lié. Si un dépôt l’est, il faut conserver le verrouillage de la production, ou désactiver les constructions automatiques (*Stop builds*), avant toute fusion.
+
+### Sécurisation proposée (aucune action faite par l’Ingénierie)
+
+1. Créer les tags `v1.0.0-alpha` et `v2.0.0-tech` dans GitHub (tableau ci-dessus).
+2. Protéger `main` dans GitHub (*Settings → Branches → Branch protection rule*) : pas de push direct, pas de suppression, pas de force-push. Protéger de même `claude/sprint09-validation`.
+3. Netlify : garder la production verrouillée. Vérifier l’absence de lien Git ou l’arrêt des constructions automatiques. Ne jamais supprimer les déploiements de référence (`6aff204b…`, `6b0078bb…`, `6b05c486…`, `6b09a750…`).
+4. Finitions à partir du 28/11 : nouvelle branche depuis `b419339`. `b419339` reste la référence immuable de la V2 technique.
+
+## État Sprint 09 — Validation finale et stabilisation du MVP (clôture technique consolidée le 27/11/2026)
 
 - Branche `claude/sprint09-validation` depuis `claude/sprint08-identite` (application = `975e9ea` au départ). Non fusionnée.
 - **Candidate n° 1** (`22dbdc2`, déploiement `6b085b5efaedcc23d9d0dea3`, non publiée) : https://6b085b5efaedcc23d9d0dea3--ariafirstversion.netlify.app — corrections S08-ENG-01 et S08-QA-01.

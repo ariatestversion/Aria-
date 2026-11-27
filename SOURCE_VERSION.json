@@ -10,7 +10,12 @@
   "reference": "Alpha V0.6 : 67aa241, prévisualisation 6b05c4864a41ea883858ac80 (conservée)",
   "productionLocked": "6aff204b188f1862668a1bab (Sprint 02, d86e813) — vérifié le 25/11 : locked true",
   "verification": "Déploiement ready, published_at null, expires_at null, aucun secret détecté. version.json construit = b419339. Unitaires 53/53 ; e2e 347/347 (Nuit & cuivre) et 327/327 (DA A), micro simulé. Aucun test sur appareil physique pour cette candidate.",
-  "status": "Sprint 09 : candidate n° 4 livrée (dernier lot correctif, GO PM du 27/11). À contre-recetter par Claude QA (automatisé) puis par un essai physique ciblé de 15 min. Aucune fusion, aucune publication.",
+  "status": "Sprints 07, 08 et 09 : clôture technique consolidée validée par le Head of Product (27/11). Référence technique de Sonique V2 : candidate n° 4, b419339. Tags proposés (à créer sur GitHub) : v1.0.0-alpha (67aa241), v2.0.0-tech (b419339) ; v0.4.0-alpha (MVP) existant. Aucune fusion dans main, aucune publication.",
   "netlifyPreviewPapier": "https://6b09a750acc212c565bc603f--ariafirstversion.netlify.app/?accueil=papier",
-  "netlifyPreviewDAA": "https://6b09a750acc212c565bc603f--ariafirstversion.netlify.app/?theme=blanc"
+  "netlifyPreviewDAA": "https://6b09a750acc212c565bc603f--ariafirstversion.netlify.app/?theme=blanc",
+  "references": {
+    "MVP": "v0.4.0-alpha → e3950e6 (application 91441b1)",
+    "V1": "67aa241 (Alpha V0.6, Sprint 06) — tag proposé v1.0.0-alpha",
+    "V2technique": "b419339 (candidate n° 4) — tag proposé v2.0.0-tech"
+  }
 }

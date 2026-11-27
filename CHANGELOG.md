@@ -1,6 +1,8 @@
 # Changelog — ARIA
 
-## [Sprint 09] — Validation finale de l’expérience et stabilisation du MVP (en cours, 2026-11-26)
+## [Sprint 09] — Validation finale de l’expérience et stabilisation du MVP (clôture technique consolidée, 2026-11-27)
+
+**Clôture technique consolidée des Sprints 07, 08 et 09 (Head of Product, 27/11).** Référence technique de Sonique V2 : candidate n° 4, `b419339`. Filiation, versions de référence, tags proposés et déploiement Netlify : `docs/SOURCE.md`.
 
 Branche : `claude/sprint09-validation`, depuis `claude/sprint08-identite` (application identique à `975e9ea`, référence du Sprint 08). Nuit & cuivre conservée.
 - **S08-ENG-01 corrigé** : un nouveau morceau reprend l’instrument du profil, y compris après un rechargement de la page.
