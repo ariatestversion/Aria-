@@ -1983,8 +1983,15 @@ export function AriaApp() {
                       type="button"
                       aria-disabled={capturing || undefined}
                       aria-describedby={capturing ? 'capture-hint' : undefined}
-                      onClick={() => {
-                        if (!capturing) openReview()
+                      // REG-01 — ce bouton reçoit le focus automatiquement à la dernière étape. Une touche Entrée
+                      // maintenue (répétition) ou le second clic d’un double clic, venus du bouton précédent
+                      // (« Reprendre la séance », « Étape suivante »), ne doivent pas rouvrir le bilan.
+                      onKeyDown={(e) => {
+                        if (e.repeat) e.preventDefault()
+                      }}
+                      onClick={(e) => {
+                        if (capturing || e.detail > 1) return
+                        openReview()
                       }}
                     >
                       Faire le bilan

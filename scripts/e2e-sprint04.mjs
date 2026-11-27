@@ -1226,6 +1226,56 @@ async function main() {
     await b9.close()
   }
 
+  // Sprint 09 · S08-QA-REG-01 — cause identifiée : touche Entrée répétée après le focus automatique de « Faire le bilan ».
+  for (const origin of ['Reprendre la séance', 'Étape suivante']) {
+    const b10 = await chromium.launch()
+    const p10 = await (await b10.newContext({ viewport: VIEWPORT, locale: 'fr-FR' })).newPage()
+    const p10errors = []
+    p10.on('pageerror', (e) => p10errors.push(e.message))
+    await p10.goto(`${BASE}?reset`)
+    await p10.getByRole('button', { name: 'Commencer' }).click()
+    await p10.getByRole('button', { name: /Piano/ }).click()
+    await p10.getByRole('button', { name: 'Continuer' }).click()
+    await p10.getByRole('button', { name: /Je débute/ }).click()
+    await p10.getByRole('button', { name: 'Continuer' }).click()
+    await p10.getByRole('button', { name: /^Rythme/ }).click()
+    await p10.getByRole('button', { name: 'Continuer' }).click()
+    await p10.getByRole('button', { name: '15 min' }).click()
+    await p10.getByRole('button', { name: /^Entrer dans / }).click()
+    await addPiece(p10, 'Entrée répétée')
+    await p10.getByRole('button', { name: 'Préparer une séance' }).click()
+    await p10.getByRole('button', { name: 'Commencer la séance' }).click()
+    const segs10 = await p10.locator('.ds-steps-seg').count()
+    let target
+    if (origin === 'Reprendre la séance') {
+      await p10.locator('.ds-steps-seg').nth(segs10 - 1).click()
+      await p10.getByRole('button', { name: 'Faire le bilan', exact: true }).click()
+      await p10.getByRole('button', { name: 'Garder en brouillon' }).click()
+      await p10.getByRole('navigation').getByRole('button', { name: 'Accueil' }).click()
+      await p10.reload()
+      await p10.getByText('Envie de jouer ?').waitFor()
+      await p10.locator('.v0-resume').click()
+      await p10.getByTestId('review-title').waitFor()
+      target = p10.getByRole('button', { name: 'Reprendre la séance' })
+    } else {
+      await p10.locator('.ds-steps-seg').nth(segs10 - 2).click()
+      target = p10.getByRole('button', { name: 'Étape suivante' })
+    }
+    await target.focus()
+    await p10.keyboard.down('Enter')
+    await p10.keyboard.down('Enter') // répétition automatique de la touche maintenue
+    await p10.keyboard.up('Enter')
+    await p10.waitForTimeout(400)
+    check(`S09 · REG-01 : Entrée répétée sur « ${origin} » → séance à la dernière étape, bilan non rouvert`, (await p10.getByTestId('review-title').count()) === 0 && (await p10.getByTestId('step-card').count()) === 1)
+    const focused10 = await p10.evaluate(() => (document.activeElement?.textContent || '').trim())
+    check(`S09 · REG-01 : focus automatique conservé sur « Faire le bilan » (${origin})`, focused10 === 'Faire le bilan', focused10)
+    await p10.keyboard.press('Enter')
+    await p10.getByTestId('review-title').waitFor({ timeout: 3000 }).catch(() => undefined)
+    check(`S09 · REG-01 : un nouvel appui volontaire sur Entrée ouvre bien le bilan (${origin})`, (await p10.getByTestId('review-title').count()) === 1)
+    check(`S09 · REG-01 : aucune erreur JavaScript (${origin})`, p10errors.length === 0, p10errors.join(' | '))
+    await b10.close()
+  }
+
   const failed = results.filter((r) => !r.ok)
   console.log(`\n${results.length - failed.length}/${results.length} vérifications réussies`)
   process.exit(failed.length ? 1 : 0)

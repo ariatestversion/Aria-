@@ -10,6 +10,13 @@ Branche : `claude/sprint09-validation`, depuis `claude/sprint08-identite` (appli
 - Audit du parcours et des programmes, constats S09-D-01 à D-05 à arbitrer : `docs/recettes/sprint09.md`.
 - Tests : unitaires 44/44 ; e2e **300/300** (3 contrôles dédiés ajoutés).
 
+### Candidate n° 3 — correctif REG-01 (GO PM du 27/11)
+- **S08-QA-REG-01 corrigé** :
+  - cause : une touche Entrée répétée (maintenue, ou deux appuis rapprochés) sur « Reprendre la séance » ou « Étape suivante » activait aussitôt « Faire le bilan », qui reçoit le focus automatiquement à la dernière étape ; le bilan se rouvrait ;
+  - correctif : sur « Faire le bilan » seulement, un appui répété et le second clic d’un double clic sont ignorés ; le focus automatique (S7-04 / T07) et celui du bilan (QA-01) sont conservés.
+- Tests dédiés : 8 contrôles. Les deux scénarios échouent sans le correctif (vérifié) et passent avec.
+- Tests : unitaires 47/47 ; e2e **315/315**.
+
 ### Candidate n° 2 (GO PM du 26/11, après la contre-recette Claude QA de la candidate n° 1 : 9/10)
 - **S09-QA-01 corrigé** : après une modification des instruments dans le Profil, l’ajout d’un morceau propose aussitôt le premier instrument du profil, sans rechargement.
 - **S09-D-01 confirmé et corrigé** :

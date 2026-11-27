@@ -193,3 +193,10 @@ Android, si un appareil est disponible : tests 2 et 4 dans Chrome.
   - puis environ 30 min de contre-recette par les QA ;
   - et environ 30 min de tests physiques par la fondatrice.
 - La clôture dans la journée est possible si aucun nouvel écart n’apparaît.
+
+## Candidate n° 3 — correctif REG-01 appliqué (GO PM du 27/11/2026)
+
+- Correctif appliqué tel que proposé (`docs/sprint09/REG-01-correctif-propose.patch`), aucune autre modification applicative.
+- Tests dédiés (8 contrôles) : Entrée répétée sur « Reprendre la séance » (bilan repris après rechargement) et sur « Étape suivante » vers la dernière étape. Pour chacun : la séance reste affichée, le focus est sur « Faire le bilan », un nouvel appui volontaire ouvre bien le bilan, et aucune erreur JavaScript.
+- Preuve de détection : sans le correctif, les deux scénarios échouent (311/315) ; avec le correctif : **315/315**.
+- REG-01 passe au statut « corrigé, à contre-recetter » par les deux QA et sur Safari iPhone (protocole simplifié, test 1).
