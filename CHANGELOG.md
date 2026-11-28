@@ -8,6 +8,7 @@ Branche `claude/sonique-v2-finitions`, depuis la référence technique `b419339`
 - **V2-03** : vignettes Piano, Guitare et Voix en Bibliothèque et dans le Suivi ; pictogramme conservé pour les autres familles.
 - **V2-04** : association par instrument, images décoratives, DA A inchangée.
 - Aucune modification fonctionnelle. Tests : 53/53 ; parcours 360/360 (Nuit & cuivre) et 338/338 (DA A), dont 13 contrôles V2.
+- Prévisualisation non publiée : https://6b0a3613baecd0ded2957f17--ariafirstversion.netlify.app (déploiement `6b0a3613baecd0ded2957f17`, `/version.json` = `bd38ae5`).
 - Référentiel, captures avant/après et arbitrages de la fondatrice (A-1 à A-8) : `docs/v2/REFERENTIEL-FINITIONS.md`. Images proposées à validation interne : `docs/LICENCES.md`.
 
 ## [Sprint 09] — Validation finale de l’expérience et stabilisation du MVP (clôture technique consolidée, 2026-11-27)

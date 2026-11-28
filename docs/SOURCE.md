@@ -24,6 +24,13 @@ Base du Sprint 04 : commit GitHub `23ea182` sur `main`. Il contient la source Cu
 
 `npm run build` génère `public/version.json` (commit, branche, date) : c’est la preuve de correspondance entre le commit GitHub et le déploiement Netlify. `SOURCE_VERSION.json` enregistre le dernier couple commit / déploiement de prévisualisation.
 
+## Sonique V2 — finition esthétique (prévisualisation consolidée, 28/11/2026)
+
+- Branche `claude/sonique-v2-finitions`, créée depuis `c0164ff` (base technique `b419339`). Commit `bd38ae5`.
+- Prévisualisation non publiée : https://6b0a3613baecd0ded2957f17--ariafirstversion.netlify.app (déploiement `6b0a3613baecd0ded2957f17` ; `/version.json` doit indiquer `bd38ae5`). DA A : `?theme=blanc`.
+- Contenu : visuels du Product Design (Bienvenue, carte de reprise, vignettes), sans modification fonctionnelle. Référentiel, captures avant/après et arbitrages de la fondatrice : `docs/v2/REFERENTIEL-FINITIONS.md`.
+- Recette : 53/53, 360/360 (Nuit & cuivre), 338/338 (DA A). Production toujours verrouillée sur le Sprint 02.
+
 ## Clôture technique consolidée des Sprints 07, 08 et 09 et sécurisation des versions (27/11/2026)
 
 Décision du Head of Product : clôture technique consolidée des Sprints 07, 08 et 09. **Référence technique de Sonique V2 : candidate n° 4, `b419339`.** À partir du 28/11 : finitions esthétiques et intégration des ressources validées seulement. Aucune modification fonctionnelle, aucun Sprint 10, aucune suppression de branche, aucune fusion dans `main`, aucune publication.

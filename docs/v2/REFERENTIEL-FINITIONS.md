@@ -65,4 +65,4 @@ Les captures sont dans `docs/screenshots/v2/avant/` (`b419339`) et `docs/screens
 
 ## Prévisualisation
 
-Lien, commit et déploiement : voir `docs/SOURCE.md` et `SOURCE_VERSION.json`. Prévisualisation non publiée ; la production reste verrouillée sur le Sprint 02.
+https://6b0a3613baecd0ded2957f17--ariafirstversion.netlify.app (commit `bd38ae5`, déploiement `6b0a3613baecd0ded2957f17` ; `/version.json` doit indiquer `bd38ae5`). DA A : `https://6b0a3613baecd0ded2957f17--ariafirstversion.netlify.app/?theme=blanc`. Pour voir l’état « avant », utiliser la candidate n° 4 : https://6b09a750acc212c565bc603f--ariafirstversion.netlify.app. Prévisualisation non publiée ; la production reste verrouillée sur le Sprint 02.
