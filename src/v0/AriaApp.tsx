@@ -46,6 +46,7 @@ import {
   seedDemoPieces,
   setSessionEmail,
 } from './store'
+import { instrumentPhoto } from './photos'
 import { Badge, fmt, MetronomePanel, PieceThumb, RecordPanel, ResourceList, Section, SourceTag, StepTimer, TakePlayer } from './ui'
 import { BRAND_NAME, BRAND_SLOGAN } from './brand'
 
@@ -1324,7 +1325,7 @@ export function AriaApp() {
           {inProgressPiece ? (
             <div className="ds-stack">
             <button className="v0-resume" type="button" onClick={() => resumePracticeFor(inProgressPiece.id, inProgressPiece.program?.phase === 'review' ? 'review' : 'session')}>
-              <span className="v0-resume-visual" aria-hidden />
+              <ResumeVisual instrument={inProgressPiece.instrument} />
               <span className="v0-resume-body">
                 <small>
                   {inProgressPiece.program?.phase === 'review' ? 'Bilan commencé' : 'Séance en cours'}
@@ -1348,7 +1349,7 @@ export function AriaApp() {
           ) : lastCompletedPiece ? (
             <div className="ds-stack">
               <button className="v0-resume" type="button" onClick={() => requestPractice(lastCompletedPiece.id, 'prepare')}>
-                <span className="v0-resume-visual" aria-hidden />
+                <ResumeVisual instrument={lastCompletedPiece.instrument} />
                 <span className="v0-resume-body">
                   <small>Prochaine séance</small>
                   <b>{lastCompletedPiece.title}</b>
@@ -2701,5 +2702,31 @@ export function AriaApp() {
         </nav>
       ) : null}
     </div>
+  )
+}
+
+/**
+ * Sonique V2 — zone visuelle de la carte de reprise : visuel de la famille instrumentale du morceau (fichier 640),
+ * décoratif, posé sur le décor existant (vagues cuivre) qui reste le repli si l’image manque ou échoue.
+ */
+function ResumeVisual({ instrument }: { instrument?: InstrumentId }) {
+  const photo = instrumentPhoto(instrument)
+  return (
+    <span className={`v0-resume-visual${photo ? ' has-photo' : ''}`} aria-hidden>
+      {photo ? (
+        <img
+          className="v0-resume-photo v0-photo"
+          src={photo.large}
+          alt=""
+          width={640}
+          height={427}
+          decoding="async"
+          style={{ objectPosition: photo.position }}
+          onError={(e) => {
+            e.currentTarget.hidden = true
+          }}
+        />
+      ) : null}
+    </span>
   )
 }

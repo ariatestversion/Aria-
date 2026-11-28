@@ -1,0 +1,83 @@
+// Sonique V2 · captures avant/après de chaque écran (finition esthétique).
+// Usage : npx vite preview --port 43123, puis node scripts/captures-v2.cjs <dossier> [URL]
+// Micro simulé par Chromium ; aucune donnée réelle (morceaux de démonstration saisis par le script).
+const { chromium } = require('playwright')
+const { mkdirSync } = require('fs')
+const OUT = process.argv[2] || 'docs/screenshots/v2/apres'
+const BASE = process.argv[3] || 'http://localhost:43123/'
+mkdirSync(OUT, { recursive: true })
+
+async function addPiece(page, title, instrument) {
+  await page.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
+  await page.getByRole('button', { name: 'Ajouter un morceau' }).click()
+  await page.getByLabel('Titre').fill(title)
+  await page.locator('#np-inst').selectOption({ label: instrument })
+  await page.getByRole('button', { name: 'Enregistrer le morceau' }).click()
+}
+
+async function run(viewport, suffix, browser) {
+  const ctx = await browser.newContext({ viewport, deviceScaleFactor: 2, locale: 'fr-FR', reducedMotion: 'reduce' })
+  await ctx.grantPermissions(['microphone'])
+  const page = await ctx.newPage()
+  const shot = async (name, full = false) => {
+    await page.waitForTimeout(450)
+    await page.screenshot({ path: `${OUT}/${name}-${suffix}.png`, fullPage: full })
+  }
+  await page.goto(BASE + '?reset')
+  await page.getByRole('button', { name: 'Commencer' }).waitFor()
+  await page.evaluate(() => document.fonts.ready)
+  await shot('01-bienvenue')
+  await page.getByRole('button', { name: 'Commencer' }).click()
+  await page.getByRole('button', { name: /Piano/ }).click()
+  await page.getByRole('button', { name: /Guitare/ }).click()
+  await page.getByRole('button', { name: /Voix/ }).click()
+  await shot('02-personnalisation-instruments')
+  await page.getByRole('button', { name: 'Continuer' }).click()
+  await page.getByRole('button', { name: /Je débute/ }).click()
+  await page.getByRole('button', { name: 'Continuer' }).click()
+  await page.getByRole('button', { name: /^Rythme/ }).click()
+  await page.getByRole('button', { name: 'Continuer' }).click()
+  await page.getByRole('button', { name: '15 min' }).click()
+  await page.getByRole('button', { name: /^Entrer dans / }).click()
+  await page.getByText('Envie de jouer ?').waitFor()
+  await shot('03-accueil-vierge')
+  await addPiece(page, 'Le Vent nous portera', 'Guitare')
+  await addPiece(page, 'Chanson du soir', 'Voix')
+  await addPiece(page, 'Prélude en do', 'Piano')
+  await page.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
+  await shot('04-bibliotheque')
+  await page.getByRole('button', { name: /Prélude en do/ }).first().click()
+  await shot('05-fiche-morceau')
+  await page.getByRole('button', { name: 'Préparer une séance' }).click()
+  await shot('06-preparation')
+  await page.getByRole('button', { name: 'Commencer la séance' }).click()
+  await page.getByTestId('step-card').waitFor()
+  await shot('07-seance')
+  for (let i = 0; i < 6 && (await page.getByRole('button', { name: 'Étape suivante' }).count()); i++) await page.getByRole('button', { name: 'Étape suivante' }).click()
+  await page.locator('.ds-recbtn').click()
+  await page.locator('.v0-navlock').waitFor()
+  await page.waitForTimeout(1500)
+  await shot('08-prise-en-cours')
+  await page.locator('.ds-recbtn.is-on').click()
+  await page.getByText(/Prise sauvegardée sur cet appareil/).waitFor()
+  await page.getByRole('navigation').getByRole('button', { name: 'Accueil' }).click()
+  await page.getByText('Envie de jouer ?').waitFor()
+  await shot('09-accueil-reprise')
+  await page.locator('.v0-resume').first().click()
+  await page.getByRole('button', { name: 'Faire le bilan', exact: true }).click()
+  await page.getByTestId('review-title').waitFor()
+  await shot('10-bilan')
+  await page.getByRole('navigation').getByRole('button', { name: 'Suivi' }).click()
+  await shot('11-suivi')
+  await page.getByRole('navigation').getByRole('button', { name: 'Profil' }).click()
+  await shot('12-profil')
+  await ctx.close()
+}
+
+;(async () => {
+  const browser = await chromium.launch({ args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'] })
+  await run({ width: 390, height: 844 }, '390', browser)
+  await run({ width: 1280, height: 800 }, '1280', browser)
+  await browser.close()
+  console.log('captures :', OUT, '(PNG ; converties en WebP pour le dépôt)')
+})()

@@ -207,7 +207,9 @@ async function onboardGuitar(page) {
     })
     check('S08 · V-01 · Bienvenue : logotype « Sonique » en Fraunces 650, slogan exact', w.text === BRAND && /Fraunces/.test(w.font) && w.weight === '650' && w.slogan === 'Just Play Something.', `${w.font} ${w.weight}`)
     check('S08 · V-01 · Bienvenue : fond marine #101D35 et filet cuivre', /rgb\(16, 29, 53\)/.test(w.bg) && w.rule === 'rgb(217, 102, 43)', w.rule)
-    check('S08 · V-02 · Bienvenue : aucune photographie sans droits documentés (repli marine)', w.imgs === 0 && !/url\(/.test(w.bg.replace(/url\("data:image\/svg[^)]*\)/g, '')))
+    // Sonique V2 — la photographie du pack Product Design (docs/LICENCES.md) remplace le contrôle V-02 « aucune photo » ;
+    // le repli marine reste sous l’image (couches de fond conservées), aucune balise <img> n’est ajoutée.
+    check('V2 · Bienvenue : photographie du pack Product Design, repli marine conservé dessous', w.imgs === 0 && /bienvenue-cuivres-(480|960)/.test(w.bg) && /rgb\(16, 29, 53\)/.test(w.bg))
     check('S08 · Bienvenue : bouton « Commencer » présent', await page.getByRole('button', { name: 'Commencer' }).isVisible())
     await shot(page, '00-bienvenue')
     await contrastAudit(page, 'Bienvenue')
@@ -1375,6 +1377,84 @@ async function main() {
     check(`S09 · S09-QA-03 (${tag}) : « Arrêter » fonctionne, message et repère retirés`, (await p12.locator('.v0-navlock').count()) === 0 && (await p12.locator('.v0-dock-rec').count()) === 0)
     check(`S09 · S09-QA-03 (${tag}) : aucune erreur JavaScript`, p12errors.length === 0, p12errors.join(' | '))
     await b12.close()
+  }
+
+  // Sonique V2 · finition esthétique — visuels de famille : bonne image par instrument, tailles réservées, replis.
+  {
+    for (const blockImages of [false, true]) {
+      const tag = blockImages ? 'images bloquées (repli)' : 'images chargées'
+      const b13 = await chromium.launch()
+      const c13 = await b13.newContext({ viewport: VIEWPORT, locale: 'fr-FR' })
+      if (blockImages) await c13.route(/\.webp(\?|$)/, (r) => r.abort())
+      const p13 = await c13.newPage()
+      const p13errors = []
+      p13.on('pageerror', (e) => p13errors.push(e.message))
+      await p13.goto(`${BASE}?reset`)
+      await p13.getByRole('button', { name: 'Commencer' }).click()
+      for (const n of [/Piano/, /Guitare/, /Batterie/]) await p13.getByRole('button', { name: n }).click()
+      await p13.getByRole('button', { name: 'Continuer' }).click()
+      await p13.getByRole('button', { name: /Je débute/ }).click()
+      await p13.getByRole('button', { name: 'Continuer' }).click()
+      await p13.getByRole('button', { name: /^Rythme/ }).click()
+      await p13.getByRole('button', { name: 'Continuer' }).click()
+      await p13.getByRole('button', { name: '15 min' }).click()
+      await p13.getByRole('button', { name: /^Entrer dans / }).click()
+      for (const [title, inst] of [['V2 Guitare', 'Guitare'], ['V2 Batterie', 'Batterie'], ['V2 Voix', 'Voix'], ['V2 Piano', 'Piano']]) {
+        await p13.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
+        await p13.getByRole('button', { name: 'Ajouter un morceau' }).click()
+        await p13.getByLabel('Titre').fill(title)
+        await p13.locator('#np-inst').selectOption({ label: inst })
+        await p13.getByRole('button', { name: 'Enregistrer le morceau' }).click()
+      }
+      await p13.getByRole('navigation').getByRole('button', { name: 'Bibliothèque' }).click()
+      await p13.waitForTimeout(500)
+      const rows = await p13.evaluate(() => [...document.querySelectorAll('.ds-thumb')].map((t) => {
+        const card = t.closest('button, li, .ds-row-card')
+        const img = t.querySelector('img')
+        const r = t.getBoundingClientRect()
+        return { text: card ? card.textContent : '', src: img ? img.getAttribute('src').slice(0, 60) : '', shown: !!img && !img.hidden && img.complete && img.naturalWidth > 0, w: Math.round(r.width), h: Math.round(r.height), alt: img ? img.getAttribute('alt') : null }
+      }))
+      const row = (t) => rows.find((r) => r.text.includes(t)) || {}
+      if (DEFAULT_THEME !== 'nuit') {
+        const visible = await p13.evaluate(() => [...document.querySelectorAll('.v0-photo')].filter((i) => i.getClientRects().length > 0).length)
+        check(`V2 · DA A : aucun visuel de famille affiché, vignettes inchangées (${tag})`, visible === 0, String(visible))
+      } else if (!blockImages) {
+        check('V2 · Vignettes : Piano, Guitare et Voix portent le visuel de leur famille', row('V2 Piano').shown && row('V2 Guitare').shown && row('V2 Voix').shown && row('V2 Piano').src !== row('V2 Guitare').src && row('V2 Voix').src !== row('V2 Piano').src, JSON.stringify(rows.map((r) => [r.text.slice(0, 12), r.shown])))
+        check('V2 · Vignettes : Batterie garde le pictogramme (aucune image approuvée)', !row('V2 Batterie').src)
+        check('V2 · Vignettes décoratives (alt vide, titre et instrument écrits)', rows.filter((r) => r.src).every((r) => r.alt === ''))
+      } else {
+        // Les vignettes 160 px (~3,5 Ko) sont intégrées au code par Vite (data:) : aucun chargement réseau, donc rien à casser.
+        // Toute image servie par le réseau et bloquée doit être masquée (vagues et pictogramme visibles dessous).
+        check('V2 · Repli : aucune vignette cassée (intégrée au code, ou masquée si son chargement échoue)', rows.every((r) => !r.src || r.src.startsWith('data:') ? (!r.src || r.shown) : !r.shown), JSON.stringify(rows.map((r) => [r.src.slice(0, 15), r.shown])))
+      }
+      check(`V2 · Vignettes : taille réservée 52 × 52, aucun déplacement (${tag})`, rows.length >= 4 && rows.every((r) => r.w === 52 && r.h === 52), JSON.stringify(rows.map((r) => [r.w, r.h])))
+      // Carte de reprise : visuel de l’instrument du morceau en cours.
+      await p13.getByRole('button', { name: /V2 Guitare/ }).first().click()
+      await p13.getByRole('button', { name: 'Préparer une séance' }).click()
+      await p13.getByRole('button', { name: 'Commencer la séance' }).click()
+      await p13.getByRole('navigation').getByRole('button', { name: 'Accueil' }).click()
+      await p13.getByText('Envie de jouer ?').waitFor()
+      await p13.waitForTimeout(500)
+      const card = await p13.evaluate(() => {
+        const v = document.querySelector('.v0-resume-visual')
+        const img = v.querySelector('img')
+        return { h: Math.round(v.getBoundingClientRect().height), src: img ? img.getAttribute('src') : '', shown: !!img && !img.hidden && img.complete && img.naturalWidth > 0, bg: getComputedStyle(v).backgroundImage }
+      })
+      if (DEFAULT_THEME !== 'nuit') check(`V2 · DA A : carte de reprise sans visuel (${tag})`, await p13.evaluate(() => [...document.querySelectorAll('.v0-resume-photo')].every((i) => i.getClientRects().length === 0)))
+      else if (!blockImages) check('V2 · Carte de reprise : visuel Guitare (fichier 640) pour un morceau de guitare', card.shown && /guitare-640/.test(card.src), card.src)
+      else check('V2 · Repli : carte de reprise sans image, décor de vagues conservé', !card.shown && /url\(/.test(card.bg))
+      check(`V2 · Carte de reprise : hauteur réservée inchangée, 112 px (${tag})`, card.h === 112, String(card.h))
+      check(`V2 · Aucune erreur JavaScript (${tag})`, p13errors.length === 0, p13errors.join(' | '))
+      await b13.close()
+    }
+    // La DA A reste inchangée : aucun visuel affiché ni photo de Bienvenue.
+    const b14 = await chromiumBase.launch()
+    const p14 = await (await b14.newContext({ viewport: VIEWPORT, locale: 'fr-FR' })).newPage()
+    await p14.goto(`${BASE}?reset&theme=blanc`)
+    await p14.locator('.v0-welcome-bg').waitFor()
+    const bgA = await p14.evaluate(() => getComputedStyle(document.querySelector('.v0-welcome-bg')).backgroundImage)
+    check('V2 · DA A (?theme=blanc) : Bienvenue sans photographie, inchangée', !/bienvenue-cuivres/.test(bgA))
+    await b14.close()
   }
 
   const failed = results.filter((r) => !r.ok)

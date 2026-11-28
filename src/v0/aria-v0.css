@@ -493,3 +493,26 @@ html[data-v0='1'][data-brand='nuit'][data-accueil='papier'] .v0-app.is-home {
   --dock-bg: var(--brand-paper);
   background: var(--brand-paper);
 }
+
+/* —— Sonique V2 · finition esthétique (pack Product Design du 27/11/2026, arbitrage de la fondatrice requis) —— */
+/* Bienvenue : photographie sur Nuit & cuivre uniquement, 480 ou 960 selon la densité ; voile marine local en bas
+   pour la lisibilité du logotype, du slogan et de « Commencer ». Sans image, le fond marine actuel reste visible. */
+html[data-v0='1'][data-brand='nuit'] .v0-welcome-bg {
+  --welcome-photo:
+    linear-gradient(0deg, var(--welcome-bottom) 0%, color-mix(in srgb, var(--welcome-bottom) 86%, transparent) 34%, color-mix(in srgb, var(--welcome-bottom) 18%, transparent) 64%, transparent 82%),
+    url('../assets/photos/bienvenue-cuivres-480.webp') 56% 52% / cover no-repeat;
+}
+@media (min-resolution: 1.5dppx), (min-width: 600px) {
+  html[data-v0='1'][data-brand='nuit'] .v0-welcome-bg {
+    --welcome-photo:
+      linear-gradient(0deg, var(--welcome-bottom) 0%, color-mix(in srgb, var(--welcome-bottom) 86%, transparent) 34%, color-mix(in srgb, var(--welcome-bottom) 18%, transparent) 64%, transparent 82%),
+      url('../assets/photos/bienvenue-cuivres-960.webp') 56% 52% / cover no-repeat;
+  }
+}
+/* Carte de reprise et vignettes : visuel de la famille instrumentale, taille réservée, aucun déplacement du texte. */
+.v0-resume-visual.has-photo { position: relative; overflow: hidden; }
+.v0-resume-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ds-thumb--photo { position: relative; overflow: hidden; }
+.ds-thumb-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+/* Les visuels appartiennent à la direction Nuit & cuivre (V2) : la DA A (?theme=blanc) reste inchangée. */
+html[data-v0='1']:not([data-brand='nuit']) .v0-photo { display: none; }

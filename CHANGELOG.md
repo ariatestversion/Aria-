@@ -1,5 +1,15 @@
 # Changelog — ARIA
 
+## [Sonique V2] — Finition esthétique (prévisualisation, 2026-11-28)
+
+Branche `claude/sonique-v2-finitions`, depuis la référence technique `b419339`. Mission validée par le Head of Product, ressources du Product Design.
+- **V2-01** : photographie de Bienvenue sur Nuit & cuivre (480/960 selon la densité, voile marine local, repli marine).
+- **V2-02** : visuel de la famille instrumentale dans la carte de reprise de l’Accueil (hauteur réservée inchangée).
+- **V2-03** : vignettes Piano, Guitare et Voix en Bibliothèque et dans le Suivi ; pictogramme conservé pour les autres familles.
+- **V2-04** : association par instrument, images décoratives, DA A inchangée.
+- Aucune modification fonctionnelle. Tests : 53/53 ; parcours 360/360 (Nuit & cuivre) et 338/338 (DA A), dont 13 contrôles V2.
+- Référentiel, captures avant/après et arbitrages de la fondatrice (A-1 à A-8) : `docs/v2/REFERENTIEL-FINITIONS.md`. Images proposées à validation interne : `docs/LICENCES.md`.
+
 ## [Sprint 09] — Validation finale de l’expérience et stabilisation du MVP (clôture technique consolidée, 2026-11-27)
 
 **Clôture technique consolidée des Sprints 07, 08 et 09 (Head of Product, 27/11).** Référence technique de Sonique V2 : candidate n° 4, `b419339`. Filiation, versions de référence, tags proposés et déploiement Netlify : `docs/SOURCE.md`.

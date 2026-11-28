@@ -67,3 +67,17 @@ Quatre JPEG (cuivre, guitare, piano, voix ; générés par ImageGen, statut « r
 - **Photographies : aucune intégrée.** Les candidats du pack Sprint 07 (cuivre.jpg, guitare.jpg, piano.jpg, voix.jpg) sont des images générées (OpenAI ImageGen) au statut « usage interne » ; la prévisualisation Netlify étant publique par lien, ils sont exclus. Replis : fond marine sur la Bienvenue, pictogrammes en Bibliothèque. Avant toute intégration : auteur ou provenance, licence ou autorisation, périmètre de diffusion à inscrire ici.
 - **Polices** : Fraunces (logotype, graisse 650) et Manrope (interface), servies par Google Fonts, licence SIL Open Font License 1.1.
 - **Motifs** : filets et vagues cuivre dessinés en CSS / SVG inline, création du projet, sans droits tiers.
+
+## Sonique V2 — finition esthétique (28/11/2026) : visuels du pack Product Design
+
+| Fichier (dans `src/assets/photos/`) | Surface | Empreinte SHA-256 (vérifiée à l’intégration) |
+| --- | --- | --- |
+| `bienvenue-cuivres-480.webp` / `-960.webp` | Bienvenue (Nuit & cuivre) | `ce827ca9…` / `19526630…` |
+| `guitare-160.webp` / `-640.webp` | Vignette et carte de reprise Guitare | `36152ed1…` / `dc71ea4e…` |
+| `piano-160.webp` / `-640.webp` | Vignette et carte de reprise Piano | `31c4fe38…` / `a7d4346c…` |
+| `voix-160.webp` / `-640.webp` | Vignette et carte de reprise Voix | `c6ba6bba…` / `2b587119…` |
+
+- **Provenance** : pack `SONIQUE-V2-ressources-visuelles.zip` du Product Design (Drive, APP / Produit / Product Design, 27/11/2026), fichier `empreintes.txt`. Les quatre originaux ont été générés avec OpenAI ImageGen pour Sonique V2, à partir de descriptions textuelles originales, sans photo tierce en entrée. Les huit fichiers sont des redimensionnements WebP de ces originaux, intégrés sans retouche.
+- **Statut : proposés à validation interne.** Ils sont intégrés à une prévisualisation non publiée, sur autorisation du Head of Product du 28/11. **L’intégration définitive attend l’arbitrage de la fondatrice** : approbation des images et de leurs surfaces de diffusion.
+- Le dossier ne contient aucune licence commerciale indépendante. Avant toute utilisation commerciale ou publication : consigner le compte et le régime contractuel OpenAI applicables, contrôler marques et ressemblances, puis tracer la décision pour l’app, le web et les supports de diffusion.
+- Les images sont décoratives (`alt=""`) : titre et instrument sont toujours écrits. Repli si une image manque : fond marine (Bienvenue), décor de vagues (carte de reprise), vagues et pictogramme (vignettes).

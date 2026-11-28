@@ -1,3 +1,4 @@
+import { instrumentPhoto } from './photos'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Icon, INSTRUMENT_ICON, type IconName } from '../design/Icon'
 import type { InstrumentId, PieceResource, Take } from './model'
@@ -12,11 +13,29 @@ export function fmt(sec: number) {
 
 /* —— Vignette de morceau (composant neutre, sans image externe) —— */
 
-/** Vignette neutre : vagues abstraites teintées (DA 1) ou icône d’instrument (V0.4). Aucune image externe. */
+/** Vignette : vagues abstraites teintées (DA 1) ou icône d’instrument (V0.4) ; visuel de famille en Nuit & cuivre (Sonique V2). */
 export function PieceThumb({ instrument, seed = '' }: { instrument?: InstrumentId; seed?: string }) {
   const tint = (([...seed].reduce((a, c) => a + c.charCodeAt(0), 0) % 3) + 1).toString()
+  // Sonique V2 — visuel de la famille instrumentale (Piano, Guitare, Voix) par-dessus le repli ; taille réservée,
+  // chargement à la demande. Si l’image manque ou échoue, les vagues et le pictogramme restent visibles dessous.
+  const photo = instrumentPhoto(instrument)
   return (
-    <span className="ds-thumb ds-thumb--icon" data-tint={tint} aria-hidden>
+    <span className={`ds-thumb ds-thumb--icon${photo ? ' ds-thumb--photo' : ''}`} data-tint={tint} aria-hidden>
+      {photo ? (
+        <img
+          className="ds-thumb-photo v0-photo"
+          src={photo.small}
+          alt=""
+          width={52}
+          height={52}
+          loading="lazy"
+          decoding="async"
+          style={{ objectPosition: photo.position }}
+          onError={(e) => {
+            e.currentTarget.hidden = true
+          }}
+        />
+      ) : null}
       <svg className="ds-thumb-waves" width="30" height="24" viewBox="0 0 30 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
         <path d="M2 7c4-3 8-3 12 0s8 3 12 0" />
         <path d="M2 12c4-3 8-3 12 0s8 3 12 0" />
